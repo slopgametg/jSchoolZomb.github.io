@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0c1022">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Школа против зомби">
 <title>Школа с защитой от зомби</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -246,10 +250,13 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
     <div class="row">
       <button class="btn" id="startBtn">Начать урок</button>
       <button class="btn ghost small" id="soundBtn">Звук: вкл</button>
+      <button class="btn ghost small fsBtn" id="fsBtn">На весь экран</button>
     </div>
+    <div class="best" id="fsNote" hidden></div>
     <div class="best" id="best"></div>
     <div class="rules">
       <div><b>Телефон</b>Тяни пальцем в любом месте экрана — появится джойстик. На лестнице — кнопки ▲ ▼.</div>
+      <div><b>Полный экран</b>Кнопка «На весь экран» в меню и в паузе. На iPhone добавь страницу на экран «Домой» — так игра открывается без панелей браузера.</div>
       <div><b>Компьютер</b>WASD или стрелки. E — этаж вверх, Q — вниз. Esc — пауза, 1·2·3 — выбор улучшения.</div>
       <div><b>Цель</b>Продержаться 15:00 до рассвета. С 5:00 приходят боссы, всего их шесть, последний — в 14:20.</div>
       <div><b>Окна</b>Если стоишь в классе с окнами, зомби лезут прямо через них: окно мигает красным за секунду до этого.</div>
@@ -284,6 +291,7 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
       <button class="btn" id="resumeBtn">Продолжить</button>
       <button class="btn ghost small" id="sound2Btn">Звук: вкл</button>
       <button class="btn ghost small" id="gfxBtn">Графика</button>
+      <button class="btn ghost small fsBtn" id="fsBtn2">На весь экран</button>
       <button class="btn ghost small" id="quitBtn">В меню</button>
     </div>
   </div>
@@ -873,46 +881,53 @@ function mkIcon(shape,c){
 }
 function wIcon(id){return '<svg viewBox="0 0 40 40">'+IC[WDEF[id].icon].replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'')+'<circle cx="31" cy="31" r="7.5" fill="#ffd36b"/><path d="M31 35v-7.5M27.5 30.5L31 27l3.5 3.5" stroke="#1b2a24" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>';}
 const FXT={spd:'к скорости бега',dm:'к урону',xp:'к опыту',mag:'к радиусу сбора',cd:'к скорости перезарядки',arm:'к защите',area:'к радиусу атак',crit:'к шансу крита',critd:'к урону крита',kb:'к отбрасыванию',luck:'к удаче: еда выпадает чаще',boss:'к урону по боссам',heal:'к лечению от еды',proj:'к скорости снарядов',dur:'к длительности луж и струй',low:'к урону, когда здоровья меньше половины'};
+const WXT={chalk:'мел пробивает ещё 1 зомби и летит на 10% быстрее',shinai:'удар синая шире на 15° и длиннее на 6%',scissors:'+1 пара ножниц, вращение на 10% быстрее',
+  bell:'волна звонка замедляет зомби на 1 с и отбрасывает сильнее',ext:'струя огнетушителя на 25% дольше',ball:'+2 отскока мяча',kanabo:'канабо оглушает зомби на 0,3 с',
+  shuriken:'+2 сюрикена',ruler:'линейка задевает шире; каждые 2 уровня +1 линейка',acid:'лужи кислоты на 20% больше',boombox:'музыка замедляет зомби в зоне, радиус +8%',
+  plane:'+1 самолётик',tesla:'+1 молния',bow:'стрелы пробивают ещё 2 зомби',pan:'оглушение сковородой на 0,3 с дольше, удар на 10% шире',drone:'+1 дрон',
+  bubble:'взрыв пузырей на 15% шире',fire:'+2 хлопка петард',brush:'чернильный след на 30% дольше и на 10% шире'};
 const num=v=>String(Math.round(v*100)/100).replace('.',',');
 function fxText(fx){const out=[];let rev=false;
   for(const k in fx){const v=fx[k];
     if(k==='revive'){rev=true;continue;}
-    if(k.startsWith('w_'))out.push('+'+Math.round(v*100)+'% к урону: '+WDEF[k.slice(2)].name);
+    if(k.startsWith('wx_'))out.push(WXT[k.slice(3)]);
+    else if(k.startsWith('w_'))out.push('+'+Math.round(v*100)+'% к урону: '+WDEF[k.slice(2)].name);
     else if(k==='regen')out.push('+'+num(v)+' HP/с регенерации');
     else if(k==='hp')out.push('+'+v+' к здоровью');
     else if(k==='life')out.push('+'+num(v)+' HP за каждого убитого');
     else if(k==='thorns')out.push('колючки: '+v+' урона/с тем, кто кусает');
-    else if(k==='amount')out.push('+1 снаряд каждые 2 уровня');
-    else if(k==='vis')out.push('вокруг светлее');
+    else if(k==='amount')out.push('+1 снаряд у всего оружия на 1-м уровне и ещё +1 на каждом нечётном');
+    else if(k==='blind')out.push('зомби в круге света медленнее на '+Math.round(v*100)+'% (до 48%)');
+    else if(k==='vis')out.push('вокруг светлее в темноте');
     else out.push('+'+Math.round(v*100)+'% '+FXT[k]);}
   return (rev?'Один раз за забег спасает от поражения. ':'')+out.join('; ')+' — за уровень.';}
 const NEWP=[
- ['chalk2','Цветной мел','w:chalk',{w_chalk:.2}],['shinai2','Бамбуковая рукоять','w:shinai',{w_shinai:.2}],['scissors2','Точилка для ножниц','w:scissors',{w_scissors:.2}],
- ['bell2','Медный язычок звонка','w:bell',{w_bell:.2}],['ext2','Запасной баллон','w:ext',{w_ext:.2}],['ball2','Бейсбольная перчатка','w:ball',{w_ball:.2}],
- ['kanabo2','Железные шипы','w:kanabo',{w_kanabo:.2}],['shuriken2','Плотная бумага для оригами','w:shuriken',{w_shuriken:.2}],['ruler2','Металлическая линейка','w:ruler',{w_ruler:.2}],
- ['acid2','Концентрированная кислота','w:acid',{w_acid:.2}],['boombox2','Новые батарейки','w:boombox',{w_boombox:.2}],['plane2','Конструктор самолётиков','w:plane',{w_plane:.2}],
- ['tesla2','Медная обмотка','w:tesla',{w_tesla:.2}],
- ['readglasses','Очки отличника','glasses:#5b8fd9',{crit:.05}],['luckypencil','Счастливый карандаш','pencil:#f2c94c',{critd:.25}],
+ ['chalk2','Цветной мел','w:chalk',{wx_chalk:1}],['shinai2','Бамбуковая рукоять','w:shinai',{wx_shinai:1}],['scissors2','Точилка для ножниц','w:scissors',{wx_scissors:1}],
+ ['bell2','Медный язычок звонка','w:bell',{wx_bell:1}],['ext2','Запасной баллон','w:ext',{wx_ext:1}],['ball2','Бейсбольная перчатка','w:ball',{wx_ball:1}],
+ ['kanabo2','Железные шипы','w:kanabo',{wx_kanabo:1}],['shuriken2','Плотная бумага для оригами','w:shuriken',{wx_shuriken:1}],['ruler2','Металлическая линейка','w:ruler',{wx_ruler:1}],
+ ['acid2','Концентрированная кислота','w:acid',{wx_acid:1}],['boombox2','Новые батарейки','w:boombox',{wx_boombox:1}],['plane2','Конструктор самолётиков','w:plane',{wx_plane:1}],
+ ['tesla2','Медная обмотка','w:tesla',{wx_tesla:1}],
+ ['readglasses','Очки отличника','glasses:#5b8fd9',{crit:.05}],['luckypencil','Счастливый карандаш','pencil:#f2c94c',{critd:.25,crit:.02}],
  ['spikes','Кроссовки с шипами','shoe:#e05a6a',{spd:.05,kb:.1}],['bar','Энергетический батончик','bar:#c97b3a',{regen:.2}],
  ['firstaid','Аптечка медпункта','box:#e0313f',{hp:20}],['plaster','Пластырь','plaster:#e8c39e',{heal:.25,regen:.05}],
- ['cocoa','Кружка какао','cup:#8a5a3a',{regen:.15,arm:.03}],['uniform','Спортивная форма','shirt:#1f7a5a',{arm:.06}],
+ ['cocoa','Кружка какао','cup:#8a5a3a',{regen:.15,arm:.03}],['uniform','Спортивная форма','shirt:#1f7a5a',{arm:.04,spd:.03}],
  ['helmet','Каска с субботника','helmet:#f2c94c',{arm:.05,hp:5}],['kneepads','Наколенники','shield:#5d6670',{arm:.04,spd:.02}],
- ['bigbag','Вместительная сумка','bag:#3a6ad1',{mag:.2}],['butterfly','Сачок кружка биологии','net:#4e9a63',{mag:.15,luck:.1}],
+ ['bigbag','Вместительная сумка','bag:#3a6ad1',{mag:.15,hp:5}],['butterfly','Сачок кружка биологии','net:#4e9a63',{mag:.15,luck:.1}],
  ['clover','Четырёхлистный клевер','clover:#4e9a63',{luck:.2}],['omamori','Омамори из храма','omamori:#d63b4a',{revive:1,hp:5}],
- ['flag','Флажок старосты','flag:#e0313f',{area:.08}],['megaphone','Мегафон','mega:#f2c94c',{area:.06,kb:.1}],
+ ['flag','Флажок старосты','flag:#e0313f',{area:.05,boss:.1}],['megaphone','Мегафон','mega:#f2c94c',{area:.06,kb:.1}],
  ['magnifier','Увеличительное стекло','magnify:#9aa7b3',{area:.1}],['hourglass','Песочные часы','hourglass:#d9b23a',{dur:.15}],
- ['schedule','Расписание звонков','book:#b8343a',{cd:.05}],['metronome','Метроном музыкального клуба','metro:#7a5234',{cd:.04,proj:.05}],
+ ['schedule','Расписание звонков','book:#b8343a',{cd:.04,dur:.1}],['metronome','Метроном музыкального клуба','metro:#7a5234',{cd:.04,proj:.05}],
  ['slingshot','Рогатка','sling:#8a5a32',{proj:.15}],['pencilcase','Пенал','case:#8c5fb3',{amount:.5}],
  ['hachimaki','Повязка «Победа»','headband:#f4f4f4',{dm:.06,low:.15}],['locket','Кулон с фото класса','locket:#d9b23a',{low:.2}],
- ['whistle','Свисток физрука','whistle:#c0c6d0',{boss:.2}],['diary','Дневник с пятёрками','book:#3a7bd5',{xp:.08}],
+ ['whistle','Свисток физрука','whistle:#c0c6d0',{boss:.2}],['diary','Дневник с пятёрками','book:#3a7bd5',{xp:.05,luck:.1}],
  ['kanji','Словарь кандзи','book:#2b2b33',{xp:.06,cd:.02}],['catears','Кошачьи ушки с фестиваля','ears:#2a1b14',{spd:.04,luck:.05}],
  ['scarf','Колючий шарф','scarf:#8c5fb3',{thorns:10}],['cactus','Кактус с подоконника','cactus:#4e9a63',{thorns:6,arm:.02}],
  ['fangs','Клыки вампира из костюмерной','fang:#f4f4f4',{life:.4}],['unagi','Бэнто с угрём','box:#5a3b24',{life:.3,regen:.1}],
- ['flashlight','Фонарик','lamp:#f2c94c',{vis:.5}],['schoolmap','Карта школы','map:#d8c79a',{spd:.03,mag:.08}],
+ ['flashlight','Фонарик','lamp:#f2c94c',{blind:.12,vis:.5}],['schoolmap','Карта школы','map:#d8c79a',{spd:.03,mag:.08}],
  ['umbrella','Зонтик-трость','umbrella:#2b6cd6',{arm:.03,kb:.1}],['tamago','Тамагояки в коробочке','box:#f2c94c',{hp:10,heal:.1}],
  ['headphones','Наушники','phones:#333a4a',{cd:.03,area:.04}],
- ['bow2','Оперение для стрел','w:bow',{w_bow:.2}],['pan2','Антипригарное покрытие','w:pan',{w_pan:.2}],['drone2','Запасной аккумулятор','w:drone',{w_drone:.2}],
- ['bubble2','Густой мыльный раствор','w:bubble',{w_bubble:.2}],['fire2','Порох с фестиваля','w:fire',{w_fire:.2}],['brush2','Тушь для каллиграфии','w:brush',{w_brush:.2}],
+ ['bow2','Оперение для стрел','w:bow',{wx_bow:1}],['pan2','Антипригарное покрытие','w:pan',{wx_pan:1}],['drone2','Запасной аккумулятор','w:drone',{wx_drone:1}],
+ ['bubble2','Густой мыльный раствор','w:bubble',{wx_bubble:1}],['fire2','Порох с фестиваля','w:fire',{wx_fire:1}],['brush2','Тушь для каллиграфии','w:brush',{wx_brush:1}],
 ];
 NEWP.forEach(([id,name,ic,fx])=>{IC['p_'+id]=ic.startsWith('w:')?wIcon(ic.slice(2)):mkIcon(ic.split(':')[0],ic.split(':')[1]);PDEF[id]={name,icon:'p_'+id,fx,ds:fxText(fx)};});
 // stats beyond the 5 hand-tuned levels keep growing
@@ -982,8 +997,9 @@ function stats(){
     regen:hasC('neko')?0:.3*pl('bento')+sumFx('regen'),
     area:Math.min(3,1+sumFx('area')+.4*cc('cdiary')),crit:Math.min(.8,(P.C&&P.C.crit||0)+sumFx('crit')+.2*cc('kitsune')),critd:2+sumFx('critd'),kb:1+sumFx('kb'),
     life:(P.C&&P.C.life||0)+sumFx('life')+1.5*cc('oath'),thorns:sumFx('thorns'),luck:(1+sumFx('luck'))*(1+cc('envelope')),boss:1+sumFx('boss')+.6*cc('onimask'),heal:1+sumFx('heal'),
-    proj:Math.min(2.5,1+sumFx('proj')),dur:1+sumFx('dur'),amount:Math.min(6,Math.floor(sumFx('amount'))+cc('teru')),low:sumFx('low'),vis:Math.min(2,sumFx('vis')),w:{}};
+    proj:Math.min(2.5,1+sumFx('proj')),dur:1+sumFx('dur'),amount:Math.min(6,(pl('pencilcase')?Math.floor((pl('pencilcase')+1)/2):0)+cc('teru')),blind:Math.min(.48,sumFx('blind')),low:sumFx('low'),vis:Math.min(2,sumFx('vis')),w:{}};
   for(const id in WDEF)S.w[id]=1+sumFx('w_'+id);
+  S.wx={};for(const id in WDEF)S.wx[id]=sumFx('wx_'+id);
   return S;
 }
 function calcMaxHp(){return Math.max(30,(P.baseHp||100)+sumFx('hp')+15*pl('bento')+(P.baseMaxBonus||0)-30*cc('energy')-25*cc('oath'));}
@@ -1161,7 +1177,7 @@ function damage(e,amt,nx,ny,kb,tick){
   e.hp-=amt;e.hitT=.1;
   const res=e.kind==='boss'?.06:e.kind==='sumo'?.4:1;
   if(kb){e.kbx+=nx*kb*res;e.kby+=ny*kb*res;}
-  if(tick){e.acc+=amt;if(e.acc>=7){addNum(e.x,e.y-e.r,e.acc,'#cfefff');e.acc=0;}}
+  if(tick){e.acc+=amt;if(e.accT===undefined)e.accT=time;if(time-e.accT>=.5){if(e.acc>=.5)addNum(e.x,e.y-e.r,e.acc,'#cfefff');e.acc=0;e.accT=time;}}
   else{addNum(e.x,e.y-e.r,amt,crit?'#ffd36b':undefined);sfx('hit');}
   if(e.hp<=0)kill(e);
 }
@@ -1298,7 +1314,8 @@ function updateEnemies(dt){
     if(e.stunT>0){e.stunT-=dt;dx=0;dy=0;spMul=0;}
     const slow=(e.slowT>0?.45:1)*(e.buffT>0?1.4:1);e.slowT-=dt;if(e.buffT>0)e.buffT-=dt;
     const Fw=floors[e.floor].water,wet=Fw&&Fw[Math.max(0,Math.min(MW*MH-1,Math.floor(e.y/T)*MW+Math.floor(e.x/T)))];
-    const sp=e.spd*slow*zSpd*(wet?.6:1)*(floors[e.floor].snow&&floors[e.floor].snow[Math.max(0,Math.min(MW*MH-1,Math.floor(e.y/T)*MW+Math.floor(e.x/T)))]?.5:1)*spMul,k=e.ms==='dash'?1:Math.min(1,dt*(slipZ?2:6));
+    const blind=(S.blind&&e.floor===P.floor&&Math.abs(e.x-P.x)<110&&Math.abs(e.y-P.y)<110&&Math.hypot(e.x-P.x,e.y-P.y)<110)?1-S.blind:1;
+    const sp=e.spd*slow*zSpd*blind*(wet?.6:1)*(floors[e.floor].snow&&floors[e.floor].snow[Math.max(0,Math.min(MW*MH-1,Math.floor(e.y/T)*MW+Math.floor(e.x/T)))]?.5:1)*spMul,k=e.ms==='dash'?1:Math.min(1,dt*(slipZ?2:6));
     e.vx+=(dx*sp-e.vx)*k;e.vy+=(dy*sp-e.vy)*k;
     e.x+=(e.vx+e.kbx)*dt;e.y+=(e.vy+e.kby)*dt;
     if(windZ&&e.floor===2){e.x+=wZx*dt;e.y+=wZy*dt;}
@@ -1333,24 +1350,24 @@ function angDiff(a,b){let d=a-b;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+
 function updateWeapons(dt){
   const S=stats();curS=S;
   for(const w of P.weapons){
-    const D=WDEF[w.id],L=w.lvl-1,WM=S.dm*(S.w[w.id]||1)*(P.hp<P.maxHp*.5?1+S.low:1);
+    const D=WDEF[w.id],L=w.lvl-1,X=S.wx[w.id]||0,WM=S.dm*(S.w[w.id]||1)*(P.hp<P.maxHp*.5?1+S.low:1);
     if(w.id==='scissors'){
-      w.ang=(w.ang||0)+ws(D,'spd',L)*dt;
-      const n=(ws(D,'n',L)+AMT()),R=ws(D,'r',L)*AREA();
+      w.ang=(w.ang||0)+ws(D,'spd',L)*(1+.1*X)*dt;
+      const n=Math.min(14,(ws(D,'n',L)+AMT())+X),R=ws(D,'r',L)*AREA();
       for(let i=0;i<n;i++){const a=w.ang+i*Math.PI*2/n,bx=P.x+Math.cos(a)*R,by=P.y+Math.sin(a)*R;
         forNear(P.floor,bx,by,40,e=>{if(e.scT>0)return;const d=Math.hypot(e.x-bx,e.y-by);if(d<e.cr+11){e.scT=.45;const nx=(e.x-P.x)/(Math.hypot(e.x-P.x,e.y-P.y)||1),ny=(e.y-P.y)/(Math.hypot(e.x-P.x,e.y-P.y)||1);damage(e,ws(D,'dmg',L)*WM,nx,ny,90);}});}
       continue;
     }
-    if(w.id==='drone'){const n=Math.min(10,ws(D,'n',L)+AMT());w.ang=(w.ang||0)+dt*2.2;w.dt2=(w.dt2||0)-dt;
+    if(w.id==='drone'){const n=Math.min(10,ws(D,'n',L)+AMT()+X);w.ang=(w.ang||0)+dt*2.2;w.dt2=(w.dt2||0)-dt;
       if(w.dt2<=0){w.dt2=ws(D,'cd',L)*S.cdm;let shot=false;
         for(let i=0;i<n;i++){const a=w.ang+i*Math.PI*2/n,bx=P.x+Math.cos(a)*48,by=P.y+Math.sin(a)*48,t=nearestList(bx,by,320,1)[0];if(!t)continue;shot=true;
           const aa=Math.atan2(t.y-by,t.x-bx);projs.push({k:'laser',x:bx,y:by,vx:Math.cos(aa)*820*S.proj,vy:Math.sin(aa)*820*S.proj,f:P.floor,dmg:ws(D,'dmg',L)*WM,pierce:1,life:.5,hit:new Set(),a:aa});}
         if(shot)tone(1500,.03,'square',.008,1.2);}
       continue;}
     if(w.id==='brush'){const mv=Math.hypot(P.x-(w.lx||0),P.y-(w.ly||0));
-      if(mv>12){w.lx=P.x;w.ly=P.y;if(fxs.length<260)fxs.push({k:'ink',x:P.x,y:P.y,f:P.floor,R:ws(D,'r',L)*AREA(),dps:ws(D,'dps',L)*WM,t:0,dur:ws(D,'dur',L)*S.dur});}
+      if(mv>12){w.lx=P.x;w.ly=P.y;if(fxs.length<260)fxs.push({k:'ink',x:P.x,y:P.y,f:P.floor,R:ws(D,'r',L)*AREA()*(1+.1*X),dps:ws(D,'dps',L)*WM,t:0,dur:ws(D,'dur',L)*S.dur*(1+.3*X)});}
       continue;}
-    if(w.id==='boombox'){const R=ws(D,'r',L)*AREA(),dps=ws(D,'dps',L)*WM;forNear(P.floor,P.x,P.y,R+20,e=>{if(Math.hypot(e.x-P.x,e.y-P.y)<R+e.cr)damage(e,dps*dt,0,0,0,true);});continue;}
+    if(w.id==='boombox'){const R=ws(D,'r',L)*AREA()*(1+.08*X),dps=ws(D,'dps',L)*WM;forNear(P.floor,P.x,P.y,R+20,e=>{if(Math.hypot(e.x-P.x,e.y-P.y)<R+e.cr){damage(e,dps*dt,0,0,0,true);if(X)e.slowT=Math.max(e.slowT,.15);}});continue;}
     if(w.id==='ext'&&w.spray>0){
       w.spray-=dt;const dir=aimDir(ws(D,'r',L)*AREA()*1.3);w.dir=[w.dir[0]+(dir[0]-w.dir[0])*Math.min(1,dt*8),w.dir[1]+(dir[1]-w.dir[1])*Math.min(1,dt*8)];
       const a=Math.atan2(w.dir[1],w.dir[0]),R=ws(D,'r',L)*AREA();
@@ -1366,53 +1383,53 @@ function updateWeapons(dt){
           let dx,dy;const t=ts.length?ts[i%ts.length]:null;
           if(t){dx=t.x-P.x;dy=t.y-P.y;}else{dx=P.face[0];dy=P.face[1];}
           let a=Math.atan2(dy,dx)+(ts.length<=i?(i-((ws(D,'n',L)+AMT())-1)/2)*.25:0);
-          projs.push({k:'chalk',x:P.x,y:P.y,vx:Math.cos(a)*560*S.proj,vy:Math.sin(a)*560*S.proj,f:P.floor,dmg:ws(D,'dmg',L)*WM,pierce:ws(D,'pierce',L),life:1.1,hit:new Set(),a});
+          projs.push({k:'chalk',x:P.x,y:P.y,vx:Math.cos(a)*560*S.proj*(1+.1*X),vy:Math.sin(a)*560*S.proj*(1+.1*X),f:P.floor,dmg:ws(D,'dmg',L)*WM,pierce:ws(D,'pierce',L)+X,life:1.1,hit:new Set(),a});
         }
         sfx('chalk');break;}
       case 'shinai':{
-        const R=ws(D,'r',L)*AREA(),dir=aimDir(R*1.6),a=Math.atan2(dir[1],dir[0]),half=ws(D,'arc',L)*Math.PI/360;
+        const R=ws(D,'r',L)*AREA()*(1+.06*X),dir=aimDir(R*1.6),a=Math.atan2(dir[1],dir[0]),half=Math.min(Math.PI,(ws(D,'arc',L)+15*X)*Math.PI/360);
         const dirs=[a];if(ws(D,'back',L))dirs.push(a+Math.PI);
         dirs.forEach(aa=>{
           fxs.push({k:'arc',a:aa,half,R,t:0,dur:.2});
           forNear(P.floor,P.x,P.y,R+30,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy);if(d<R+e.cr&&angDiff(Math.atan2(dy,dx),aa)<half)damage(e,ws(D,'dmg',L)*WM,dx/(d||1),dy/(d||1),260);});
         });
         tone(260,.08,'triangle',.03,.5);break;}
-      case 'bell':fxs.push({k:'ring',x:P.x,y:P.y,f:P.floor,R:ws(D,'r',L)*AREA(),dmg:ws(D,'dmg',L)*WM,t:0,dur:.45,hit:new Set()});sfx('bell');break;
-      case 'ext':w.spray=ws(D,'dur',L)*S.dur;w.dir=aimDir(ws(D,'r',L)*AREA()*1.3);tone(200,.3,'sawtooth',.015,.6);break;
+      case 'bell':fxs.push({slow:X,k:'ring',x:P.x,y:P.y,f:P.floor,R:ws(D,'r',L)*AREA(),dmg:ws(D,'dmg',L)*WM,t:0,dur:.45,hit:new Set()});sfx('bell');break;
+      case 'ext':w.spray=ws(D,'dur',L)*S.dur*(1+.25*X);w.dir=aimDir(ws(D,'r',L)*AREA()*1.3);tone(200,.3,'sawtooth',.015,.6);break;
       case 'ball':{const t=nearestList(P.x,P.y,480,1)[0];if(!t){w.t=.3;break;}
-        projs.push({k:'ball',x:P.x,y:P.y,f:P.floor,dmg:ws(D,'dmg',L)*WM,b:ws(D,'b',L),target:t,hit:new Set(),life:4,spin:0});tone(500,.05,'square',.02,1.3);break;}
+        projs.push({k:'ball',x:P.x,y:P.y,f:P.floor,dmg:ws(D,'dmg',L)*WM,b:ws(D,'b',L)+2*X,target:t,hit:new Set(),life:4,spin:0});tone(500,.05,'square',.02,1.3);break;}
       case 'kanabo':{const R=ws(D,'r',L)*AREA();fxs.push({k:'slam',R,t:0,dur:.3});
-        forNear(P.floor,P.x,P.y,R+30,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy);if(d<R+e.cr)damage(e,ws(D,'dmg',L)*WM,dx/(d||1),dy/(d||1),380);});
+        forNear(P.floor,P.x,P.y,R+30,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy);if(d<R+e.cr)damage(e,ws(D,'dmg',L)*WM,dx/(d||1),dy/(d||1),380);if(X&&e.alive&&e.kind!=='boss')e.stunT=Math.max(e.stunT||0,.3*X);});
         tone(90,.18,'square',.05,.5);break;}
-      case 'shuriken':{const n=Math.min(16,ws(D,'n',L)+AMT()*2),a0=time*2;
+      case 'shuriken':{const n=Math.min(22,ws(D,'n',L)+AMT()*2+2*X),a0=time*2;
         for(let i=0;i<n;i++){const a=a0+i*Math.PI*2/n;projs.push({k:'shuriken',x:P.x,y:P.y,vx:Math.cos(a)*420*S.proj,vy:Math.sin(a)*420*S.proj,f:P.floor,dmg:ws(D,'dmg',L)*WM,pierce:ws(D,'pierce',L),life:.9,hit:new Set(),a:0});}
         tone(900,.04,'triangle',.015,1.2);break;}
-      case 'ruler':{const n=ws(D,'n',L)+AMT(),dir=aimDir(400),a=Math.atan2(dir[1],dir[0]);
-        for(let i=0;i<n;i++){const aa=a+(i-(n-1)/2)*.35;projs.push({k:'ruler',x:P.x,y:P.y,dx:Math.cos(aa),dy:Math.sin(aa),sp:560*S.proj,f:P.floor,dmg:ws(D,'dmg',L)*WM,life:2.6,hit:new Set(),back:false,a:0});}
+      case 'ruler':{const n=ws(D,'n',L)+AMT()+Math.floor(X/2),dir=aimDir(400),a=Math.atan2(dir[1],dir[0]);
+        for(let i=0;i<n;i++){const aa=a+(i-(n-1)/2)*.35;projs.push({k:'ruler',x:P.x,y:P.y,dx:Math.cos(aa),dy:Math.sin(aa),sp:560*S.proj,f:P.floor,dmg:ws(D,'dmg',L)*WM,life:2.6,hit:new Set(),back:false,a:0,big:6*X});}
         break;}
       case 'acid':{const n=ws(D,'n',L)+AMT(),ts=nearestList(P.x,P.y,420,30);
         for(let i=0;i<n;i++){const t=ts.length?ts[(rand()*ts.length)|0]:null,x=t?t.x:P.x+rr(-150,150),y=t?t.y:P.y+rr(-150,150);
-          fxs.push({k:'acid',x,y,f:P.floor,R:ws(D,'r',L)*AREA(),dps:ws(D,'dps',L)*WM,t:0,dur:ws(D,'dur',L)*S.dur});
+          fxs.push({k:'acid',x,y,f:P.floor,R:ws(D,'r',L)*AREA()*(1+.2*X),dps:ws(D,'dps',L)*WM,t:0,dur:ws(D,'dur',L)*S.dur});
           for(let j=0;j<6;j++)parts.push({x,y,vx:rr(-90,90),vy:rr(-90,90),life:.35,max:.35,col:'#ff8a8a',s:3,f:P.floor});}
         tone(300,.1,'triangle',.03,.5);break;}
-      case 'plane':{const n=ws(D,'n',L)+AMT();
+      case 'plane':{const n=ws(D,'n',L)+AMT()+X;
         for(let i=0;i<n;i++){const a=rand()*6.28;projs.push({k:'plane',x:P.x,y:P.y,vx:Math.cos(a)*330,vy:Math.sin(a)*330,f:P.floor,dmg:ws(D,'dmg',L)*WM,pierce:ws(D,'pierce',L),life:4,hit:new Set(),target:null,sp:330*S.proj});}
         break;}
-      case 'tesla':{const n=ws(D,'n',L)+AMT(),ts=nearestList(P.x,P.y,380,40);if(!ts.length){w.t=.3;break;}
+      case 'tesla':{const n=ws(D,'n',L)+AMT()+X,ts=nearestList(P.x,P.y,380,40);if(!ts.length){w.t=.3;break;}
         for(let i=0;i<n&&ts.length;i++){const t=ts.splice((rand()*ts.length)|0,1)[0],dm=ws(D,'dmg',L)*WM;fxs.push({k:'zap',x:t.x,y:t.y,f:P.floor,t:0,dur:.22});
           damage(t,dm,0,0,0);forNear(P.floor,t.x,t.y,44,o=>{if(o!==t&&Math.hypot(o.x-t.x,o.y-t.y)<38)damage(o,dm*.4,0,0,0);});}
         tone(1800,.08,'sawtooth',.02,.3);break;}
       case 'bow':{const n=ws(D,'n',L)+AMT(),ts=nearestList(P.x,P.y,700,n);
         for(let i=0;i<n;i++){const t=ts.length?ts[i%ts.length]:null;let a=t?Math.atan2(t.y-P.y,t.x-P.x):Math.atan2(P.face[1],P.face[0]);a+=(i-(n-1)/2)*(t?.05:.2);
-          projs.push({k:'arrow',x:P.x,y:P.y,vx:Math.cos(a)*760*S.proj,vy:Math.sin(a)*760*S.proj,f:P.floor,dmg:ws(D,'dmg',L)*WM,pierce:ws(D,'pierce',L),life:1,hit:new Set(),a});}
+          projs.push({k:'arrow',x:P.x,y:P.y,vx:Math.cos(a)*760*S.proj,vy:Math.sin(a)*760*S.proj,f:P.floor,dmg:ws(D,'dmg',L)*WM,pierce:ws(D,'pierce',L)+2*X,life:1,hit:new Set(),a});}
         tone(380,.07,'triangle',.025,2);break;}
-      case 'pan':{const R=ws(D,'r',L)*AREA(),dir=aimDir(R*1.8),a=Math.atan2(dir[1],dir[0]),half=Math.PI/3.2;fxs.push({k:'pan',a,R,t:0,dur:.18});
-        forNear(P.floor,P.x,P.y,R+30,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy);if(d<R+e.cr&&angDiff(Math.atan2(dy,dx),a)<half){damage(e,ws(D,'dmg',L)*WM,dx/(d||1),dy/(d||1),200);if(e.kind!=='boss')e.stunT=ws(D,'dur',L);}});
+      case 'pan':{const R=ws(D,'r',L)*AREA()*(1+.1*X),dir=aimDir(R*1.8),a=Math.atan2(dir[1],dir[0]),half=Math.PI/3.2;fxs.push({k:'pan',a,R,t:0,dur:.18});
+        forNear(P.floor,P.x,P.y,R+30,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy);if(d<R+e.cr&&angDiff(Math.atan2(dy,dx),a)<half){damage(e,ws(D,'dmg',L)*WM,dx/(d||1),dy/(d||1),200);if(e.kind!=='boss')e.stunT=ws(D,'dur',L)+.3*X;}});
         tone(180,.08,'square',.04,1.6);break;}
       case 'bubble':{const n=ws(D,'n',L)+AMT();
-        for(let i=0;i<n;i++){const a=rand()*6.28;projs.push({k:'bubble',x:P.x+Math.cos(a)*14,y:P.y+Math.sin(a)*14,vx:Math.cos(a)*90,vy:Math.sin(a)*90,f:P.floor,dmg:ws(D,'dmg',L)*WM,R:ws(D,'r',L)*AREA(),life:4,hit:new Set(),target:null,sp:130*S.proj,ph:rand()*6});}
+        for(let i=0;i<n;i++){const a=rand()*6.28;projs.push({k:'bubble',x:P.x+Math.cos(a)*14,y:P.y+Math.sin(a)*14,vx:Math.cos(a)*90,vy:Math.sin(a)*90,f:P.floor,dmg:ws(D,'dmg',L)*WM,R:ws(D,'r',L)*AREA()*(1+.15*X),life:4,hit:new Set(),target:null,sp:130*S.proj,ph:rand()*6});}
         break;}
-      case 'fire':{const ts=nearestList(P.x,P.y,380,20),t=ts.length?ts[(rand()*ts.length)|0]:null,x=t?t.x:P.x+rr(-140,140),y=t?t.y:P.y+rr(-140,140),n=ws(D,'n',L)+AMT();
+      case 'fire':{const ts=nearestList(P.x,P.y,380,20),t=ts.length?ts[(rand()*ts.length)|0]:null,x=t?t.x:P.x+rr(-140,140),y=t?t.y:P.y+rr(-140,140),n=ws(D,'n',L)+AMT()+2*X;
         for(let i=0;i<n;i++)fxs.push({k:'cracker',x:x+rr(-35,35),y:y+rr(-35,35),f:P.floor,t:-i*.09,dur:.25,dmg:ws(D,'dmg',L)*WM,R:34*AREA(),done:false});
         break;}
     }
@@ -1446,7 +1463,7 @@ function updateProjs(dt){
       p.a+=dt*16;
       if(!p.back){p.x+=p.dx*p.sp*dt;p.y+=p.dy*p.sp*dt;p.sp-=700*dt;if(p.sp<=0){p.back=true;p.hit.clear();p.sp=100;}}
       else{const dx=P.x-p.x,dy=P.y-p.y,d=Math.hypot(dx,dy)||1;p.sp=Math.min(720,p.sp+900*dt);p.x+=dx/d*p.sp*dt;p.y+=dy/d*p.sp*dt;if(d<18){p.dead=true;continue;}}
-      forNear(p.f,p.x,p.y,34,e=>{if(p.hit.has(e.id))return;if(Math.hypot(e.x-p.x,e.y-p.y)<e.cr+10){p.hit.add(e.id);damage(e,p.dmg,0,0,0);}});
+      forNear(p.f,p.x,p.y,34,e=>{if(p.hit.has(e.id))return;if(Math.hypot(e.x-p.x,e.y-p.y)<e.cr+10+(p.big||0)){p.hit.add(e.id);damage(e,p.dmg,0,0,0);}});
     }else if(p.k==='plane'){
       if(!p.target||!p.target.alive||p.target.floor!==p.f)p.target=nearestList(p.x,p.y,420,10).find(e=>!p.hit.has(e.id))||null;
       let vx=p.vx,vy=p.vy;
@@ -1475,7 +1492,7 @@ function updateFx(dt){
     if(f.k==='acid'&&f.f===P.floor&&state==='play')forNear(f.f,f.x,f.y,f.R+20,e=>{if(Math.hypot(e.x-f.x,e.y-f.y)<f.R+e.cr*.5){damage(e,f.dps*dt,0,0,0,true);e.slowT=.4;}});
     if(f.k==='ring'&&f.f===P.floor){
       const rad=f.R*Math.min(1,f.t/f.dur);
-      forNear(f.f,f.x,f.y,rad+20,e=>{if(f.hit.has(e.id))return;const dx=e.x-f.x,dy=e.y-f.y,d=Math.hypot(dx,dy);if(d<rad+e.cr){f.hit.add(e.id);damage(e,f.dmg,dx/(d||1),dy/(d||1),320);}});
+      forNear(f.f,f.x,f.y,rad+20,e=>{if(f.hit.has(e.id))return;const dx=e.x-f.x,dy=e.y-f.y,d=Math.hypot(dx,dy);if(d<rad+e.cr){f.hit.add(e.id);damage(e,f.dmg,dx/(d||1),dy/(d||1),320*(1+.2*(f.slow||0)));if(f.slow)e.slowT=Math.max(e.slowT,f.slow);}});
     }
   }
   fxs=fxs.filter(f=>f.t<f.dur);
@@ -1510,17 +1527,33 @@ function addXP(v){
 
 /* ---------- LEVEL UP ---------- */
 let choices=[];
+function wxOk(id){const fx=PDEF[id]&&PDEF[id].fx;if(!fx)return true;for(const k in fx)if(k.startsWith('wx_')&&!P.weapons.some(w=>w.id===k.slice(3)))return false;return true;}
 function buildChoices(){
   const pool=[],shuf=arr=>{for(let i=arr.length-1;i>0;i--){const j=(rand()*(i+1))|0;[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
   P.weapons.forEach(w=>pool.push({t:'w',id:w.id,lvl:w.lvl+1,wgt:1.2}));
   shuf(Object.keys(WDEF).filter(id=>!P.weapons.some(w=>w.id===id))).slice(0,3).forEach(id=>pool.push({t:'w',id,lvl:1,wgt:P.weapons.length<MAXW?1.1:.5}));
   P.passives.forEach(q=>pool.push({t:'p',id:q.id,lvl:q.lvl+1,wgt:1}));
-  shuf(Object.keys(PDEF).filter(id=>!P.passives.some(q=>q.id===id))).slice(0,4).forEach(id=>pool.push({t:'p',id,lvl:1,wgt:P.passives.length<MAXP?.8:.4}));
+  shuf(Object.keys(PDEF).filter(id=>!P.passives.some(q=>q.id===id)&&wxOk(id))).slice(0,4).forEach(id=>pool.push({t:'p',id,lvl:1,wgt:P.passives.length<MAXP?.8:.4}));
   const out=[];
   while(out.length<3&&pool.length){let tot=pool.reduce((s,c)=>s+c.wgt,0),r=rand()*tot,i=0;for(;i<pool.length-1;i++){r-=pool[i].wgt;if(r<=0)break;}out.push(pool.splice(i,1)[0]);}
   if(!out.length){out.push({t:'heal'},{t:'max'});}
   if(P.level>=3&&rand()<.35){const id=pick(Object.keys(CDEF));const c={t:'c',id,lvl:cc(id)+1};if(out.length>=3)out[2]=c;else out.push(c);}
   return out;
+}
+const WK=[['dmg','урон',''],['dps','урон в секунду',''],['cd','перезарядка',' с'],['n','',''],['pierce','пробивает',''],['b','отскоков',''],['r','радиус',''],['arc','ширина удара','°'],['dur','длительность',' с'],['spd','скорость вращения','']];
+const WN={chalk:'мелков',scissors:'пар ножниц',shuriken:'сюрикенов',ruler:'линеек',acid:'колб',plane:'самолётиков',tesla:'молний',bow:'стрел',drone:'дронов',bubble:'пузырей',fire:'хлопков'};
+function fmtN(v,k){const m=k==='cd'?100:10;return String(Math.round(v*m)/m).replace('.',',');}
+const DURL={pan:'оглушение',acid:'лужа держится',brush:'след держится',ext:'струя'};
+function wDesc(id,lvl){
+  const D=WDEF[id],L=lvl-1,parts=[];
+  if(lvl===1){
+    for(const [k,lab,u] of WK){if(!D[k])continue;const v=ws(D,k,0);parts.push(k==='n'?(WN[id]||'штук')+': '+fmtN(v,k):(k==='dur'&&DURL[id]?DURL[id]:lab)+' '+fmtN(v,k)+u);}
+    return D.ds[0]+' <span style="opacity:.8">('+parts.join(', ')+')</span>';
+  }
+  for(const [k,lab,u] of WK){if(!D[k])continue;const a=ws(D,k,L-1),b=ws(D,k,L);if(Math.abs(a-b)<1e-6)continue;
+    parts.push((k==='n'?(WN[id]||'штук'):(k==='dur'&&DURL[id]?DURL[id]:lab))+' '+fmtN(a,k)+' → '+fmtN(b,k)+u);}
+  if(D.back&&ws(D,'back',L)&&!ws(D,'back',L-1))parts.push('удар назад');
+  return parts.length?parts.join(' · '):(L<D.ds.length?D.ds[L]:DSX[id]);
 }
 function openLevelUp(){
   state='levelup';choices=buildChoices();sfx('level');haptic('medium');
@@ -1530,7 +1563,7 @@ function openLevelUp(){
   choices.forEach((c,i)=>{
     const b=document.createElement('button');b.className='card';b.id='card'+i;
     let ic,nm,ds,tag='';
-    if(c.t==='w'){const D=WDEF[c.id];ic=IC[D.icon];nm=D.name;ds=c.lvl<=D.ds.length?D.ds[c.lvl-1]:DSX[c.id];if(c.lvl===1)tag='<span class="tag">ОРУЖИЕ</span>';}
+    if(c.t==='w'){const D=WDEF[c.id];ic=IC[D.icon];nm=D.name;ds=wDesc(c.id,c.lvl);if(c.lvl===1)tag='<span class="tag">ОРУЖИЕ</span>';}
     else if(c.t==='p'){const D=PDEF[c.id];ic=IC[D.icon];nm=D.name;ds=D.ds;if(c.lvl===1)tag='<span class="tag" style="background:var(--gold)">ПРЕДМЕТ</span>';}
     else if(c.t==='c'){const D=CDEF[c.id];ic=IC[D.icon];nm=D.name;ds='<span class="pro">+ '+D.pro+'</span><br><span class="con">− '+D.con+'</span>';tag='<span class="tag" style="background:#b83a5a;color:#fff">РИСК'+(c.lvl>1?' ×'+c.lvl:'')+'</span>';if(c.lvl>1)ds+='<br><span style="opacity:.75">Плюс и минус складываются со взятыми ранее.</span>';b.classList.add('curse');}
     else if(c.t==='heal'){ic=IC.onigiri;nm='Онигири';ds='Восстанавливает 50 здоровья.';}
@@ -1777,13 +1810,29 @@ function drawHero(c,r,a,sw,S){
   }
   c.restore();
 }
+const ICIMG={};
+function icImg(k){let im=ICIMG[k];if(!im&&IC[k]){im=new Image();im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(IC[k].replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" '));ICIMG[k]=im;}return im;}
+// gear slots in the hero's local frame (x forward, y sideways): hands first, then back and hips
+const GEAR=[[.95,.95,.5,1],[.95,-.95,-.5,1],[-.95,.55,2.6,0],[-.95,-.55,-2.6,0],[-.3,1.2,1.7,0],[-.3,-1.2,-1.7,0],[-1.25,0,3.14,0]];
+function drawGear(r,a,sw,back){
+  const ws_=P.weapons;if(!ws_.length)return;
+  ctx.save();ctx.rotate(a);
+  for(let i=0;i<Math.min(ws_.length,GEAR.length);i++){const g=GEAR[i];const isBack=!g[3];if(isBack!==back)continue;
+    const im=icImg(WDEF[ws_[i].id].icon);if(!im||!im.complete||!im.naturalWidth)continue;
+    const bob=g[3]?(i%2?-sw:sw)*.6:0,sz=r*(g[3]?1.55:1.25);
+    ctx.save();ctx.translate(g[0]*r+bob,g[1]*r);ctx.rotate(g[2]);ctx.drawImage(im,-sz/2,-sz/2,sz,sz);ctx.restore();}
+  ctx.restore();
+}
 function drawPlayer(){
+  if(curS&&curS.blind){const g=ctx.createRadialGradient(P.x,P.y,10,P.x,P.y,110);g.addColorStop(0,'rgba(255,240,180,.16)');g.addColorStop(1,'rgba(255,240,180,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(P.x,P.y,110,0,7);ctx.fill();}
   if(P.inv>0&&Math.floor(P.inv*12)%2===0&&state==='play')return;
   const r=P.r,a=Math.atan2(P.face[1],P.face[0]),sw=P.moving?Math.sin(P.step)*r*.15:0;
   ctx.save();ctx.translate(P.x,P.y);
   ctx.fillStyle='rgba(255,220,120,.12)';ctx.beginPath();ctx.arc(0,0,r*2.6,0,7);ctx.fill();
   ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(0,r*.55,r*1.05,r*.45,0,0,7);ctx.fill();
+  drawGear(r,a,sw,true);
   drawHero(ctx,r,a,sw,skinOf(P.skin));
+  drawGear(r,a,sw,false);
   ctx.restore();
 }
 const INFO_Z=[
@@ -1945,13 +1994,13 @@ function render(){
   for(const e of vis)drawZombieFast(e);
   drawPlayer();
   // scissors
-  for(const w of P.weapons){if(w.id!=='scissors')continue;const D=WDEF.scissors,L=w.lvl-1,n=(ws(D,'n',L)+AMT());
+  for(const w of P.weapons){if(w.id!=='scissors')continue;const D=WDEF.scissors,L=w.lvl-1,n=Math.min(14,(ws(D,'n',L)+AMT())+(curS&&curS.wx?curS.wx.scissors||0:0));
     for(let i=0;i<n;i++){const a=(w.ang||0)+i*Math.PI*2/n,bx=P.x+Math.cos(a)*ws(D,'r',L)*AREA(),by=P.y+Math.sin(a)*ws(D,'r',L)*AREA();
       ctx.save();ctx.translate(bx,by);ctx.rotate(a+time*14);ctx.strokeStyle='#d6dde8';ctx.lineWidth=3;ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(-9,-3);ctx.lineTo(9,3);ctx.moveTo(-9,3);ctx.lineTo(9,-3);ctx.stroke();
       ctx.strokeStyle='#e05a6a';ctx.lineWidth=2;ctx.beginPath();ctx.arc(-10,-4,3,0,7);ctx.arc(-10,4,3,0,7);ctx.stroke();ctx.restore();}}
-  for(const w of P.weapons){if(w.id==='drone'){const n=Math.min(10,ws(WDEF.drone,'n',w.lvl-1)+AMT());for(let i=0;i<n;i++){const a=(w.ang||0)+i*Math.PI*2/n,bx=P.x+Math.cos(a)*48,by=P.y+Math.sin(a)*48;ctx.save();ctx.translate(bx,by);ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(2,10,8,3,0,0,7);ctx.fill();ctx.strokeStyle='#5d6670';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-7,-7);ctx.lineTo(7,7);ctx.moveTo(7,-7);ctx.lineTo(-7,7);ctx.stroke();ctx.fillStyle='#5d6670';ctx.fillRect(-4,-4,8,8);ctx.fillStyle='#6ad4ff';ctx.fillRect(-1.5,-1.5,3,3);ctx.fillStyle='rgba(200,210,220,.6)';[[-7,-7],[7,-7],[-7,7],[7,7]].forEach(([qx,qy])=>{ctx.beginPath();ctx.ellipse(qx,qy,4.5,1.5,time*30,0,7);ctx.fill();});ctx.restore();}}
-    if(w.id!=='boombox')continue;const R=ws(WDEF.boombox,'r',w.lvl-1)*AREA();ctx.save();
+  for(const w of P.weapons){if(w.id==='drone'){const n=Math.min(10,ws(WDEF.drone,'n',w.lvl-1)+AMT()+(curS&&curS.wx?curS.wx.drone||0:0));for(let i=0;i<n;i++){const a=(w.ang||0)+i*Math.PI*2/n,bx=P.x+Math.cos(a)*48,by=P.y+Math.sin(a)*48;ctx.save();ctx.translate(bx,by);ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(2,10,8,3,0,0,7);ctx.fill();ctx.strokeStyle='#5d6670';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-7,-7);ctx.lineTo(7,7);ctx.moveTo(7,-7);ctx.lineTo(-7,7);ctx.stroke();ctx.fillStyle='#5d6670';ctx.fillRect(-4,-4,8,8);ctx.fillStyle='#6ad4ff';ctx.fillRect(-1.5,-1.5,3,3);ctx.fillStyle='rgba(200,210,220,.6)';[[-7,-7],[7,-7],[-7,7],[7,7]].forEach(([qx,qy])=>{ctx.beginPath();ctx.ellipse(qx,qy,4.5,1.5,time*30,0,7);ctx.fill();});ctx.restore();}}
+    if(w.id!=='boombox')continue;const R=ws(WDEF.boombox,'r',w.lvl-1)*AREA()*(1+.08*(curS&&curS.wx?curS.wx.boombox||0:0));ctx.save();
     for(let i=0;i<2;i++){const ph=(time*1.2+i*.5)%1;ctx.strokeStyle=`rgba(255,134,166,${.35*(1-ph)})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(P.x,P.y,R*ph,0,7);ctx.stroke();}
     ctx.fillStyle='rgba(255,134,166,.07)';ctx.beginPath();ctx.arc(P.x,P.y,R,0,7);ctx.fill();ctx.fillStyle='rgba(255,220,235,.85)';ctx.font='14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
     for(let i=0;i<3;i++){const a=time*1.3+i*2.1;ctx.fillText('♪',P.x+Math.cos(a)*R*.7,P.y+Math.sin(a)*R*.7);}ctx.restore();}
@@ -2103,7 +2152,7 @@ function togglePause(){
     [...P.weapons.map(w=>[WDEF[w.id],w.lvl,WDEF[w.id].ds[0]]),...P.passives.map(p=>[PDEF[p.id],p.lvl,PDEF[p.id].ds]),...[...new Set(P.curses)].map(id=>[CDEF[id],-cc(id),'<span class="pro">+ '+CDEF[id].pro+'</span> · <span class="con">− '+CDEF[id].con+'</span>'])].forEach(([D,l,ds])=>{
       const d=document.createElement('div');d.className='card';d.style.cursor='default';d.style.padding='6px 10px';
       d.innerHTML='<span class="ic" style="width:34px;height:34px;flex-basis:34px">'+IC[D.icon]+'</span><span class="tx"><span class="nm" style="font-size:13px">'+D.name+(l>0?'<span class="lv">УР. '+l+'</span>':'<span class="lv" style="color:#ff9aa8">РИСК'+(l<-1?' ×'+(-l):'')+'</span>')+'</span><span class="ds" style="display:block;font-size:11.5px">'+ds+'</span></span>';box.appendChild(d);});
-    gfxLabel();showOv('pause');setTimeout(()=>$('#resumeBtn').focus({preventScroll:true}),50);}
+    gfxLabel();fsLabel();showOv('pause');setTimeout(()=>$('#resumeBtn').focus({preventScroll:true}),50);}
   else if(state==='pause'){hideOv('pause');state='play';}
 }
 function setSound(m){muted=m;try{localStorage.setItem('szz-mute',m?'1':'0');}catch(e){}const t='Звук: '+(m?'выкл':'вкл');$('#soundBtn').textContent=t;$('#sound2Btn').textContent=t;}
@@ -2117,6 +2166,25 @@ $('#pauseBtn').addEventListener('click',()=>{if(state==='play'||state==='pause')
 $('#soundBtn').addEventListener('click',()=>{initAudio();setSound(!muted);});
 $('#sound2Btn').addEventListener('click',()=>setSound(!muted));
 const QNAME=['высокая','средняя','низкая','минимум'];function gfxLabel(){$('#gfxBtn').textContent='Графика: '+QNAME[qi];}
+function fsEl(){return document.fullscreenElement||document.webkitFullscreenElement||null;}
+function tgApp(){const tg=window.Telegram&&window.Telegram.WebApp;return tg&&typeof tg.requestFullscreen==='function'&&(!tg.isVersionAtLeast||tg.isVersionAtLeast('8.0'))?tg:null;}
+function fsOn(){const tg=tgApp();return !!fsEl()||!!(tg&&tg.isFullscreen);}
+function fsLabel(){document.querySelectorAll('.fsBtn').forEach(b=>b.textContent=fsOn()?'Выйти из полного экрана':'На весь экран');}
+function fsHint(){const n=$('#fsNote');n.textContent='Этот браузер не даёт открыть игру на весь экран. На iPhone: «Поделиться» → «На экран „Домой“» — оттуда игра открывается без панелей браузера.';n.hidden=false;
+  if(state==='play'||state==='pause')banner('Полный экран недоступен','Добавь игру на экран «Домой»',false);}
+function toggleFS(){
+  const tg=tgApp();
+  if(tg){try{if(tg.isFullscreen)tg.exitFullscreen();else tg.requestFullscreen();}catch(e){fsHint();}setTimeout(()=>{fsLabel();resize();},400);return;}
+  try{
+    if(fsEl()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);return;}
+    const d=document.documentElement,req=d.requestFullscreen||d.webkitRequestFullscreen;
+    if(!req){fsHint();return;}
+    const pr=req.call(d,{navigationUI:'hide'});if(pr&&pr.catch)pr.catch(()=>fsHint());
+  }catch(e){fsHint();}
+}
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{fsLabel();setTimeout(resize,60);}));
+try{const tg=window.Telegram&&window.Telegram.WebApp;if(tg&&tg.onEvent){tg.onEvent('fullscreenChanged',()=>{fsLabel();resize();});tg.onEvent('fullscreenFailed',()=>fsHint());}}catch(e){}
+$('#fsBtn').addEventListener('click',toggleFS);$('#fsBtn2').addEventListener('click',toggleFS);fsLabel();
 $('#gfxBtn').addEventListener('click',()=>{qi=(qi+1)%QDPR.length;perfAcc=0;perfN=0;resize();gfxLabel();});
 $('#stUp').addEventListener('click',()=>tryStairs(1));
 $('#stDn').addEventListener('click',()=>tryStairs(-1));
