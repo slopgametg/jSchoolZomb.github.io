@@ -346,8 +346,8 @@ const cv=$('#game');let ctx=cv.getContext('2d',{alpha:false});
 /* ---------- MAP ---------- */
 const T=40, MW=44, MH=24, WW=MW*T, WH=MH*T;
 const FL=0,WALL=1,CLS=2,STAIR=3,DESK=4,WIN=5,SHELF=6,TILEF=7,ENTR=8,TABLE=9,LOCKER=10,LAB=11,PIANO=12,BED=13,WOOD=14,SOFA=15;
-const FENCE=16,ROOF=17,TANK=18,ACU=19,PLANT=20,BENCH=21,BARR=22,BOARD=23,STALL=24;
-const SOLID=new Uint8Array(32);[WALL,DESK,WIN,SHELF,TABLE,LOCKER,LAB,PIANO,BED,WOOD,SOFA,FENCE,TANK,ACU,PLANT,BENCH,BARR,BOARD,STALL].forEach(t=>SOLID[t]=1);
+const FENCE=16,ROOF=17,TANK=18,ACU=19,PLANT=20,BENCH=21,BARR=22,BOARD=23,STALL=24,VEND=25,POT=26,CRATE=27,BUCKET=28,UMB=29;
+const SOLID=new Uint8Array(32);[WALL,DESK,WIN,SHELF,TABLE,LOCKER,LAB,PIANO,BED,WOOD,SOFA,FENCE,TANK,ACU,PLANT,BENCH,BARR,BOARD,STALL,VEND,POT,CRATE,BUCKET,UMB].forEach(t=>SOLID[t]=1);
 const floorName=f=>f===2?'Крыша':(f+1)+'F';
 const WALLISH=new Uint8Array(32);WALLISH[WALL]=WALLISH[WIN]=WALLISH[BOARD]=1;
 
@@ -448,6 +448,10 @@ function makeFloor(fi){
       case 'art':[[31,17],[33,17],[35,17],[31,20],[33,20],[35,20]].forEach(([x,y])=>put(x,y,DESK));break;
     }
   });
+  // physical decor: boxes in both storage rooms, props on 1F
+  [[3,19,CRATE],[4,19,CRATE],[3,21,BUCKET],[40,19,CRATE],[39,19,CRATE],[40,21,BUCKET],[4,21,CRATE],[39,21,CRATE]].forEach(([x,y,v])=>put(x,y,v));
+  if(fi===0){put(9,10,VEND);put(10,10,VEND);put(34,10,VEND);put(17,13,POT);put(25,13,POT);put(9,22,UMB);put(17,22,UMB);}
+  if(fi===1){put(9,10,POT);put(34,13,POT);}
   const spawns=windows.filter(w=>!SOLID[g[Math.floor(w.iy/T)*MW+Math.floor(w.ix/T)]]);
   const stairIdx=[];for(let i=0;i<g.length;i++)if(g[i]===STAIR)stairIdx.push(i);
   return {g,base,roomId,rooms,doors,windows:spawns,entrance,stairIdx,broken:new Set()};
@@ -698,6 +702,16 @@ function renderFloor(fi){
       case ACU:block(tx,ty,v,'#c9cdd2','#7d838c');x.fillStyle='#5d636c';x.beginPath();x.arc(px+20,py+17,10,0,7);x.fill();x.strokeStyle='#c9cdd2';x.lineWidth=2;x.beginPath();x.moveTo(px+11,py+17);x.lineTo(px+29,py+17);x.moveTo(px+20,py+8);x.lineTo(px+20,py+26);x.stroke();break;
       case PLANT:block(tx,ty,v,'#6b4a2e','#3e2a18');x.fillStyle='#3f7a3a';x.beginPath();x.arc(px+12,py+15,8,0,7);x.arc(px+27,py+14,9,0,7);x.fill();x.fillStyle=['#ff86a6','#ffd36b','#f4f1e8'][(R()*3)|0];x.beginPath();x.arc(px+11,py+12,3,0,7);x.arc(px+29,py+18,3,0,7);x.fill();break;
       case BENCH:block(tx,ty,v,'#9a6a3c','#5a3b1f');x.fillStyle='rgba(0,0,0,.25)';x.fillRect(px,py+12,T,2);x.fillRect(px,py+22,T,2);break;
+      case VEND:{x.fillStyle='rgba(0,0,0,.35)';x.fillRect(px+4,py+6,T-4,T-4);x.fillStyle='#c62a3c';x.fillRect(px+3,py+2,T-6,T-6);x.fillStyle='#f4f4f4';x.fillRect(px+6,py+5,T-12,16);
+        ['#3a7bd5','#5aa35d','#f2c94c','#e05a6a','#8c5fb3','#e8913a'].forEach((c,i)=>{x.fillStyle=c;x.fillRect(px+8+(i%3)*8,py+7+((i/3)|0)*7,5,5);});x.fillStyle='#222';x.fillRect(px+8,py+25,T-16,5);x.fillStyle='rgba(255,255,255,.25)';x.fillRect(px+3,py+2,4,T-6);break;}
+      case POT:{x.fillStyle='rgba(0,0,0,.3)';x.beginPath();x.ellipse(px+22,py+30,12,5,0,0,7);x.fill();x.fillStyle='#b8643e';x.beginPath();x.arc(px+20,py+24,9,0,7);x.fill();
+        x.fillStyle='#3f7a3a';[[-7,-4],[6,-5],[0,-10],[-3,2],[5,3]].forEach(([dx,dy])=>{x.beginPath();x.ellipse(px+20+dx,py+18+dy,6,4,dx*.2,0,7);x.fill();});x.fillStyle='#5aa35d';x.beginPath();x.arc(px+20,py+12,4,0,7);x.fill();break;}
+      case CRATE:{x.fillStyle='rgba(0,0,0,.3)';x.fillRect(px+5,py+7,T-6,T-6);x.fillStyle='#a8763f';x.fillRect(px+3,py+3,T-6,T-6);x.strokeStyle='#6e4a26';x.lineWidth=2.5;x.strokeRect(px+4,py+4,T-8,T-8);
+        x.beginPath();x.moveTo(px+5,py+5);x.lineTo(px+T-5,py+T-5);x.moveTo(px+T-5,py+5);x.lineTo(px+5,py+T-5);x.stroke();break;}
+      case BUCKET:{x.fillStyle='rgba(0,0,0,.3)';x.beginPath();x.ellipse(px+22,py+28,11,5,0,0,7);x.fill();x.fillStyle='#5d7a8a';x.beginPath();x.arc(px+20,py+22,10,0,7);x.fill();x.fillStyle='#6fa8d8';x.beginPath();x.arc(px+20,py+22,7,0,7);x.fill();
+        x.strokeStyle='#8a5a32';x.lineWidth=3;x.beginPath();x.moveTo(px+20,py+22);x.lineTo(px+34,py+4);x.stroke();x.fillStyle='#c9cdd2';x.beginPath();x.arc(px+20,py+22,4,0,7);x.fill();break;}
+      case UMB:{x.fillStyle='rgba(0,0,0,.3)';x.beginPath();x.ellipse(px+21,py+28,10,4,0,0,7);x.fill();x.fillStyle='#3a3f48';x.beginPath();x.arc(px+20,py+22,9,0,7);x.fill();
+        ['#d63b4a','#3a7bd5','#f2c94c','#5aa35d'].forEach((c,i)=>{x.strokeStyle=c;x.lineWidth=2.5;x.beginPath();x.arc(px+14+i*4,py+16-(i%2)*3,3.5,Math.PI,0);x.stroke();});break;}
       case STALL:{x.fillStyle='rgba(0,0,0,.3)';x.fillRect(px+3,py+6,T-2,T-4);x.fillStyle='#8a5a32';x.fillRect(px+1,py+16,T-2,T-18);
         for(let k=0;k<4;k++){x.fillStyle=k%2?'#f4efe2':'#d63b4a';x.fillRect(px+1+k*9.5,py+2,9.5,14);}
         x.fillStyle='#ffd36b';x.beginPath();x.arc(px+T/2,py+28,4,0,7);x.fill();break;}
@@ -814,6 +828,8 @@ const IC={
  brush:'<svg viewBox="0 0 40 40"><path d="M31 5L15 25" stroke="#7a5234" stroke-width="5" stroke-linecap="round"/><path d="M15 24l-6 10 10-5z" fill="#1a1a22"/><path d="M4 36q9-4 16-1" stroke="#1a1a22" stroke-width="2.5" fill="none"/></svg>',
  globe:'<svg viewBox="0 0 40 40"><path d="M10 34h20M20 28v6" stroke="#7a5234" stroke-width="3"/><path d="M8 18a12 12 0 0 0 24 0" stroke="#d9b23a" stroke-width="2" fill="none"/><circle cx="20" cy="17" r="10" fill="#3a7bd5"/><path d="M14 11c3 0 4 3 2 5s1 5 4 4M24 9c-1 3 2 4 4 3M22 22c2-1 5 0 5 2" stroke="#5aa35d" stroke-width="3" fill="none" stroke-linecap="round"/></svg>',
  camera:'<svg viewBox="0 0 40 40"><rect x="5" y="13" width="30" height="20" rx="3" fill="#3a3f48"/><rect x="11" y="9" width="9" height="5" rx="1" fill="#3a3f48"/><circle cx="20" cy="23" r="7" fill="#1a1d22" stroke="#9aa7b3" stroke-width="2"/><circle cx="18" cy="21" r="2" fill="#bfe8ff"/><rect x="27" y="15" width="5" height="3" fill="#ffd36b"/></svg>',
+ eraser:'<svg viewBox="0 0 40 40"><g transform="rotate(-25 20 20)"><rect x="6" y="13" width="28" height="14" rx="3" fill="#ff9ab4"/><rect x="6" y="13" width="11" height="14" rx="3" fill="#3a7bd5"/></g><path d="M8 34h24" stroke="#cfd6e0" stroke-width="2" stroke-dasharray="3 3"/></svg>',
+ gacha:'<svg viewBox="0 0 40 40"><rect x="9" y="22" width="22" height="14" rx="2" fill="#d63b4a"/><circle cx="20" cy="14" r="10" fill="#bfe8ff" fill-opacity=".5" stroke="#9aa7b3" stroke-width="2"/><circle cx="16" cy="15" r="3.5" fill="#ffd36b"/><circle cx="23" cy="11" r="3" fill="#7dff9a"/><circle cx="23" cy="18" r="3" fill="#ff86a6"/><circle cx="20" cy="29" r="3" fill="#f4f4f4"/><rect x="24" y="31" width="5" height="3" fill="#1a1a22"/></svg>',
  onigiri:'<svg viewBox="0 0 40 40"><path d="M20 6c4 0 15 18 15 24 0 3-3 4-15 4S5 33 5 30C5 24 16 6 20 6z" fill="#f6f4ec"/><rect x="13" y="24" width="14" height="10" fill="#1d2b22"/></svg>',
 };
 
@@ -857,7 +873,7 @@ const WDEF={
    cd:[2.6,2.4,2.2,2.0,1.7],n:[4,5,5,6,8],dmg:[10,12,15,17,21]},
  brush:{name:'Кисть для каллиграфии',icon:'brush',ds:['Ты оставляешь чернильный след, он жжёт зомби.','Урон выше.','След шире.','След держится дольше.','Самый широкий и едкий след.'],
    r:[16,17,20,21,25],dps:[12,15,18,22,28],dur:[2,2.2,2.4,3,3.6]},
- globe:{name:'Глобус',icon:'globe',ds:['Глобус катится по полу, отскакивает от стен и сбивает зомби на пути.','Урон выше.','+1 глобус.','Катится дольше.','+1 глобус, урон выше.'],
+ globe:{name:'Глобус',icon:'globe',ds:['Глобус катится по полу, отскакивает от стен и сбивает зомби на пути. Одновременно — не больше 5 глобусов.','Урон выше.','+1 глобус.','Катится дольше.','+1 глобус, урон выше.'],
    cd:[2.4,2.2,2.0,1.8,1.5],n:[1,1,2,2,3],dmg:[14,18,20,24,30],dur:[3,3.5,3.5,4.2,5]},
  camera:{name:'Фотоаппарат клуба журналистики',icon:'camera',ds:['Вспышка ослепляет зомби впереди: урон и оглушение.','Урон выше.','Оглушает дольше, дальше бьёт.','Снимает чаще.','Самая яркая вспышка.'],
    cd:[3.2,3.0,2.7,2.5,2.1],r:[130,140,150,165,180],dmg:[15,19,23,27,34],dur:[.8,1,1.1,1.3,1.5]},
@@ -966,7 +982,7 @@ NEWP.forEach(([id,name,ic,fx])=>{IC['p_'+id]=ic.startsWith('w:')?wIcon(ic.slice(
 // stats beyond the 5 hand-tuned levels keep growing
 function ws(D,k,L){const a=D[k];if(L<a.length)return a[L];const x=L-a.length+1,top=a[a.length-1];
   switch(k){case 'dmg':case 'dps':return top*(1+.15*x);case 'cd':return Math.max(top*.45,top*Math.pow(.95,x));
-    case 'n':return Math.min(D===WDEF.scissors?10:8,top+Math.floor(x/2));case 'b':return Math.min(20,top+x);case 'pierce':return Math.min(6,top+Math.floor(x/3));
+    case 'n':return Math.min(D===WDEF.scissors?10:D===WDEF.globe?5:8,top+Math.floor(x/2));case 'b':return Math.min(20,top+x);case 'pierce':return Math.min(6,top+Math.floor(x/3));
     case 'r':return top*Math.min(1.6,1+.04*x);case 'arc':return Math.min(360,top+6*x);case 'spd':return top*Math.min(1.8,1+.05*x);
     case 'dur':return Math.min(top*2,top+.1*x);case 'back':return 1;default:return top;}}
 const DSX={chalk:'Урон +15%, бросает чаще, каждые 2 уровня +1 мелок.',shinai:'Урон +15%, удар шире и дальше.',scissors:'Урон +15%, вращаются быстрее, каждые 2 уровня +1 ножницы.',
@@ -975,7 +991,7 @@ const DSX={chalk:'Урон +15%, бросает чаще, каждые 2 уро�
   acid:'Урон +15%, лужи шире и дольше.',boombox:'Урон +15%, радиус больше.',plane:'Урон +15%, бросает чаще, каждые 2 уровня +1 самолётик.',tesla:'Урон +15%, бьёт чаще, каждые 2 уровня +1 молния.',
   bow:'Урон +15%, стреляет чаще, каждые 2 уровня +1 стрела.',pan:'Урон +15%, удар шире.',drone:'Урон +15%, стреляет чаще, каждые 2 уровня +1 дрон.',
   bubble:'Урон +15%, взрыв шире, каждые 2 уровня +1 пузырь.',fire:'Урон +15%, бросает чаще, каждые 2 уровня +1 хлопок.',brush:'Урон +15%, след шире и дольше.',
-  globe:'Урон +15%, бросает чаще, каждые 2 уровня +1 глобус.',camera:'Урон +15%, снимает чаще, вспышка дальше.'};
+  globe:'Урон +15%, бросает чаще, каждые 2 уровня +1 глобус (на поле не больше 5).',camera:'Урон +15%, снимает чаще, вспышка дальше.'};
 const CDEF={
  blacknote:{name:'Чёрная тетрадь',icon:'blacknote',pro:'+50% к урону всего оружия',con:'Зомби становится вдвое больше'},
  energy:{name:'Энергетик из автомата',icon:'energy',pro:'+35% к скорости бега',con:'−30 к максимуму здоровья'},
@@ -991,6 +1007,8 @@ const CDEF={
  envelope:{name:'Красный конвертик',icon:'envelope',pro:'Удача ×2: еда и магниты выпадают вдвое чаще',con:'Новые зомби на 25% крепче'},
  oath:{name:'Кровавая клятва',icon:'oath',pro:'+1 HP за каждого убитого зомби',con:'−25 к максимуму здоровья'},
  kitsune:{name:'Маска кицунэ',icon:'kitsune',pro:'+20% к шансу крита',con:'Укусы ранят на 30% сильнее'},
+ eraser:{name:'Ластик директора',icon:'eraser',once:true,pro:'За каждый стёртый уровень — полтора новых улучшения на выбор',con:'Стирает все предметы, а оружие сбрасывает на 1-й уровень'},
+ gacha:{name:'Капсульный автомат',icon:'gacha',once:true,pro:'Каждый предмет станет на 1 уровень выше',con:'Все предметы случайно заменятся другими'},
 };
 
 
@@ -1480,7 +1498,7 @@ function updateWeapons(dt){
       case 'bubble':{const n=ws(D,'n',L)+AMT();
         for(let i=0;i<n;i++){const a=rand()*6.28;projs.push({k:'bubble',x:P.x+Math.cos(a)*14,y:P.y+Math.sin(a)*14,vx:Math.cos(a)*90,vy:Math.sin(a)*90,f:P.floor,dmg:ws(D,'dmg',L)*WM,R:ws(D,'r',L)*AREA()*(1+.15*X),life:4,hit:new Set(),target:null,sp:130*S.proj,ph:rand()*6});}
         break;}
-      case 'globe':{const n=ws(D,'n',L)+AMT(),ts=nearestList(P.x,P.y,500,n);
+      case 'globe':{const act=projs.filter(q=>q.k==='globe').length,n=Math.min(ws(D,'n',L)+AMT(),5-act);if(n<=0){w.t=.3;break;}const ts=nearestList(P.x,P.y,500,n);
         for(let i=0;i<n;i++){const t=ts.length?ts[i%ts.length]:null;let a=t?Math.atan2(t.y-P.y,t.x-P.x):rand()*6.28;a+=(i-(n-1)/2)*.5;const sp=300*S.proj*(1+.1*X);
           projs.push({k:'globe',x:P.x,y:P.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,f:P.floor,dmg:ws(D,'dmg',L)*WM,life:ws(D,'dur',L)*S.dur*(1+.3*X),hitAt:{},spin:0});}
         tone(240,.12,'triangle',.03,.7);break;}
@@ -1614,7 +1632,7 @@ function buildChoices(){
   const out=[];
   while(out.length<3&&pool.length){let tot=pool.reduce((s,c)=>s+c.wgt,0),r=rand()*tot,i=0;for(;i<pool.length-1;i++){r-=pool[i].wgt;if(r<=0)break;}out.push(pool.splice(i,1)[0]);}
   if(!out.length){out.push({t:'heal'},{t:'max'});}
-  if(P.level>=3&&rand()<.35){const id=pick(Object.keys(CDEF));const c={t:'c',id,lvl:cc(id)+1};if(out.length>=3)out[2]=c;else out.push(c);}
+  if(P.level>=3&&rand()<.35){const ok=Object.keys(CDEF).filter(k=>!CDEF[k].once||(k==='gacha'?P.passives.length>0:(P.passives.length>0||P.weapons.some(w=>w.lvl>1))));const id=pick(ok);const c={t:'c',id,lvl:cc(id)+1};if(out.length>=3)out[2]=c;else out.push(c);}
   return out;
 }
 const WK=[['dmg','урон',''],['dps','урон в секунду',''],['cd','перезарядка',' с'],['n','',''],['pierce','пробивает',''],['b','отскоков',''],['r','радиус',''],['arc','ширина удара','°'],['dur','длительность',' с'],['spd','скорость вращения','']];
@@ -1634,8 +1652,8 @@ function wDesc(id,lvl){
 }
 function openLevelUp(){
   state='levelup';choices=buildChoices();sfx('level');haptic('medium');
-  $('#lvTitle').textContent='Уровень '+(P.level-pendingLv+1);
-  $('#lvKick').textContent=pendingLv>1?'Новый уровень · ещё '+(pendingLv-1):'Новый уровень';
+  $('#lvTitle').textContent=bonusLv>0?'Бонусное улучшение':'Уровень '+(P.level-pendingLv+1);
+  $('#lvKick').textContent=bonusLv>0?'Ластик директора · осталось '+bonusLv:(pendingLv>1?'Новый уровень · ещё '+(pendingLv-1):'Новый уровень');
   const box=$('#cards');box.innerHTML='';
   choices.forEach((c,i)=>{
     const b=document.createElement('button');b.className='card';b.id='card'+i;
@@ -1653,14 +1671,29 @@ function openLevelUp(){
   showOv('lvup');
   setTimeout(()=>{const c=$('#card0');if(c)c.focus({preventScroll:true});},50);
 }
+let bonusLv=0;
+function applyOnce(id){
+  if(id==='eraser'){
+    const removed=P.passives.reduce((a,p)=>a+p.lvl,0)+P.weapons.reduce((a,w)=>a+w.lvl-1,0);
+    P.passives=[];P.weapons.forEach(w=>w.lvl=1);
+    const n=Math.ceil(removed*1.5);pendingLv+=n;bonusLv+=n;
+    banner('Ластик директора','Стёрто уровней: '+removed+' · новых улучшений: '+n,true);
+  }else if(id==='gacha'){
+    const used=new Set(),old=P.passives;P.passives=[];
+    old.forEach(q=>{const pool=Object.keys(PDEF).filter(k=>k!==q.id&&!used.has(k)&&!old.some(o=>o.id===k)&&wxOk(k));const nid=pool.length?pick(pool):q.id;used.add(nid);P.passives.push({id:nid,lvl:q.lvl+1});
+      if(nid==='omamori'&&q.id!=='omamori')P.revive++;});
+    banner('Капсульный автомат','Предметы заменены: '+P.passives.map(q=>PDEF[q.id].name).slice(0,3).join(', ')+(P.passives.length>3?'…':''),false);
+  }
+  sfx('level');haptic('medium');
+}
 function choose(i){
   const c=choices[i];if(!c||state!=='levelup')return;
   if(c.t==='w'){const w=P.weapons.find(x=>x.id===c.id);if(w)w.lvl++;else P.weapons.push({id:c.id,lvl:1,t:.2});}
   else if(c.t==='p'){const p=P.passives.find(x=>x.id===c.id);if(p)p.lvl++;else P.passives.push({id:c.id,lvl:1});if(c.id==='bento')P.hp+=15;if(c.id==='omamori'&&!p)P.revive++;}
-  else if(c.t==='c'){P.curses.push(c.id);}
+  else if(c.t==='c'){if(CDEF[c.id].once)applyOnce(c.id);else P.curses.push(c.id);}
   else if(c.t==='heal')P.hp=Math.min(P.maxHp,P.hp+50);
   else{P.baseMaxBonus=(P.baseMaxBonus||0)+10;}
-  pendingLv--;renderInv();
+  pendingLv--;if(bonusLv>0)bonusLv--;renderInv();
   if(pendingLv>0){openLevelUp();return;}
   hideOv('lvup');state='play';
 }
@@ -1998,7 +2031,7 @@ function renderInfo(){
     note('Пассивные предметы, всего '+Object.keys(PDEF).length+'. Лимита нет: после 6 предметов новые продолжают выпадать, просто реже. Уровень без потолка. Эффект указан за один уровень.');
     for(const id in PDEF){const D=PDEF[id];add(IC[D.icon],D.name,D.ds,[],'p-'+id);}
   }else if(infoSec==='c'){
-    note('Выпадают с 3-го уровня вместо одной из карточек. Не занимают слотов. Можно брать повторно — плюс и минус складываются.');
+    note('Выпадают с 3-го уровня вместо одной из карточек. Не занимают слотов. Можно брать повторно — плюс и минус складываются. Ластик и капсульный автомат срабатывают сразу один раз.');
     for(const id in CDEF){const D=CDEF[id];add(IC[D.icon],D.name,'<span class="pro">+ '+D.pro+'</span><br><span class="con">− '+D.con+'</span>',[],'c-'+id);}
   }else{
     note('При каждом запуске выпадают 1–2 изменения школы и 1–2 правила дня. Их показывают в начале забега и в паузе.');
@@ -2211,7 +2244,7 @@ function startGame(){
   P=newPlayer();enemies=[];projs=[];zprojs=[];fxs=[];parts=[];gems=[];nums=[];decals=[];
   buildWorld();const rid=++runId;committed=false;runBosses=new Set();runUnlocks=[];notified=new Set(SKINS.filter(S=>isUnlocked(S.id)).map(S=>S.id));
   retreat=false;retreatT=0;left=0;exitField=null;time=0;kills=0;spawnAcc=0;pendingLv=0;eventIdx=0;bossIdx=0;hurtT=0;fade=1;lastRoom='';pfKey=-1;
-  curS=null;flashT=0;stormT=6;quarOpen=false;ambT=4;pendAmb=[];ambHint=false;
+  curS=null;flashT=0;stormT=6;quarOpen=false;bonusLv=0;ambT=4;pendAmb=[];ambHint=false;
   if(QUAR)QUAR.forEach(q=>{const F=floors[q.f];for(let k=0,m=0;k<80&&m<7;k++){const x=q.r.x0+((rand()*(q.r.x1-q.r.x0+1))|0),y=q.r.y0+((rand()*(q.r.y1-q.r.y0+1))|0);if(SOLID[F.g[y*MW+x]])continue;enemies.push(makeZombie(rand()<.2?'sumo':'student',q.f,x*T+T/2,y*T+T/2));m++;}});
   for(const k in H)delete H[k];for(const k in HW)delete HW[k];
   if(RUN.ids.has('gift')){const own=P.weapons.map(w=>w.id);P.weapons.push({id:pick(Object.keys(WDEF).filter(id=>!own.includes(id))),lvl:2,t:.5});}
