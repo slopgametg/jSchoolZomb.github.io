@@ -872,7 +872,7 @@ function mapOpen(id){const pv=mapPrev(id);return !pv||((prog.mapFull||{})[pv.id]
 function mapLockText(id){const pv=mapPrev(id);return 'Откроется, когда ты полностью продержишься до рассвета (15:00) на карте «'+pv.name+'» в режиме «Обычный», «Хардкор» или «Защита выжившего». «Короткая смена», «Сокращённый день» и «Сломанные часы» не засчитываются.';}
 const NEWS=['Новый босс — Гигантский осьминог: может появиться на любой карте и бьёт всех, даже зомби. Удар щупальцем, 30-секундная раскрутка (крушит мебель и зомби, снаряды о него разбиваются) и щупальца, перекрывающие проходы.','Пять новых карт: Магазин, Пятиэтажка, Больница, Кладбище и Метро — у каждой свои зомби, босс и условия дня. Карты открываются по очереди: продержись полные 15 минут на предыдущей.',
  'Новые режимы: «Защита выжившего» (15 минут охраняй раненого — на рассвете он сам убегает к выходу) и «Зачистка» (уничтожь всех зомби за 10 минут). Под таймером цветом показано, до какого времени держаться.',
- 'Обучение теперь — отдельный уровень на 5 минут: шаг за шагом про движение, кристаллы, улучшения, еду, лестницы, замедление времени и боссов.',
+ 'Обучение теперь — отдельный уровень на 3 минуты: шаг за шагом про движение, кристаллы, улучшения, еду, лестницы, замедление времени и боссов.',
  'Замедление времени: кнопка ⏳ (на компьютере — пробел). 4 секунды зомби двигаются вчетверо медленнее, потом 40 секунд перезарядка.',
  'Боссы школы: за ночь приходят 5 случайных, примерно раз в 2–3 минуты — сначала школьники и персонал, потом учителя, последними руководство. Повар теперь гасит лечение, ускоряет зомби рядом и сжигает твои снаряды волной.',
  'Атаки больше не проходят сквозь стены, шкафы и ящики (кроме волн).',
@@ -1373,7 +1373,7 @@ function buildWorld(){
   const ev=[];if(ids.has('alarm'))for(let t=40;t<890;t+=40)ev.push(t);
   RUN={ids,names,events:ev.length?ev:null,mode:MODE,map:MAPSEL,cycle:0,evCycle:0};
   if(MAPCUR.id==='school')RUN.bossList=rollSchoolBosses();
-  GOAL=MODE==='endless'?Infinity:MODE==='clear'?600:MODE==='tutorial'?300:(ids.has('shortday')?720:900);
+  GOAL=MODE==='endless'?Infinity:MODE==='clear'?600:MODE==='tutorial'?180:(ids.has('shortday')?720:900);
   RUN.octoT=(MODE==='tutorial')?undefined:(MODE==='clear'?(rand()<.45?rr(150,420):undefined):(rand()<.45?(MODE==='endless'?rr(380,700):GOAL*rr(.4,.8)):undefined));
   RUN.crumble=[];if(ids.has('crumble')){const n=3+((Math.random()*3)|0);for(let i=0;i<n;i++)RUN.crumble.push(90+Math.random()*(GOAL-150));RUN.crumble.sort((a,b)=>a-b);}
   if(ids.has('snow')&&roofI()>=0)snowAll(floors[roofI()]);
@@ -1997,7 +1997,7 @@ function placeSurvivor(){
     const sc=Math.abs(v-tg)+(F.roomId[i]>=0?0:4)+Math.random()*3;if(sc<bs){bs=sc;best=i;}}
   if(best<0)best=si;
   const sk=SKINS.filter(S=>S.id!==P.skin&&!charOf(S.id).rnd&&!['cat','tanuki','ghost','oni'].includes(S.id));
-  SV={x:(best%MW+.5)*T,y:(((best/MW)|0)+.5)*T,floor:f,r:13,hp:325,maxHp:325,hurtT:0,warnT:0,biteT:9,cause:'',ang:Math.PI/2,skin:pick(sk).id,dead:false};
+  SV={x:(best%MW+.5)*T,y:(((best/MW)|0)+.5)*T,floor:f,r:13,hp:75,maxHp:75,hurtT:0,warnT:0,biteT:9,cause:'',ang:Math.PI/2,skin:pick(sk).id,dead:false};
   svField=buildField(f,[best]);svFT=3;
 }
 function clearSpawn(){
@@ -3787,7 +3787,7 @@ function startGame(){
   const h=$('#hint');h.hidden=false;h.style.opacity=1;
   h.textContent=touch?'Веди пальцем по экрану, чтобы бегать. Оружие стреляет само.':'WASD / стрелки — бег · E / Q — лестница · Esc — пауза';
   setTimeout(()=>{h.style.opacity=0;},5000);
-  if(RUN.mode==='tutorial')banner('Обучение','Пять минут до рассвета — по шагам',false);else if(RUN.mode==='clear')banner('Зачистка','Зомби: '+RUN.clearN+' · уничтожь всех за 10 минут',false);else banner(RUN.mode==='endless'?'Бесконечная ночь':'Продержись до рассвета',RUN.mode==='endless'?'Рассвета не будет · держись как можно дольше':RUN.mode==='quick'?'Короткая смена · время идёт вдвое быстрее':RUN.mode==='hard'?'Хардкор · вторых шансов нет':RUN.mode==='guard'?'Защити выжившего · '+(GOAL/60)+' минут':(GOAL/60)+' минут · зомби уже у окон',false);
+  if(RUN.mode==='tutorial')banner('Обучение','Три минуты до рассвета — по шагам',false);else if(RUN.mode==='clear')banner('Зачистка','Зомби: '+RUN.clearN+' · уничтожь всех за 10 минут',false);else banner(RUN.mode==='endless'?'Бесконечная ночь':'Продержись до рассвета',RUN.mode==='endless'?'Рассвета не будет · держись как можно дольше':RUN.mode==='quick'?'Короткая смена · время идёт вдвое быстрее':RUN.mode==='hard'?'Хардкор · вторых шансов нет':RUN.mode==='guard'?'Защити выжившего · '+(GOAL/60)+' минут':(GOAL/60)+' минут · зомби уже у окон',false);
   {const tb=$('#todayBox');tb.hidden=!RUN.names.length;tb.classList.remove('dim');tb.classList.remove('mini');if(touch)tb.classList.add('mini');tb.innerHTML='<div class="th">Сегодня</div>'+RUN.names.map(n=>{const sh=n.split(' — ')[0].split(': ')[0];return '<div class="tc">'+sh+'</div>';}).join('');setTimeout(()=>{if(rid===runId)tb.classList.add('dim');},12000);}
   RUN.names.forEach((n,i)=>setTimeout(()=>{if(rid===runId&&state==='play')banner('Сегодня в школе',n,false);},3000*(i+1)));
 }
@@ -3801,7 +3801,7 @@ const TUTS=[
  {t:'Зомби напирают! Нажми ⏳ справа (на компьютере — пробел) — время для них замедлится.',ok:()=>slowT>0,go:()=>{TUT.slowOk=true;for(let k=0;k<8;k++){const a=k*.785,x=P.x+Math.cos(a)*190,y=P.y+Math.sin(a)*170;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);enemies.push(z);}}}},
  {t:'Босс! У каждого босса своя атака — подробности в справочнике. Победи Завуча.',ok:()=>TUT.boss&&!TUT.boss.alive,go:()=>{const B=BOSSES.find(b=>b.name==='Завуч');let p=null;for(let k=0;k<12&&!p;k++){const a=rand()*6.28,x=P.x+Math.cos(a)*220,y=P.y+Math.sin(a)*220;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T)))p={x,y};}p=p||{x:P.x+40,y:P.y};
    const z=makeZombie('student',P.floor,p.x,p.y);Object.assign(z,{kind:'boss',name:B.name,r:30,cr:18,hp:420,maxHp:420,spd:42,dmg:16,xp:0,uni:'boss',B});enemies.push(z);TUT.boss=z;banner('Завуч идёт с проверкой','Учебный босс — слабее обычного',true);}},
- {t:'Отлично! Последнее: продержись до рассвета — до 05:00 на часах. В комнатах с окнами зомби лезут прямо снаружи.',ok:()=>false}];
+ {t:'Отлично! Последнее: продержись до рассвета — до 03:00 на часах. В комнатах с окнами зомби лезут прямо снаружи.',ok:()=>false}];
 function updateTut(dt){if(!TUT)return;TUT.dist+=Math.hypot(P.x-TUT.lx,P.y-TUT.ly);TUT.lx=P.x;TUT.ly=P.y;
   const S0=TUTS[TUT.step];if(!S0)return;if(!TUT.started){TUT.started=true;if(S0.go)S0.go();}
   if(S0.ok()){TUT.step++;TUT.started=false;sfx('gem');const b=$('#tutBox');b.classList.add('done');setTimeout(()=>b.classList.remove('done'),500);}
