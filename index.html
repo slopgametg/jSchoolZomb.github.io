@@ -376,6 +376,7 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
   </div>
 </div>
 
+<div id="errToast" hidden style="position:fixed;z-index:20;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 40px);transform:translateX(-50%);max-width:90vw;background:rgba(120,20,30,.92);color:#fff;font:700 11px/1.35 var(--body);padding:6px 10px;border-radius:8px;pointer-events:none;text-align:center"></div>
 <div id="banner"><div class="t" id="banT"></div><div class="s" id="banS"></div></div>
 <button id="slowBtn" hidden aria-label="Замедлить время" title="Замедлить время (пробел)"><span>⏳</span><i id="slowCd"></i></button>
 <div id="stairs" hidden>
@@ -451,6 +452,7 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
     <div class="kicker" id="lvKick">Новый уровень</div>
     <h2 id="lvTitle">Уровень 2</h2>
     <div class="cards" id="cards"></div>
+    <div class="row" style="margin-top:10px;justify-content:center"><button class="btn ghost small" id="rerollBtn" type="button" hidden>🍀 Перекрутить</button></div>
   </div>
 </div>
 
@@ -870,7 +872,7 @@ function mapOf(id){return MAPS.find(m=>m.id===id)||MAPS[0];}
 function mapPrev(id){const i=MAPS.findIndex(m=>m.id===id);return i>0?MAPS[i-1]:null;}
 function mapOpen(id){const pv=mapPrev(id);return !pv||((prog.mapFull||{})[pv.id]||0)>0;}
 function mapLockText(id){const pv=mapPrev(id);return 'Откроется, когда ты полностью продержишься до рассвета (15:00) на карте «'+pv.name+'» в режиме «Обычный», «Хардкор» или «Защита выжившего». «Короткая смена», «Сокращённый день» и «Сломанные часы» не засчитываются.';}
-const NEWS=['Новый босс — Гигантский осьминог: может появиться на любой карте и бьёт всех, даже зомби. Удар щупальцем, 30-секундная раскрутка (крушит мебель и зомби, снаряды о него разбиваются) и щупальца, перекрывающие проходы.','Пять новых карт: Магазин, Пятиэтажка, Больница, Кладбище и Метро — у каждой свои зомби, босс и условия дня. Карты открываются по очереди: продержись полные 15 минут на предыдущей.',
+const NEWS=['Четырёхлистный клевер даёт перекрутки: на экране улучшений можно заменить все три карточки (на компьютере — клавиша R).','Исправлен вылет игры во время боёв с осьминогом. Если что-то пойдёт не так, игра больше не зависает, а показывает короткое сообщение и играет дальше.','Новый босс — Гигантский осьминог: может появиться на любой карте и бьёт всех, даже зомби. Удар щупальцем, 30-секундная раскрутка (крушит мебель и зомби, снаряды о него разбиваются) и щупальца, перекрывающие проходы.','Пять новых карт: Магазин, Пятиэтажка, Больница, Кладбище и Метро — у каждой свои зомби, босс и условия дня. Карты открываются по очереди: продержись полные 15 минут на предыдущей.',
  'Новые режимы: «Защита выжившего» (15 минут охраняй раненого — на рассвете он сам убегает к выходу) и «Зачистка» (уничтожь всех зомби за 10 минут). Под таймером цветом показано, до какого времени держаться.',
  'Обучение теперь — отдельный уровень на 3 минуты: шаг за шагом про движение, кристаллы, улучшения, еду, лестницы, замедление времени и боссов.',
  'Замедление времени: кнопка ⏳ (на компьютере — пробел). 4 секунды зомби двигаются вчетверо медленнее, потом 40 секунд перезарядка.',
@@ -1428,7 +1430,8 @@ const rand=Math.random, rr=(a,b)=>a+rand()*(b-a), pick=a=>a[(rand()*a.length)|0]
 
 /* ---------- FLOOR RENDER CACHE ---------- */
 let cache=null,cacheFloor=-1,cacheScale=1;
-function blobLayer(x,mask,col,alpha,R){const c=document.createElement('canvas');c.width=WW;c.height=WH;const g=c.getContext('2d');g.fillStyle=col;
+let BLOBC=null;
+function blobLayer(x,mask,col,alpha,R){if(!BLOBC){BLOBC=document.createElement('canvas');BLOBC.width=WW;BLOBC.height=WH;}const c=BLOBC,g=c.getContext('2d');g.clearRect(0,0,WW,WH);g.fillStyle=col;
   const on=(tx,ty)=>tx>=0&&ty>=0&&tx<MW&&ty<MH&&mask[ty*MW+tx];
   for(let i=0;i<mask.length;i++){if(!mask[i])continue;const tx=i%MW,ty=(i/MW)|0,px=tx*T,py=ty*T,l=on(tx-1,ty)?0:7,r=on(tx+1,ty)?0:7,u=on(tx,ty-1)?0:7,d=on(tx,ty+1)?0:7;
     g.fillRect(px+l,py+u,T-l-r,T-u-d);g.beginPath();g.arc(px+T/2+(R()-.5)*8,py+T/2+(R()-.5)*8,T*(.5+R()*.12),0,7);g.fill();
@@ -1905,6 +1908,7 @@ IC.p_boxglove='<svg viewBox="0 0 40 40"><path d="M10 14c0-6 5-9 11-9s10 4 10 10v
 IC.p_popper='<svg viewBox="0 0 40 40"><path d="M8 34l8-22 14 14z" fill="#f2c94c"/><path d="M11 26l3-8M14 30l6-12M19 31l5-7" stroke="#d63b4a" stroke-width="2"/><circle cx="28" cy="10" r="2.5" fill="#3a7bd5"/><circle cx="33" cy="16" r="2" fill="#ff86a6"/><circle cx="24" cy="6" r="2" fill="#5aa35d"/><path d="M30 6l3-3M34 11l3-1" stroke="#d63b4a" stroke-width="2"/></svg>';
 PDEF.mp3={name:'Плеер',icon:'mp3',fx:{},max:1,ds:'Один раз за забег, когда ты вот-вот погибнешь, перематывает время на 1:20 назад: зомби и ты — там, где были. Если есть второй шанс (омамори, способность персонажа), сначала сработает он.'};
 PDEF.pencilcase.ds='Всё оружие выпускает больше снарядов: +1 на 1-м уровне пенала, потом ещё +1 на 3-м, 5-м и так далее.';
+PDEF.clover.ds='+2 перекрутки: на экране улучшений можно заменить все три карточки новыми. Ещё +20% к удаче — еда выпадает чаще. За уровень.';
 PDEF.globe3.ds='+1 глобус за бросок, но все глобусы становятся в 1,5 раза меньше — за уровень.';
 // stats beyond the 5 hand-tuned levels keep growing
 function ws(D,k,L){const a=D[k];if(L<a.length)return a[L];const x=L-a.length+1,top=a[a.length-1];
@@ -2014,7 +2018,7 @@ function spawnOcto(){const f=P.floor,F=floors[f],c=[],dd=buildField(f,[Math.floo
   Object.assign(z,{kind:'boss',name:OCTO.name,r:58,cr:18,body:34,hp:H,maxHp:H,spd:OCTO.spd,dmg:OCTO.dmg,xp:0,uni:'boss',B:OCTO,ghost:false,enter:1.2,abT:3,spinCd:12,spinT:0});enemies.push(z);OCT=z;
   banner('Гигантский осьминог!','Он крушит всё вокруг — и зомби тоже',true);sfx('boss');haptic('heavy');tone(55,1.4,'sawtooth',.06,.4);}
 function octoSmash(e,f){let n=0;const F=floors[f],B=e.body+6;for(let ty=Math.floor((e.y-B)/T);ty<=Math.floor((e.y+B)/T);ty++)for(let tx=Math.floor((e.x-B)/T);tx<=Math.floor((e.x+B)/T);tx++){if(tx<1||ty<1||tx>=MW-1||ty>=MH-1)continue;const i=ty*MW+tx,g=F.g[i];
-    if(!SOLID[g]||WALLISH[g]||g===FENCE||g===TENT||g===PILLAR)continue;const fl=F.roomId&&F.roomId[i]>=0?CLS:FL;F.g[i]=fl;F.base[i]=fl;if(F.props)F.props.delete(i);n++;
+    if(!SOLID[g]||WALLISH[g]||g===FENCE||g===TENT||g===PILLAR)continue;const fl=F.roomId&&F.roomId[i]>=0?CLS:FL;F.g[i]=fl;F.base[i]=fl;if(F.props)F.props.delete(i);n++;(e.rubble=e.rubble||[]).push({f,i});
     for(let q=0;q<6;q++)parts.push({x:(tx+.5)*T,y:(ty+.5)*T,vx:rr(-140,140),vy:rr(-140,140),life:.5,max:.5,col:pick(['#8e6638','#c99a5e','#6a707a']),s:4,f});}
   if(n){e.dirty=true;tone(120,.08,'square',.03,.6);}
   for(let k=boxes.length-1;k>=0;k--){const b=boxes[k];if(b.f===f&&Math.hypot(b.x-e.x,b.y-e.y)<e.body+b.s){boxes.splice(k,1);for(let q=0;q<8;q++)parts.push({x:b.x,y:b.y,vx:rr(-120,120),vy:rr(-120,120),life:.5,max:.5,col:'#b3874f',s:4,f});}}}
@@ -2029,6 +2033,7 @@ function octoBlock(e){const f=e.floor,F=floors[f],ptx=Math.floor(P.x/T),pty=Math
 function octoSlam(e){const a=Math.atan2(P.y-e.y,P.x-e.x),L=Math.min(Math.hypot(P.x-e.x,P.y-e.y)+80,360);fxs.push({k:'tent',x:e.x,y:e.y,f:e.floor,a,L,w:30,t:0,dur:1.15,warn:.75,hit:false});tone(160,.3,'triangle',.03,.6);}
 function updOcto(e,dt){
   for(let k=octoBlocks.length-1;k>=0;k--){const b=octoBlocks[k];if(time>=b.until||!e.alive){const F=floors[b.f];if(F.g[b.i]===TENT)F.g[b.i]=b.old;octoBlocks.splice(k,1);stairField[b.f]=buildField(b.f,F.stairIdx);pfKey=-1;}}
+  if(!e.alive){if(e.needRefresh){e.needRefresh=false;refreshFloor(e.floor);e.rubble=[];}return;}
   forNear(e.floor,e.x,e.y,e.body+30,o=>{if(o===e||!o.alive)return;if(Math.hypot(o.x-e.x,o.y-e.y)<e.body+o.cr+(e.spinT>0?10:0)){if(o.kind==='boss'){o.hp-=(e.spinT>0?60:20)*dt;if(o.hp<=0)kill(o);}else{o.hp-=(e.spinT>0?400:80)*dt;o.hitT=.1;if(o.hp<=0)kill(o);}}});
   if(e.spinT>0){e.spinT-=dt;octoSmash(e,e.floor);
     for(const q of projs){if(!q.dead&&q.f===e.floor&&Math.hypot(q.x-e.x,q.y-e.y)<e.body+18){q.dead=true;for(let k=0;k<3;k++)parts.push({x:q.x,y:q.y,vx:rr(-90,90),vy:rr(-90,90),life:.3,max:.3,col:'#e8d0ff',s:3,f:q.f});}}
@@ -2036,7 +2041,8 @@ function updOcto(e,dt){
     if(e.floor===P.floor&&P.inv<=0&&!retreat&&Math.hypot(P.x-e.x,P.y-e.y)<e.body+P.r+6&&time>=(e.hitP||0)){e.hitP=time+.6;P.hp-=25*(curS?curS.arm*curS.bossTaken:1);hurtT=1;lastHit='вращение осьминога';sfx('hurt');haptic('heavy');const d=Math.hypot(P.x-e.x,P.y-e.y)||1;P.x+=(P.x-e.x)/d*40;P.y+=(P.y-e.y)/d*40;P.cr=P.r;collideCircle(P,P.floor);}
     if(e.spinT<=0){e.spinCd=40;banner('Осьминог выдохся','Он снова медленный — бей!',false);}}
   else e.spinCd=(e.spinCd||0)-dt;
-  if(e.dirty&&time>=(e.dirtyT||0)){e.dirty=false;e.dirtyT=time+.8;refreshFloor(e.floor);}
+  if(e.dirty&&time>=(e.dirtyT||0)){e.dirty=false;e.dirtyT=time+.8;const F=floors[e.floor];stairField[e.floor]=buildField(e.floor,F.stairIdx);pfKey=-1;e.needRefresh=true;}
+  if(e.needRefresh&&!(e.spinT>0)){e.needRefresh=false;refreshFloor(e.floor);e.rubble=[];}
   if(e.spinT>0||e.floor!==P.floor||retreat)return;
   e.abT-=dt;if(e.abT>0)return;e.abT=rr(3,4.5);
   const r=rand();
@@ -2933,9 +2939,10 @@ function openLevelUp(){
     else{ic=IC.bento;nm='Добавка в столовой';ds='+10 к максимуму здоровья навсегда.';}
     const lv=c.lvl&&c.t!=='c'?'<span class="lv">УР. '+c.lvl+'</span>':'';
     b.innerHTML='<span class="ic">'+ic+'</span><span class="tx"><span class="nm">'+nm+lv+'</span><span class="ds" style="display:block">'+ds+'</span></span><span class="key">'+(i+1)+'</span>'+tag;
-    b.addEventListener('click',()=>choose(i));
+    b.addEventListener('click',()=>safeChoose(i));
     box.appendChild(b);
   });
+  {const rb=$('#rerollBtn');rb.hidden=!(P.rerolls>0);rb.textContent='🍀 Перекрутить ('+(P.rerolls||0)+')';}
   showOv('lvup');
   setTimeout(()=>{const c=$('#card0');if(c)c.focus({preventScroll:true});},50);
 }
@@ -2972,6 +2979,8 @@ function applyOnce(id){
   }
   sfx('level');haptic('medium');
 }
+function safeChoose(i){try{choose(i);}catch(err){try{console.error(err);localStorage.setItem('szz-lasterr',String(err&&err.stack||err).slice(0,600));}catch(e){}pendingLv=0;hideOv('lvup');state='play';}}
+function doReroll(){if(state!=='levelup'||!(P.rerolls>0))return;P.rerolls--;openLevelUp();tone(900,.08,'triangle',.03,1.4);}
 function lastPickName(){const q=P.lastPick;if(!q)return '';return q.t==='w'?WDEF[q.id].name:q.t==='p'?PDEF[q.id].name:CDEF[q.id].name;}
 function choose(i){
   const c=choices[i];if(!c||state!=='levelup')return;
@@ -2979,7 +2988,7 @@ function choose(i){
   else if(c.t==='w'||c.t==='p'||(c.t==='c'&&!CDEF[c.id].once))P.lastPick={t:c.t,id:c.id};
   if(c.t==='cd'){}
   else if(c.t==='w'){const w=P.weapons.find(x=>x.id===c.id);if(w)w.lvl++;else P.weapons.push({id:c.id,lvl:1,t:.2});}
-  else if(c.t==='p'){const p=P.passives.find(x=>x.id===c.id);if(p)p.lvl++;else P.passives.push({id:c.id,lvl:1});if(c.id==='omamori'&&!p&&RUN.mode!=='hard')P.revive++;}
+  else if(c.t==='p'){const p=P.passives.find(x=>x.id===c.id);if(p)p.lvl++;else P.passives.push({id:c.id,lvl:1});if(c.id==='omamori'&&!p&&RUN.mode!=='hard')P.revive++;if(c.id==='clover')P.rerolls=(P.rerolls||0)+2;}
   else if(c.t==='c'){if(CDEF[c.id].once)applyOnce(c.id);else addCurse(c.id);}
   else if(c.t==='heal'){if(!noHeal())P.hp=Math.min(P.maxHp,P.hp+50);}
   else{P.baseMaxBonus=(P.baseMaxBonus||0)+10;}
@@ -3034,7 +3043,7 @@ function zSprite(e,ai,wi){
   const x=c.getContext('2d');x.scale(sc,sc);x.translate(R,R);
   const old=ctx;ctx=x;
   try{drawZombie({kind:e.kind,uni:e.uni,scarf:e.scarf,B:e.B,name:e.name,r:e.r,x:0,y:0,ang:0,seed:0,preview:true,hitT:0,slowT:0,fixA:ai*Math.PI*2/ZA,fixW:wi?.8:-.8});}finally{ctx=old;}
-  c._R=R;if(zCache.size>2500)zCache.clear();zCache.set(k,c);return c;
+  c._R=R;if(zCache.size>1200)zCache.clear();zCache.set(k,c);return c;
 }
 function drawZombieFast(e){
   if(e.kind==='boss'){drawZombie(e);return;}
@@ -3576,6 +3585,8 @@ function render(){
     else if(g.type==='heal'){ctx.fillStyle='#f6f4ec';ctx.beginPath();ctx.moveTo(g.x,g.y-9+by);ctx.lineTo(g.x+9,g.y+7+by);ctx.lineTo(g.x-9,g.y+7+by);ctx.fill();ctx.fillStyle='#1d2b22';ctx.fillRect(g.x-5,g.y+1+by,10,6);}
     else{ctx.fillStyle='#f2c94c';ctx.beginPath();ctx.arc(g.x,g.y+by,8,Math.PI,0);ctx.lineTo(g.x+9,g.y+5+by);ctx.lineTo(g.x-9,g.y+5+by);ctx.fill();ctx.fillStyle='#c79a22';ctx.beginPath();ctx.arc(g.x,g.y+6+by,2.5,0,7);ctx.fill();}
   }
+  // octopus rubble (until the floor is re-rendered)
+  if(OCT&&OCT.rubble)for(const r of OCT.rubble){if(r.f!==P.floor)continue;const rx=(r.i%MW)*T,ry=((r.i/MW)|0)*T;ctx.fillStyle='#6b5f52';ctx.fillRect(rx,ry,T,T);ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(rx+6,ry+8,10,6);ctx.fillRect(rx+22,ry+20,12,7);ctx.fillStyle='rgba(200,180,150,.35)';ctx.fillRect(rx+14,ry+4,8,5);ctx.fillRect(rx+4,ry+26,9,6);}
   // octopus blocks
   for(const b of octoBlocks){if(b.f!==P.floor)continue;const bx=(b.i%MW+.5)*T,by=(((b.i/MW)|0)+.5)*T,F2=floors[b.f],hor=solidT(b.f,b.i%MW,((b.i/MW)|0)-1)&&solidT(b.f,b.i%MW,((b.i/MW)|0)+1);
     ctx.save();ctx.translate(bx,by);if(hor)ctx.rotate(Math.PI/2);ctx.strokeStyle='#9a3f74';ctx.lineWidth=22;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-T*.75,-T*.55);ctx.quadraticCurveTo(Math.sin(time*3+b.ph)*10,0,T*.75*Math.cos(time*2+b.ph)*.2,T*.62);ctx.stroke();
@@ -3812,6 +3823,7 @@ function rwSnap(){RW.push({t:time,hp:P.hp,x:P.x,y:P.y,floor:P.floor,en:enemies.f
 function doRewind(){const tg=time-80;let s0=RW[0];for(const s of RW)if(Math.abs(s.t-tg)<Math.abs(s0.t-tg))s0=s;
   const back=time-s0.t;time=s0.t;P.x=s0.x;P.y=s0.y;P.floor=s0.floor;P.hp=Math.max(s0.hp,P.maxHp*.35);P.inv=2.5;P.rwUsed=true;
   enemies=s0.en.map(e=>Object.assign({},e));projs=[];zprojs=[];fxs=[];RW=[];pfKey=-1;lastRoom='';rwFx=1.4;
+  octoBlocks.forEach(b=>{const F=floors[b.f];if(F.g[b.i]===TENT)F.g[b.i]=b.old;});octoBlocks=[];floors.forEach((F,f)=>stairField[f]=buildField(f,F.stairIdx));OCT=enemies.find(e=>e.B&&e.B.octo&&e.alive)||null;
   banner('⏪ Перемотка!','Плеер вернул время на '+fmt(back)+' назад',false);tone(900,.5,'sawtooth',.03,.3);tone(500,.5,'sawtooth',.03,.3,.1);haptic('heavy');}
 function startRetreat(){
   retreat=true;retreatT=0;left=0;time=GOAL;
@@ -3851,6 +3863,7 @@ function togglePause(){
 function setSound(m){muted=m;try{localStorage.setItem('szz-mute',m?'1':'0');}catch(e){}const t='Звук: '+(m?'выкл':'вкл');$('#soundBtn').textContent=t;}
 setSound(muted);
 $('#startBtn').addEventListener('click',startGame);
+$('#rerollBtn').addEventListener('click',doReroll);
 $('#tutBtn').addEventListener('click',()=>{if(!prevMode){prevMode=MODE;prevMap=MAPSEL;}MODE='tutorial';MAPSEL='school';startGame();});
 $('#againBtn').addEventListener('click',startGame);
 $('#menuBtn').addEventListener('click',()=>{hideOv('end');$('#hud').hidden=true;state='menu';mView('Home');showOv('menu');});
@@ -3926,7 +3939,8 @@ addEventListener('keydown',e=>{
   if(e.code==='KeyE'||e.code==='PageUp')tryStairs(1);
   if(e.code==='KeyQ'||e.code==='PageDown')tryStairs(-1);
   if(e.code==='Escape'||e.code==='KeyP'){if(!$('#codexOv').hidden)closeCodex();else if(!$('#setOv').hidden)closePSet();else if(!$('#statsOv').hidden){hideOv('statsOv');showOv('pause');}else if(state==='play'||state==='pause')togglePause();}
-  if(state==='levelup'&&/^(Digit|Numpad)[123]$/.test(e.code))choose(+e.code.slice(-1)-1);
+  if(state==='levelup'&&/^(Digit|Numpad)[123]$/.test(e.code))safeChoose(+e.code.slice(-1)-1);
+  if(state==='levelup'&&e.code==='KeyR')doReroll();
   if(state==='menu'&&e.code==='Enter'&&document.activeElement===document.body)startGame();
   if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)&&state==='play')e.preventDefault();
 });
@@ -3955,7 +3969,14 @@ cv.addEventListener('contextmenu',e=>e.preventDefault());
 /* ---------- LOOP ---------- */
 let last=performance.now(),unlockT=1;
 let frameNo=0;
+let errShown=0,errCount=0;
 function frame(now){
+  requestAnimationFrame(frame);
+  try{frameInner(now);}catch(err){errCount++;try{console.error(err);localStorage.setItem('szz-lasterr',String(err&&err.stack||err).slice(0,600));}catch(e){}
+    if(performance.now()-errShown>8000){errShown=performance.now();const t=$('#errToast');if(t){t.textContent='Сбой в игре ('+String(err&&err.message||err).slice(0,80)+') — игра продолжается. Пожалуйста, сообщи об этом разработчику.';t.hidden=false;setTimeout(()=>t.hidden=true,5000);}}
+    if(state==='play'&&P&&!(P.hp>0)&&!committed){try{endGame(false);}catch(e){}}}
+}
+function frameInner(now){
   frameNo++;
   const rawDt=now-last;let dt=Math.min(.05,rawDt/1000);last=now;
   if(state==='play'&&rawDt<250){perfAcc+=rawDt;perfN++;if(perfN>=120){const avg=perfAcc/perfN;perfAcc=0;perfN=0;if(avg>23&&qi<QDPR.length-1){qi++;resize();}}}else{perfAcc=0;perfN=0;}
@@ -3980,7 +4001,6 @@ function frame(now){
   else if(state==='over'){updateFx(dt*.5);}
   if(P){render();if(state!=='menu')updateHUD(dt);}
   else{ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#0c1022';ctx.fillRect(0,0,cv.width,cv.height);}
-  requestAnimationFrame(frame);
 }
 resize();
 // menu backdrop: show the school
