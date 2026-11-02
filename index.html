@@ -72,7 +72,7 @@ body{margin:0;overflow:hidden;background:var(--night);color:var(--chalk);font-fa
 #goal{font:800 10.5px/1 var(--body);color:var(--gold);letter-spacing:.1em;text-transform:uppercase;text-shadow:0 1px 0 #000}
 #room{position:fixed;z-index:3;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 6px);max-width:calc(100vw - 150px);overflow:hidden;text-overflow:ellipsis;pointer-events:none;font:800 12px/1 var(--body);color:var(--gold);background:rgba(10,13,28,.7);padding:4px 9px;border-radius:99px;opacity:0;transition:opacity .4s;white-space:nowrap}
 #room.on{opacity:1}
-#tutBox{margin-top:4px;max-width:min(420px,72vw);background:rgba(10,13,28,.82);border:2px solid var(--gold);border-radius:10px;padding:7px 10px;text-align:center;pointer-events:none}#tutBox small{display:block;font:800 9px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}#tutBox span{font:700 12.5px/1.35 var(--body);color:var(--chalk)}#tutBox.done{border-color:#7dff9a}
+#tutBox{position:fixed;z-index:4;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 96px);width:max-content;max-width:min(420px,72vw);background:rgba(10,13,28,.82);border:2px solid var(--gold);border-radius:10px;padding:7px 10px;text-align:center;pointer-events:none}#tutBox small{display:block;font:800 9px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}#tutBox span{font:700 12.5px/1.35 var(--body);color:var(--chalk)}#tutBox.done{border-color:#7dff9a}
 #bossbar{width:min(260px,52vw);margin-top:2px}
 #bossbar .nm{font:12px/1.2 var(--display);color:#ffb3b3;text-shadow:0 2px 0 #000}
 #bossbar .bar{height:8px;background:#2a1018;border:2px solid #0a0d1c;border-radius:3px;overflow:hidden;margin-top:3px}
@@ -288,14 +288,13 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
   .hud{grid-template-columns:auto 1fr auto}
   .hud-left{gap:4px;grid-column:1}.hud-right{grid-column:3}
   .hud-mid{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 9px);transform:translateX(-50%);width:max-content;max-width:46vw;pointer-events:none}
-  #tutBox{position:absolute;left:50%;top:calc(100% + 34px);transform:translateX(-50%);width:min(300px,64vw);max-width:none}
-  #inv{max-width:min(120px,34vw)}
+  #tutBox{position:fixed;left:50%;transform:translate(-50%,0);top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 92px);width:min(320px,82vw);max-width:none}
+  #inv{max-width:min(152px,40vw)}
   .hprow{flex-direction:row;align-items:center;gap:5px}
   .lvl{font-size:11px;text-shadow:0 1px 0 #000;white-space:nowrap}
   .hpwrap{width:min(124px,32vw);height:12px;border-width:1.5px;border-radius:3px}#hptext{font-size:8.5px}
   .hpwrap.svw{height:11px;width:min(124px,32vw)}#svtext{font-size:7.5px}#svArr{font-size:12px}#svArr.fl{font-size:9px}
   #inv{gap:2px;max-width:min(150px,40vw)}#inv .slot{width:18px;height:18px;border-radius:4px}#inv .slot b{font-size:7px;right:-1px;bottom:-3px}
-  #inv .slot.pas,#inv .slot.cur{display:none}
   .hud-mid{gap:2px}
   #timer{font-size:18px;text-shadow:0 2px 0 #000}#goal{font-size:8.5px;letter-spacing:.06em}
   #bossbar{width:min(130px,34vw);margin-top:1px}#bossbar .nm{font-size:10px}#bossbar .bar{height:6px;border-width:1.5px;margin-top:2px}
@@ -310,7 +309,7 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
   #todayBox.mini .th::after{content:' ▸'}
   .verTag.hudVer{font-size:8.5px;bottom:calc(env(safe-area-inset-bottom,0px) + 6px);left:max(8px,env(safe-area-inset-left,0px));color:rgba(238,242,230,.4)}
   #room{font-size:9.5px;padding:3px 8px}
-  #tutBox{padding:5px 8px;max-width:min(300px,62vw)}#tutBox span{font-size:11px}
+  #tutBox{padding:5px 8px;max-width:82vw}#tutBox span{font-size:11px}
   #banner{top:30%}#banner .t{font-size:clamp(17px,4.8vw,24px);text-shadow:0 2px 0 #000,0 0 14px rgba(255,90,90,.45)}#banner .s{font-size:11px;margin-top:3px}
   #hint{font-size:10.5px;bottom:calc(env(safe-area-inset-bottom,0px) + 64px)}
   #slowBtn{width:44px;height:44px;font-size:18px;bottom:calc(env(safe-area-inset-bottom,0px) + 120px)}
@@ -333,6 +332,7 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
   .pmenu{gap:7px;margin-top:10px}.pmenu .btn{padding-top:9px;padding-bottom:9px}
   #hint{bottom:calc(env(safe-area-inset-bottom,0px) + 40px)}
 }
+@media (pointer:coarse) and (max-width:520px){#inv{max-width:128px}.hpwrap{width:calc(50vw - 112px)}.hpwrap.svw{width:calc(50vw - 94px)}#bossbar{width:min(110px,28vw)}#bossbar .nm{font-size:9px;line-height:1.15}}
 </style>
 </head>
 <body>
@@ -361,10 +361,10 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
   <div class="hud-mid">
     <div id="timer">00:00</div>
     <div id="goal">до рассвета 15:00</div>
-    <div id="tutBox" hidden><small id="tutStep">Обучение</small><span id="tutText"></span></div>
     <div id="bossbar" hidden><div class="nm" id="bossname">Завуч</div><div class="bar"><div id="bossfill"></div></div></div>
   </div>
   <div id="room">Коридор</div>
+  <div id="tutBox" hidden><small id="tutStep">Обучение</small><span id="tutText"></span></div>
   <div class="hud-right">
     <button id="pauseBtn" aria-label="Пауза">II</button>
     <div id="kills">0 убито</div>
@@ -535,13 +535,14 @@ const cv=$('#game');let ctx=cv.getContext('2d',{alpha:false});
 const T=40, MW=44, MH=24, WW=MW*T, WH=MH*T;
 const FL=0,WALL=1,CLS=2,STAIR=3,DESK=4,WIN=5,SHELF=6,TILEF=7,ENTR=8,TABLE=9,LOCKER=10,LAB=11,PIANO=12,BED=13,WOOD=14,SOFA=15;
 const FENCE=16,ROOF=17,TANK=18,ACU=19,PLANT=20,BENCH=21,BARR=22,BOARD=23,STALL=24,VEND=25,POT=26,CRATE=27,BUCKET=28,UMB=29;
-const GRASS=30,GRAVE=31,TREE=32,PATHT=33,TRACK=34,CHECKOUT=35,FRIDGE=36,PILLAR=37,TURN=38,PLATF=39;
+const GRASS=30,GRAVE=31,TREE=32,PATHT=33,TRACK=34,CHECKOUT=35,FRIDGE=36,PILLAR=37,TURN=38,PLATF=39,TENT=40;
 const SOLID=new Uint8Array(64);[GRAVE,TREE,CHECKOUT,FRIDGE,PILLAR,TURN,WALL,DESK,WIN,SHELF,TABLE,LOCKER,LAB,PIANO,BED,WOOD,SOFA,FENCE,TANK,ACU,PLANT,BENCH,BARR,BOARD,STALL,VEND,POT,CRATE,BUCKET,UMB].forEach(t=>SOLID[t]=1);
 function floorName(f){return (typeof MAPCUR!=='undefined'&&MAPCUR&&MAPCUR.floorName)?MAPCUR.floorName(f):(f===2?'Крыша':(f+1)+'F');}
 function roofI(){return (typeof MAPCUR!=='undefined'&&MAPCUR)?MAPCUR.roof:2;}
 function hubOf(F){return F&&F.hub!==undefined?F.hub:12*MW+22;}
 const WALLISH=new Uint8Array(64);WALLISH[WALL]=WALLISH[WIN]=WALLISH[BOARD]=1;
-const BLOCKP=new Uint8Array(64);[WALL,WIN,BOARD,SHELF,LOCKER,PILLAR,FRIDGE,VEND,TANK,TREE,BARR,CRATE,STALL,ACU].forEach(t=>BLOCKP[t]=1);
+SOLID[TENT]=1;
+const BLOCKP=new Uint8Array(64);[TENT,WALL,WIN,BOARD,SHELF,LOCKER,PILLAR,FRIDGE,VEND,TANK,TREE,BARR,CRATE,STALL,ACU].forEach(t=>BLOCKP[t]=1);
 function boxAt(f,x,y,pad){for(const b of boxes)if(b.f===f&&Math.abs(b.x-x)<b.s+pad&&Math.abs(b.y-y)<b.s+pad)return b;return null;}
 function blockedAt(f,x,y){return BLOCKP[tileAt(f,x,y)]===1||(boxes.length>0&&!!boxAt(f,x,y,0));}
 function losB(f,x0,y0,x1,y1){const dx=x1-x0,dy=y1-y0,d=Math.hypot(dx,dy),st=Math.ceil(d/16);for(let q=1;q<st;q++){if(blockedAt(f,x0+dx*q/st,y0+dy*q/st))return false;}return true;}
@@ -869,7 +870,7 @@ function mapOf(id){return MAPS.find(m=>m.id===id)||MAPS[0];}
 function mapPrev(id){const i=MAPS.findIndex(m=>m.id===id);return i>0?MAPS[i-1]:null;}
 function mapOpen(id){const pv=mapPrev(id);return !pv||((prog.mapFull||{})[pv.id]||0)>0;}
 function mapLockText(id){const pv=mapPrev(id);return 'Откроется, когда ты полностью продержишься до рассвета (15:00) на карте «'+pv.name+'» в режиме «Обычный», «Хардкор» или «Защита выжившего». «Короткая смена», «Сокращённый день» и «Сломанные часы» не засчитываются.';}
-const NEWS=['Пять новых карт: Магазин, Пятиэтажка, Больница, Кладбище и Метро — у каждой свои зомби, босс и условия дня. Карты открываются по очереди: продержись полные 15 минут на предыдущей.',
+const NEWS=['Новый босс — Гигантский осьминог: может появиться на любой карте и бьёт всех, даже зомби. Удар щупальцем, 30-секундная раскрутка (крушит мебель и зомби, снаряды о него разбиваются) и щупальца, перекрывающие проходы.','Пять новых карт: Магазин, Пятиэтажка, Больница, Кладбище и Метро — у каждой свои зомби, босс и условия дня. Карты открываются по очереди: продержись полные 15 минут на предыдущей.',
  'Новые режимы: «Защита выжившего» (15 минут охраняй раненого — на рассвете он сам убегает к выходу) и «Зачистка» (уничтожь всех зомби за 10 минут). Под таймером цветом показано, до какого времени держаться.',
  'Обучение теперь — отдельный уровень на 5 минут: шаг за шагом про движение, кристаллы, улучшения, еду, лестницы, замедление времени и боссов.',
  'Замедление времени: кнопка ⏳ (на компьютере — пробел). 4 секунды зомби двигаются вчетверо медленнее, потом 40 секунд перезарядка.',
@@ -1284,7 +1285,7 @@ function snowAll(F){F.snow=new Uint8Array(MW*MH);for(let i=0;i<F.g.length;i++)if
 MAPMODS.office={apply(){const F=floors[0];F.rooms.forEach(r=>{if(r.type==='office')F.doors.forEach(d=>{if(d.y===9&&d.x>=r.x0&&d.x<=r.x1){F.g[d.y*MW+d.x]=BARR;}});});RUN_OFFICE=true;
    return 'Кабинет директора заперт — Директор выйдет оттуда сам';}};
 MAPMODS.crumble={apply(){return 'Аварийное здание: стены рушатся в случайные моменты';}};
-MAPMODS.lava={apply(){return 'Пол — это лава: простоишь на месте 5 секунд — получишь 35 урона';}};
+MAPMODS.lava={apply(){return 'Пол\u00a0— это лава: простоишь на месте 5 секунд — получишь 35 урона';}};
 MAPMODS.snow1={apply(){snowAll(floors[0]);return '1F засыпало снегом: там ты медленнее на 75%, зомби на 50%';}};
 MAPMODS.snow2={apply(){snowAll(floors[1]);return '2F засыпало снегом: там ты медленнее на 75%, зомби на 50%';}};
 MAPMODS.snowEntr={apply(){const F=floors[0];F.snow=new Uint8Array(MW*MH);
@@ -1373,6 +1374,7 @@ function buildWorld(){
   RUN={ids,names,events:ev.length?ev:null,mode:MODE,map:MAPSEL,cycle:0,evCycle:0};
   if(MAPCUR.id==='school')RUN.bossList=rollSchoolBosses();
   GOAL=MODE==='endless'?Infinity:MODE==='clear'?600:MODE==='tutorial'?300:(ids.has('shortday')?720:900);
+  RUN.octoT=(MODE==='tutorial')?undefined:(MODE==='clear'?(rand()<.45?rr(150,420):undefined):(rand()<.45?(MODE==='endless'?rr(380,700):GOAL*rr(.4,.8)):undefined));
   RUN.crumble=[];if(ids.has('crumble')){const n=3+((Math.random()*3)|0);for(let i=0;i<n;i++)RUN.crumble.push(90+Math.random()*(GOAL-150));RUN.crumble.sort((a,b)=>a-b);}
   if(ids.has('snow')&&roofI()>=0)snowAll(floors[roofI()]);
   if(MAPCUR.setup)MAPCUR.setup(ids,names);
@@ -1426,6 +1428,12 @@ const rand=Math.random, rr=(a,b)=>a+rand()*(b-a), pick=a=>a[(rand()*a.length)|0]
 
 /* ---------- FLOOR RENDER CACHE ---------- */
 let cache=null,cacheFloor=-1,cacheScale=1;
+function blobLayer(x,mask,col,alpha,R){const c=document.createElement('canvas');c.width=WW;c.height=WH;const g=c.getContext('2d');g.fillStyle=col;
+  const on=(tx,ty)=>tx>=0&&ty>=0&&tx<MW&&ty<MH&&mask[ty*MW+tx];
+  for(let i=0;i<mask.length;i++){if(!mask[i])continue;const tx=i%MW,ty=(i/MW)|0,px=tx*T,py=ty*T,l=on(tx-1,ty)?0:7,r=on(tx+1,ty)?0:7,u=on(tx,ty-1)?0:7,d=on(tx,ty+1)?0:7;
+    g.fillRect(px+l,py+u,T-l-r,T-u-d);g.beginPath();g.arc(px+T/2+(R()-.5)*8,py+T/2+(R()-.5)*8,T*(.5+R()*.12),0,7);g.fill();
+    if(!l&&!u){g.fillRect(px,py,T/2,T/2);}if(!r&&!u){g.fillRect(px+T/2,py,T/2,T/2);}if(!l&&!d){g.fillRect(px,py+T/2,T/2,T/2);}if(!r&&!d){g.fillRect(px+T/2,py+T/2,T/2,T/2);}}
+  x.save();x.globalAlpha=alpha;x.drawImage(c,0,0,WW,WH);x.restore();}
 function renderFloor(fi){
   const F=floors[fi],c=document.createElement('canvas');
   c.width=Math.ceil(WW*cacheScale);c.height=Math.ceil(WH*cacheScale);
@@ -1457,6 +1465,10 @@ function renderFloor(fi){
       x.fillStyle='rgba(255,255,255,.12)';x.fillRect(px+2,py+2,16,4);
     }else if(b===STAIR&&F.esc){x.fillStyle='#6a707a';x.fillRect(px,py,T,T);x.fillStyle='#8a929c';for(let k=2;k<T;k+=6)x.fillRect(px,py+k,T,3);
       if(tx===19||tx===22){x.fillStyle='#2a2e34';x.fillRect(px+(tx===19?0:T-6),py,6,T);}if(tx===21||tx===24){x.fillStyle='#2a2e34';x.fillRect(px+(tx===21?T-6:T-6),py,6,T);}
+    }else if(b===STAIR&&F.custom){const v=(R()-.5)*4;x.fillStyle=`rgb(${138+v},${134+v},${126+v})`;x.fillRect(px,py,T,T);
+      for(let k=0;k<T;k+=8){x.fillStyle='rgba(0,0,0,.22)';x.fillRect(px,py+k+6,T,2);x.fillStyle='rgba(255,255,255,.14)';x.fillRect(px,py+k,T,2);}
+      const sl=F.g[ty*MW+tx-1]!==STAIR,sr=F.g[ty*MW+tx+1]!==STAIR;x.fillStyle='#5a5e66';if(sl)x.fillRect(px,py,4,T);if(sr)x.fillRect(px+T-4,py,4,T);
+      if(F.g[(ty-1)*MW+tx]!==STAIR){x.fillStyle='#f2c94c';x.fillRect(px,py,T,3);}if(F.g[(ty+1)*MW+tx]!==STAIR){x.fillStyle='#f2c94c';x.fillRect(px,py+T-3,T,3);}
     }else if(b===STAIR){
       if(!F.stairTh)F.stairTh=[stairTheme(),stairTheme()];
       const sth=F.stairTh[tx<MW/2?0:1],lnd=ty>=10&&ty<=13,sc=lnd?sth.land:sth.c,sv=(R()-.5)*6;
@@ -1477,8 +1489,9 @@ function renderFloor(fi){
       x.fillStyle='rgba(255,255,255,'+(R()*.05)+')';x.fillRect(px+3,py+3,T-6,T-6);
     }
   }
-  if(F.water){for(let i=0;i<F.water.length;i++){if(!F.water[i])continue;const px=(i%MW)*T,py=((i/MW)|0)*T;x.fillStyle=F.milk?'rgba(240,240,232,.55)':'rgba(70,140,210,.42)';x.fillRect(px,py,T,T);x.strokeStyle='rgba(200,230,255,.35)';x.lineWidth=1.2;x.beginPath();x.ellipse(px+10+R()*20,py+10+R()*20,6,3,0,0,7);x.stroke();}}
-  if(F.snow){for(let i=0;i<F.g.length;i++){if(!F.snow[i])continue;const px=(i%MW)*T,py=((i/MW)|0)*T;x.fillStyle='rgba(240,246,255,'+(.55+R()*.3)+')';x.fillRect(px,py,T,T);x.fillStyle='rgba(200,215,235,.5)';x.fillRect(px+R()*30,py+R()*30,6,3);}}
+  if(F.water){blobLayer(x,F.water,F.milk?'#f2f1ea':'#4a8cd2',F.milk?.62:.42,R);
+    for(let i=0;i<F.water.length;i++){if(!F.water[i]||R()<.45)continue;const px=(i%MW)*T,py=((i/MW)|0)*T;x.strokeStyle=F.milk?'rgba(255,255,255,.5)':'rgba(200,230,255,.35)';x.lineWidth=1.2;x.beginPath();x.ellipse(px+10+R()*20,py+10+R()*20,6,3,0,0,7);x.stroke();}}
+  if(F.snow){blobLayer(x,F.snow,'#eef4ff',.72,R);for(let i=0;i<F.g.length;i++){if(!F.snow[i]||R()<.5)continue;const px=(i%MW)*T,py=((i/MW)|0)*T;x.fillStyle='rgba(200,215,235,.45)';x.fillRect(px+R()*30,py+R()*30,6,3);}}
   // stairs details
   (F.custom?[]:[[1,4],[39,42]]).forEach(([a,b2])=>{
     const xL=a*T,w=(b2-a+1)*T;
@@ -1994,6 +2007,55 @@ function clearSpawn(){
     for(let k=0;k<per&&c.length;k++){const i=c.splice((rand()*c.length)|0,1)[0];const z=makeZombie(rollKind(),f,(i%MW+.5)*T+rr(-8,8),(((i/MW)|0)+.5)*T+rr(-8,8));z.idle=true;z.enter=0;enemies.push(z);}});
   time=t0;RUN.clearN=enemies.length;}
 function wakeZ(e){if(!e.idle)return;e.idle=false;forNear(e.floor,e.x,e.y,170,o=>{if(o.idle&&Math.hypot(o.x-e.x,o.y-e.y)<160)o.idle=false;});}
+const OCTO={name:'Гигантский осьминог',octo:true,ab:'octo',hp:9000,spd:38,dmg:35,info:'Может появиться на любой карте. Огромный, ходит только по проходам, но мебель на пути сносит. Бьёт всех подряд — и тебя, и зомби. Три атаки: удар щупальцем по линии (красная полоса предупреждает); раскрутка на 30 секунд — носится по этажу, крушит мебель и зомби, а твои снаряды о него разбиваются; щупальца перекрывают проходы рядом с тобой, иногда сразу вместе с ударом.'};
+let OCT=null,octoBlocks=[];
+function spawnOcto(){const f=P.floor,F=floors[f],c=[],dd=buildField(f,[Math.floor(P.y/T)*MW+Math.floor(P.x/T)]);for(let i=0;i<F.g.length;i++){if(SOLID[F.g[i]]||dd[i]>=1e9||F.g[i]===STAIR)continue;const tx=i%MW,ty=(i/MW)|0;if(solidT(f,tx-1,ty)||solidT(f,tx+1,ty)||solidT(f,tx,ty-1)||solidT(f,tx,ty+1))continue;const x=(tx+.5)*T,y=(ty+.5)*T,d=Math.hypot(x-P.x,y-P.y);if(d>380&&d<720)c.push([x,y]);}
+  const p0=c.length?pick(c):[P.x+300,P.y];const z=makeZombie('student',f,p0[0],p0[1]);const H=OCTO.hp*(RUN.mode==='hard'?1.3:1)*(1+(RUN.cycle||0))*(RUN.mode==='clear'?.7:1);
+  Object.assign(z,{kind:'boss',name:OCTO.name,r:58,cr:18,body:34,hp:H,maxHp:H,spd:OCTO.spd,dmg:OCTO.dmg,xp:0,uni:'boss',B:OCTO,ghost:false,enter:1.2,abT:3,spinCd:12,spinT:0});enemies.push(z);OCT=z;
+  banner('Гигантский осьминог!','Он крушит всё вокруг — и зомби тоже',true);sfx('boss');haptic('heavy');tone(55,1.4,'sawtooth',.06,.4);}
+function octoSmash(e,f){let n=0;const F=floors[f],B=e.body+6;for(let ty=Math.floor((e.y-B)/T);ty<=Math.floor((e.y+B)/T);ty++)for(let tx=Math.floor((e.x-B)/T);tx<=Math.floor((e.x+B)/T);tx++){if(tx<1||ty<1||tx>=MW-1||ty>=MH-1)continue;const i=ty*MW+tx,g=F.g[i];
+    if(!SOLID[g]||WALLISH[g]||g===FENCE||g===TENT||g===PILLAR)continue;const fl=F.roomId&&F.roomId[i]>=0?CLS:FL;F.g[i]=fl;F.base[i]=fl;if(F.props)F.props.delete(i);n++;
+    for(let q=0;q<6;q++)parts.push({x:(tx+.5)*T,y:(ty+.5)*T,vx:rr(-140,140),vy:rr(-140,140),life:.5,max:.5,col:pick(['#8e6638','#c99a5e','#6a707a']),s:4,f});}
+  if(n){e.dirty=true;tone(120,.08,'square',.03,.6);}
+  for(let k=boxes.length-1;k>=0;k--){const b=boxes[k];if(b.f===f&&Math.hypot(b.x-e.x,b.y-e.y)<e.body+b.s){boxes.splice(k,1);for(let q=0;q<8;q++)parts.push({x:b.x,y:b.y,vx:rr(-120,120),vy:rr(-120,120),life:.5,max:.5,col:'#b3874f',s:4,f});}}}
+function octoBlock(e){const f=e.floor,F=floors[f],ptx=Math.floor(P.x/T),pty=Math.floor(P.y/T),cand=[];
+  for(let ty=Math.max(1,pty-9);ty<=Math.min(MH-2,pty+9);ty++)for(let tx=Math.max(1,ptx-11);tx<=Math.min(MW-2,ptx+11);tx++){const i=ty*MW+tx;if(SOLID[F.g[i]]||F.g[i]===STAIR)continue;
+    const d=Math.hypot(tx-ptx,ty-pty);if(d<2||d>11)continue;const sl=solidT(f,tx-1,ty),sr=solidT(f,tx+1,ty),su=solidT(f,tx,ty-1),sd=solidT(f,tx,ty+1);if(!((sl&&sr)||(su&&sd)))continue;
+    if(SV&&SV.floor===f&&Math.hypot((tx+.5)*T-SV.x,(ty+.5)*T-SV.y)<50)continue;cand.push([d+rand()*3,i]);}
+  cand.sort((a,b)=>a[0]-b[0]);const pickd=[];for(const [,i] of cand){if(pickd.every(j=>Math.abs(j%MW-i%MW)+Math.abs(((j/MW)|0)-((i/MW)|0))>3))pickd.push(i);if(pickd.length>=3)break;}
+  pickd.forEach(i=>{octoBlocks.push({f,i,old:F.g[i],until:time+12,ph:rand()*6});F.g[i]=TENT;});
+  if(pickd.length){stairField[f]=buildField(f,F.stairIdx);pfKey=-1;banner('Щупальца перекрыли проходы!','Ищи обход — через 12 секунд они уберутся',true);tone(80,.5,'sawtooth',.04,.5);}
+  return pickd.length;}
+function octoSlam(e){const a=Math.atan2(P.y-e.y,P.x-e.x),L=Math.min(Math.hypot(P.x-e.x,P.y-e.y)+80,360);fxs.push({k:'tent',x:e.x,y:e.y,f:e.floor,a,L,w:30,t:0,dur:1.15,warn:.75,hit:false});tone(160,.3,'triangle',.03,.6);}
+function updOcto(e,dt){
+  for(let k=octoBlocks.length-1;k>=0;k--){const b=octoBlocks[k];if(time>=b.until||!e.alive){const F=floors[b.f];if(F.g[b.i]===TENT)F.g[b.i]=b.old;octoBlocks.splice(k,1);stairField[b.f]=buildField(b.f,F.stairIdx);pfKey=-1;}}
+  forNear(e.floor,e.x,e.y,e.body+30,o=>{if(o===e||!o.alive)return;if(Math.hypot(o.x-e.x,o.y-e.y)<e.body+o.cr+(e.spinT>0?10:0)){if(o.kind==='boss'){o.hp-=(e.spinT>0?60:20)*dt;if(o.hp<=0)kill(o);}else{o.hp-=(e.spinT>0?400:80)*dt;o.hitT=.1;if(o.hp<=0)kill(o);}}});
+  if(e.spinT>0){e.spinT-=dt;octoSmash(e,e.floor);
+    for(const q of projs){if(!q.dead&&q.f===e.floor&&Math.hypot(q.x-e.x,q.y-e.y)<e.body+18){q.dead=true;for(let k=0;k<3;k++)parts.push({x:q.x,y:q.y,vx:rr(-90,90),vy:rr(-90,90),life:.3,max:.3,col:'#e8d0ff',s:3,f:q.f});}}
+    for(const z of zprojs){if(!z.dead&&z.f===e.floor&&Math.hypot(z.x-e.x,z.y-e.y)<e.body+14)zKill(z);}
+    if(e.floor===P.floor&&P.inv<=0&&!retreat&&Math.hypot(P.x-e.x,P.y-e.y)<e.body+P.r+6&&time>=(e.hitP||0)){e.hitP=time+.6;P.hp-=25*(curS?curS.arm*curS.bossTaken:1);hurtT=1;lastHit='вращение осьминога';sfx('hurt');haptic('heavy');const d=Math.hypot(P.x-e.x,P.y-e.y)||1;P.x+=(P.x-e.x)/d*40;P.y+=(P.y-e.y)/d*40;P.cr=P.r;collideCircle(P,P.floor);}
+    if(e.spinT<=0){e.spinCd=40;banner('Осьминог выдохся','Он снова медленный — бей!',false);}}
+  else e.spinCd=(e.spinCd||0)-dt;
+  if(e.dirty&&time>=(e.dirtyT||0)){e.dirty=false;e.dirtyT=time+.8;refreshFloor(e.floor);}
+  if(e.spinT>0||e.floor!==P.floor||retreat)return;
+  e.abT-=dt;if(e.abT>0)return;e.abT=rr(3,4.5);
+  const r=rand();
+  if(e.spinCd<=0&&r<.3){e.spinT=30;e.spinA=rand()*6.28;banner('Осьминог раскрутился!','30 секунд крушит всё на пути. Снаряды о него разбиваются',true);tone(70,1,'sawtooth',.05,.3);}
+  else if(r<.55){const n=octoBlock(e);if(!n||rand()<.5)octoSlam(e);}
+  else octoSlam(e);}
+function drawOcto(e){const r=e.r,sp=e.spinT>0,rot=sp?time*14:Math.sin(time*1.5)*.15;
+  ctx.save();ctx.translate(e.x,e.y);if(e.enter>0&&!e.preview)ctx.globalAlpha=Math.max(.15,1-e.enter);
+  if(!e.preview){ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(6,r*.35,r*1.25,r*.8,0,0,7);ctx.fill();}
+  ctx.rotate(rot);
+  for(let k=0;k<8;k++){const a=k*Math.PI/4,wv=Math.sin(time*4+k)*(sp?.1:.35),L=r*(sp?1.25:1.7);ctx.strokeStyle=e.hitT>0?'#ffd0e0':'#9a3f74';ctx.lineWidth=r*.32;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(Math.cos(a)*r*.5,Math.sin(a)*r*.5);
+    ctx.quadraticCurveTo(Math.cos(a+wv)*L*.7,Math.sin(a+wv)*L*.7,Math.cos(a+wv*2)*L,Math.sin(a+wv*2)*L);ctx.stroke();
+    ctx.fillStyle='#f0c2d8';for(let q=1;q<=3;q++){const t2=q/4;ctx.beginPath();ctx.arc(Math.cos(a+wv*t2*2)*L*(.45+t2*.5),Math.sin(a+wv*t2*2)*L*(.45+t2*.5),r*.06,0,7);ctx.fill();}}
+  const g=ctx.createRadialGradient(-r*.25,-r*.3,r*.1,0,0,r);g.addColorStop(0,'#d06a9e');g.addColorStop(1,'#7a2c5a');ctx.fillStyle=e.hitT>0?'#ffd0e0':g;ctx.beginPath();ctx.ellipse(0,0,r*.85,r*.78,0,0,7);ctx.fill();
+  ctx.fillStyle='#fff6d0';ctx.beginPath();ctx.ellipse(-r*.3,-r*.12,r*.17,r*.21,0,0,7);ctx.ellipse(r*.3,-r*.12,r*.17,r*.21,0,0,7);ctx.fill();
+  ctx.fillStyle='#1a0a14';ctx.fillRect(-r*.36,-r*.2,r*.12,r*.2);ctx.fillRect(r*.24,-r*.2,r*.12,r*.2);
+  if(sp){ctx.strokeStyle='rgba(230,200,255,.45)';ctx.lineWidth=4;for(let q=0;q<3;q++){ctx.beginPath();ctx.arc(0,0,r*(1.1+q*.18),q,q+2.2);ctx.stroke();}}
+  ctx.restore();
+  if(!e.preview){ctx.font='13px "Dela Gothic One", sans-serif';ctx.textAlign='center';ctx.fillStyle='#ffd0e8';ctx.fillText(e.name,e.x,e.y-r*1.3-6);}}
 function xpNeed(l){return Math.floor(5+l*3+l*l*.42);}
 function pl(id){const p=P.passives.find(p=>p.id===id);return p?p.lvl:0;}
 function cc(id){return P&&P.curses?P.curses.filter(x=>x===id).length:0;}
@@ -2153,7 +2215,7 @@ function updateSpawns(dt){
   if(MAPCUR&&MAPCUR.update)MAPCUR.update(dt);
   for(const pr of pendRise){pr.t-=dt;if(pr.t<=0){pr.done=true;if(enemies.length<470){const z=makeZombie(pr.kind,pr.f,pr.x,pr.y);z.revived=true;z.hp*=.6;z.enter=.6;enemies.push(z);for(let q=0;q<8;q++)parts.push({x:pr.x,y:pr.y,vx:rr(-60,60),vy:rr(-60,60),life:.5,max:.5,col:'#6a5a40',s:3,f:pr.f});}}}
   pendRise=pendRise.filter(p=>!p.done);
-  if(RUN.mode==='clear')return;
+  if(RUN.mode==='clear'){if(RUN.octoT!==undefined&&!RUN.octoDone&&time>=RUN.octoT){RUN.octoDone=true;spawnOcto();}return;}
   if(RUN.crumble&&RUN.crumble.length&&time>=RUN.crumble[0]){RUN.crumble.shift();crumbleWall();}
   {const F=floors[P.floor],ti=Math.floor(P.y/T)*MW+Math.floor(P.x/T),rid=F.roof?-1:F.roomId[ti];
     if(rid>=0){ambT-=dt;
@@ -2201,9 +2263,10 @@ function updateSpawns(dt){
     if(F.roof&&f===P.floor)pts=pts.filter(p=>!inView(p.x,p.y,70));
     if(!pts.length){const sp=spawnPoint(f,true);pts=sp?[sp]:[];}
     const n=pts.length?Math.floor((10+time/22)*Math.min(3,1+.6*cc('blacknote'))):0;
-    for(let i=0;i<n;i++)setTimeout(()=>{if(state==='play'||state==='levelup'||state==='pause')spawnAt(time>200&&rand()<.25?'runner':'student',f,pick(pts));},i*90);
+    const rid0=runId;for(let i=0;i<n;i++)setTimeout(()=>{if(rid0===runId&&floors[f]&&(state==='play'||state==='levelup'||state==='pause'))spawnAt(time>200&&rand()<.25?'runner':'student',f,pick(pts));},i*90);
     if(n)banner('Прорыв! '+floorName(f),where,f===P.floor);
   }
+  if(RUN.octoT!==undefined&&!RUN.octoDone&&time>=RUN.octoT){RUN.octoDone=true;spawnOcto();}
   const BL=RUN.mode==='tutorial'?[]:MAPCUR.bosses();
   if(RUN.mode==='endless'&&bossIdx>=BL.length){bossIdx=0;RUN.cycle++;}
   if(bossIdx<BL.length&&time>=bossT(BL[bossIdx])){
@@ -2345,7 +2408,8 @@ function updatePlayer(dt){
 let choirNear=false,choirWas=false;
 function updateEnemies(dt){
   choirWas=choirNear;choirNear=false;
-  const SVon=SV&&!SV.dead&&state==='play';if(SVon&&(svFT-=dt)<=0){svFT=3;svField=buildField(SV.floor,[Math.floor(SV.y/T)*MW+Math.floor(SV.x/T)]);}
+  const SVon=SV&&!SV.dead&&state==='play';
+  if(OCT){if(OCT.alive)updOcto(OCT,dt);else{updOcto(OCT,dt);if(!octoBlocks.length)OCT=null;}}if(SVon&&(svFT-=dt)<=0){svFT=3;svField=buildField(SV.floor,[Math.floor(SV.y/T)*MW+Math.floor(SV.x/T)]);}
   const S=stats(),zSpd=Math.min(2,1+.2*cc('crib'))*(RUN.ids.has('moon')?1.2:1)*(retreat?1.15:1),slipZ=RUN.ids.has('slippery'),windZ=RUN.ids.has('wind'),wZx=45*Math.sin(time*.35+1),wZy=15*Math.sin(time*.5),snowZ=RUN.ids.has('snow');
   for(const e of enemies){
     if(!e.alive)continue;
@@ -2440,6 +2504,9 @@ function updateEnemies(dt){
         else if(e.ms==='dash'){dx=e.dashX;dy=e.dashY;spMul=10;
           if(!e.dashHit&&dist<e.cr+P.r+8&&P.inv<=0){e.dashHit=true;P.hp-=22*(curS?curS.arm*curS.bossTaken:1);lastHit='рывок: '+e.name;hurtT=1;sfx('hurt');haptic('heavy');P.x+=e.dashX*30;P.y+=e.dashY*30;P.cr=P.r;collideCircle(P,P.floor);}
           if(e.mt<=0){e.ms='walk';e.mt=rr(3.5,5);}}
+      }else if(e.kind==='boss'&&e.B.octo){
+        if(e.spinT>0){e.spinA+=(Math.atan2(vy,vx)-e.spinA)*0+rr(-.6,.6)*dt*4;const ta=Math.atan2(vy,vx);let da=ta-e.spinA;while(da>Math.PI)da-=6.283;while(da<-Math.PI)da+=6.283;e.spinA+=da*Math.min(1,dt*1.2);let nx=Math.cos(e.spinA),ny=Math.sin(e.spinA);const pr=e.cr+12,wl=(x2,y2)=>{const g=tileAt(e.floor,x2,y2);return WALLISH[g]||g===FENCE||g===PILLAR||g===TENT;};
+          if(wl(e.x+nx*pr,e.y)){nx=-nx;}if(wl(e.x,e.y+ny*pr)){ny=-ny;}e.spinA=Math.atan2(ny,nx);dx=nx;dy=ny;spMul=4.6;}
       }else if(e.kind==='boss'&&e.B.ab){
         if(e.B.chef){const AR=150;if(dist<AR)P.auraNoHeal=time+.2;forNear(e.floor,e.x,e.y,AR+10,o=>{if(o!==e&&Math.hypot(o.x-e.x,o.y-e.y)<AR)o.buffT=.3;});}
         e.abT=(e.abT===undefined?3:e.abT)-dt;
@@ -2508,7 +2575,7 @@ function updateEnemies(dt){
       if(sd<sm){e.x+=sx/sd*(sm-sd);e.y+=sy/sd*(sm-sd);}
       if(sd<sm+3&&!(e.enter>0)&&!(e.stunT>0)){const bt=e.dmg*dt*.45;svTook+=bt;if(bt>svTop){svTop=bt;svBiter=e;}}}
     if(e.floor!==P.floor)continue;
-    const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1,min=e.cr+P.r;
+    const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1,min=(e.body||e.cr)+P.r;
     if(d<min){e.x+=dx/d*(min-d);e.y+=dy/d*(min-d);}
     if(d<min+3&&P.inv<=0&&!retreat&&!(e.enter>0)&&!(e.stunT>0)){const bt=e.dmg*dt*S.arm*S.bite*(e.kind==='boss'?S.bossTaken:1);took+=bt;if(bt>topBite){topBite=bt;topBiter=e;}if(e.kind==='surgeon')P.bleedT=4;if(e.kind==='inspector'){P.xp=Math.max(0,P.xp-6*dt);if(rand()<dt*2)addNum(P.x,P.y-24,-3,'#9fd0ff');}}
     if(d<min+3&&S.thorns&&!retreat)damage(e,S.thorns*dt,0,0,0,true);
@@ -2749,6 +2816,11 @@ function updateFx(dt){
     if(f.k==='debris'&&!f.hit&&f.t>=f.dur-.2){f.hit=true;forNear(f.f,f.x,f.y,f.R+24,e=>{if(Math.hypot(e.x-f.x,e.y-f.y)<f.R+e.cr)damage(e,70*(1+time/300),0,0,0);});
       if(f.f===P.floor&&state==='play'&&!retreat&&P.inv<=0&&Math.hypot(P.x-f.x,P.y-f.y)<f.R){P.hp-=12*(curS?curS.arm:1);hurtT=1;sfx('hurt');lastHit='обломок потолка (землетрясение)';}
       for(let q=0;q<10;q++)parts.push({x:f.x,y:f.y,vx:rr(-120,120),vy:rr(-120,120),life:.5,max:.5,col:'#8a8070',s:4,f:f.f});tone(80,.15,'square',.03,.5);}
+    if(f.k==='tent'&&!f.hit&&f.t>=f.warn){f.hit=true;const ca=Math.cos(f.a),sa=Math.sin(f.a),onL=(x,y,pad)=>{const ex=x-f.x,ey=y-f.y,al=ex*ca+ey*sa;return al>0&&al<f.L&&Math.abs(-ex*sa+ey*ca)<f.w+pad;};
+      if(f.f===P.floor&&P.inv<=0&&!retreat&&onL(P.x,P.y,P.r)){P.hp-=30*(curS?curS.arm*curS.bossTaken:1);hurtT=1;lastHit='щупальце осьминога';sfx('hurt');haptic('heavy');}
+      for(const o of enemies){if(!o.alive||o.floor!==f.f||(o.B&&o.B.octo))continue;if(onL(o.x,o.y,o.cr)){o.hp-=o.kind==='boss'?250:400;o.hitT=.1;if(o.hp<=0)kill(o);}}
+      for(let k=boxes.length-1;k>=0;k--){const b=boxes[k];if(b.f===f.f&&onL(b.x,b.y,b.s))boxes.splice(k,1);}
+      for(let q=0;q<14;q++){const d=rand()*f.L;parts.push({x:f.x+ca*d,y:f.y+sa*d,vx:rr(-80,80),vy:rr(-80,80),life:.4,max:.4,col:'#c87aa8',s:4,f:f.f});}tone(90,.25,'square',.05,.4);}
     if(f.k==='chefwave'){const rad=f.R*Math.min(1,f.t/f.dur);for(const q of projs){if(q.dead||q.f!==f.f)continue;const d=Math.hypot(q.x-f.x,q.y-f.y);if(d<rad+14){q.dead=true;for(let k2=0;k2<3;k2++)parts.push({x:q.x,y:q.y,vx:rr(-60,60),vy:rr(-60,60),life:.3,max:.3,col:'#f2b45a',s:3,f:q.f});}}}
     if(f.k==='zwave'&&f.f===P.floor&&state==='play'&&!f.hit){const rad=f.R*Math.min(1,f.t/f.dur),d=Math.hypot(P.x-f.x,P.y-f.y);if(Math.abs(d-rad)<18&&P.inv<=0&&!retreat){f.hit=true;P.hp-=18*(curS?curS.arm*curS.bossTaken:1);lastHit='песня Учительницы музыки';hurtT=1;const nx=(P.x-f.x)/(d||1),ny=(P.y-f.y)/(d||1);P.x+=nx*30;P.y+=ny*30;P.cr=P.r;collideCircle(P,P.floor);}}
     if(f.k==='cracker'&&f.t>=0&&!f.done){f.done=true;tone(260+rand()*200,.05,'square',.025,.4);
@@ -2826,7 +2898,7 @@ function buildChoices(){
   const out=[];
   while(out.length<3&&pool.length){let tot=pool.reduce((s,c)=>s+c.wgt,0),r=rand()*tot,i=0;for(;i<pool.length-1;i++){r-=pool[i].wgt;if(r<=0)break;}out.push(pool.splice(i,1)[0]);}
   if(!out.length){if(!noHeal())out.push({t:'heal'});out.push({t:'max'});}
-  if(P.level>=3&&rand()<.35){const ok=Object.keys(CDEF).filter(k=>!CDEF[k].once||k==='piggy'||(k==='dice'?P.weapons.length>=2:k==='gacha'?P.passives.length>0:(P.passives.length>0||P.weapons.some(w=>w.lvl>1))));const id=pick(ok);const c={t:'c',id,lvl:cc(id)+1};if(out.length>=3)out[2]=c;else out.push(c);}
+  if(P.level>=3&&rand()<.35){const ok=Object.keys(CDEF).filter(k=>!CDEF[k].once||k==='piggy'||(k==='dice'?P.weapons.length>=2:k==='gacha'?P.passives.length>0:k==='eraser'?(P.passives.length>0||P.weapons.some(w=>w.lvl>1)):true));const id=pick(ok);const c={t:'c',id,lvl:cc(id)+1};if(out.length>=3)out[2]=c;else out.push(c);}
   return out;
 }
 const RLAB={rag:'длина взмаха',ofuda:'радиус вспышки',stomp:'радиус волны',magnifier:'дальность',rope:'длина',pots:'радиус удара'};
@@ -2977,6 +3049,7 @@ function drawZombieFast(e){
   if(e.kind==='sumo'&&e.hp<e.maxHp){ctx.fillStyle='rgba(0,0,0,.6)';ctx.fillRect(e.x-15,e.y-r-14,30,5);ctx.fillStyle='#e04a5a';ctx.fillRect(e.x-15,e.y-r-14,30*Math.max(0,e.hp/e.maxHp),5);}
 }
 function drawZombie(e){
+  if(e.B&&e.B.octo){drawOcto(e);return;}
   const ga=ctx.globalAlpha;if(e.ghost)ctx.globalAlpha=.42;if(e.enter>0)ctx.globalAlpha*=Math.max(.15,1-e.enter*1.5);
   const r=e.r,a=e.fixA!==undefined?e.fixA:e.ang+Math.sin(time*6+e.seed)*.15,walk=e.fixW!==undefined?e.fixW:Math.sin(time*9+e.seed*3);
   if(!e.preview)zExtras(e,r);
@@ -3375,6 +3448,7 @@ function renderInfo(){
     note('Боссы школы: за ночь приходят 5 случайных, примерно раз в 2–3 минуты. Сначала — школьники и персонал, потом учителя, последними — руководство. Чем позже босс, тем он крепче.');
     BOSSES.slice().sort((a,b)=>BTIER[a.name]-BTIER[b.name]).forEach(B=>add(zPreview(fake({kind:'boss',uni:'boss',B,name:B.name,r:30})),'Босс: '+B.name,'<b>Школа · '+['школьники и персонал','учителя','руководство'][BTIER[B.name]]+'.</b> '+B.info,['скорость '+B.spd].concat(B.trio?['трое сразу']:[])));
     note('Боссы других карт приходят трижды за ночь — в '+fmt(300)+', '+fmt(600)+' и '+fmt(840)+', каждый раз крепче.');
+    add(zPreview(fake({kind:'boss',uni:'boss',B:OCTO,name:OCTO.name,r:58})),'Босс: '+OCTO.name,'<b>Любая карта.</b> '+OCTO.info,['HP '+OCTO.hp,'шанс появиться ~45% за ночь']);
     MAPS.filter(M=>M.id!=='school').forEach(M=>{const B=MAPBOSS[M.id]&&MAPBOSS[M.id][0];if(!B)return;add(zPreview(fake({kind:'boss',uni:'boss',B,name:B.name,r:30})),'Босс: '+B.name,'<b>'+M.name+'.</b> '+B.info,['HP '+B.hp,'скорость '+B.spd,'укус '+B.dmg+'/с']);});
   }else if(infoSec==='w'){
     note('Атаки не проходят сквозь стены, шкафы и ящики. Исключение — волны: звонок, магнитофон, топот, хлопушка.');
@@ -3502,6 +3576,10 @@ function render(){
     else if(g.type==='heal'){ctx.fillStyle='#f6f4ec';ctx.beginPath();ctx.moveTo(g.x,g.y-9+by);ctx.lineTo(g.x+9,g.y+7+by);ctx.lineTo(g.x-9,g.y+7+by);ctx.fill();ctx.fillStyle='#1d2b22';ctx.fillRect(g.x-5,g.y+1+by,10,6);}
     else{ctx.fillStyle='#f2c94c';ctx.beginPath();ctx.arc(g.x,g.y+by,8,Math.PI,0);ctx.lineTo(g.x+9,g.y+5+by);ctx.lineTo(g.x-9,g.y+5+by);ctx.fill();ctx.fillStyle='#c79a22';ctx.beginPath();ctx.arc(g.x,g.y+6+by,2.5,0,7);ctx.fill();}
   }
+  // octopus blocks
+  for(const b of octoBlocks){if(b.f!==P.floor)continue;const bx=(b.i%MW+.5)*T,by=(((b.i/MW)|0)+.5)*T,F2=floors[b.f],hor=solidT(b.f,b.i%MW,((b.i/MW)|0)-1)&&solidT(b.f,b.i%MW,((b.i/MW)|0)+1);
+    ctx.save();ctx.translate(bx,by);if(hor)ctx.rotate(Math.PI/2);ctx.strokeStyle='#9a3f74';ctx.lineWidth=22;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-T*.75,-T*.55);ctx.quadraticCurveTo(Math.sin(time*3+b.ph)*10,0,T*.75*Math.cos(time*2+b.ph)*.2,T*.62);ctx.stroke();
+    ctx.fillStyle='#f0c2d8';for(let q=0;q<4;q++){ctx.beginPath();ctx.arc(-T*.4+q*T*.25,-T*.3+q*T*.22,3.2,0,7);ctx.fill();}const lft=b.until-time;if(lft<3){ctx.globalAlpha=.5+.5*Math.sin(time*16);}ctx.restore();}
   // boxes
   for(const b of boxes){if(b.f!==P.floor)continue;ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(b.x-b.s+3,b.y-b.s+5,b.s*2,b.s*2);ctx.fillStyle='#b3874f';ctx.fillRect(b.x-b.s,b.y-b.s,b.s*2,b.s*2);ctx.strokeStyle='#7a5a30';ctx.lineWidth=2.5;ctx.strokeRect(b.x-b.s+1,b.y-b.s+1,b.s*2-2,b.s*2-2);ctx.beginPath();ctx.moveTo(b.x-b.s+2,b.y-b.s+2);ctx.lineTo(b.x+b.s-2,b.y+b.s-2);ctx.moveTo(b.x+b.s-2,b.y-b.s+2);ctx.lineTo(b.x-b.s+2,b.y+b.s-2);ctx.stroke();}
   // enemies
@@ -3582,6 +3660,9 @@ function render(){
     if(f.k==='debris'&&f.f===P.floor){const k2=Math.min(1,f.t/(f.dur-.2));
       if(!f.hit){ctx.fillStyle=`rgba(0,0,0,${.15+.35*k2})`;ctx.beginPath();ctx.arc(f.x,f.y,f.R*(.35+.65*k2),0,7);ctx.fill();const h=(1-k2)*170;ctx.fillStyle='#9a8e78';ctx.fillRect(f.x-12,f.y-12-h,24,20);ctx.fillStyle='#6e6450';ctx.fillRect(f.x-12,f.y+4-h,24,4);}
       else{ctx.globalAlpha=Math.max(0,1-(f.t-f.dur+.2)*5);ctx.fillStyle='#8a8070';ctx.fillRect(f.x-13,f.y-9,26,18);ctx.fillStyle='#6e6450';ctx.fillRect(f.x-6,f.y-14,14,8);ctx.globalAlpha=1;}}
+    if(f.k==='tent'&&f.f===P.floor){ctx.save();ctx.translate(f.x,f.y);ctx.rotate(f.a);if(f.t<f.warn){const a2=.18+.25*Math.sin(f.t*30);ctx.fillStyle=`rgba(255,60,90,${a2})`;ctx.fillRect(0,-f.w,f.L,f.w*2);ctx.strokeStyle='rgba(255,90,110,.7)';ctx.lineWidth=2;ctx.setLineDash([8,6]);ctx.strokeRect(0,-f.w,f.L,f.w*2);ctx.setLineDash([]);}
+      else{const k2=Math.min(1,(f.t-f.warn)/(f.dur-f.warn));ctx.globalAlpha=1-k2*.7;ctx.strokeStyle='#9a3f74';ctx.lineCap='round';ctx.lineWidth=f.w*1.5;ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(f.L*.5,Math.sin(f.t*20)*10,f.L,0);ctx.stroke();ctx.fillStyle='#f0c2d8';for(let q=1;q<8;q++){ctx.beginPath();ctx.arc(f.L*q/8,0,4,0,7);ctx.fill();}}
+      ctx.restore();}
     if(f.k==='revive'&&f.f===P.floor){ctx.save();const a=1-k;ctx.fillStyle=`rgba(255,220,120,${.35*a})`;ctx.fillRect(P.x-22,P.y-400,44,400);for(let q=0;q<3;q++){ctx.strokeStyle=`rgba(255,215,110,${a*(1-q*.25)})`;ctx.lineWidth=4;ctx.beginPath();ctx.arc(P.x,P.y,20+k*160+q*24,0,7);ctx.stroke();}ctx.restore();}
     if(f.k==='chefwave'&&f.f===P.floor){const rad=f.R*Math.min(1,k);ctx.save();ctx.strokeStyle=`rgba(242,170,80,${.9*(1-k)})`;ctx.lineWidth=10*(1-k)+3;ctx.beginPath();ctx.arc(f.x,f.y,rad,0,7);ctx.stroke();ctx.fillStyle=`rgba(242,180,90,${.12*(1-k)})`;ctx.fill();ctx.restore();}
     if(f.k==='zwave'&&f.f===P.floor){const rad=f.R*Math.min(1,k);ctx.save();ctx.strokeStyle=`rgba(200,120,255,${1-k})`;ctx.lineWidth=7*(1-k)+2;ctx.beginPath();ctx.arc(f.x,f.y,rad,0,7);ctx.stroke();ctx.fillStyle=`rgba(230,190,255,${1-k})`;ctx.font='16px sans-serif';ctx.textAlign='center';for(let q=0;q<6;q++){const aa=q*1.05;ctx.fillText('♪',f.x+Math.cos(aa)*rad,f.y+Math.sin(aa)*rad);}ctx.restore();}
@@ -3656,7 +3737,7 @@ function updateHUD(dt){
   // room
   const F=floors[P.floor],tx=Math.floor(P.x/T),ty=Math.floor(P.y/T);
   let name;const t=F.g[ty*MW+tx];
-  if(t===STAIR)name='Лестница'+(F.stairTh?' · '+F.stairTh[P.x<WW/2?0:1].t:'')+' · '+floorName(P.floor);else{const id=F.roomId[ty*MW+tx];name=id>=0?F.rooms[id].name+(F.rooms[id].theme&&F.rooms[id].theme.title?' · '+F.rooms[id].theme.title:''):(F.roof?'Крыша':(F.corrName||'Коридор'));if(!F.roof&&floors.length>1)name+=' · '+floorName(P.floor);else if(F.roof&&id>=0)name+=' · Крыша';}
+  if(t===STAIR)name=(F.esc?'Эскалатор':'Лестница')+(F.stairTh&&!F.custom?' · '+F.stairTh[P.x<WW/2?0:1].t:'')+(floors.length>1?' · '+floorName(P.floor):'');else{const id=F.roomId[ty*MW+tx];name=id>=0?F.rooms[id].name+(F.rooms[id].theme&&F.rooms[id].theme.title?' · '+F.rooms[id].theme.title:''):(F.roof?'Крыша':(F.corrName||'Коридор'));if(!F.roof&&floors.length>1&&name!==floorName(P.floor))name+=' · '+floorName(P.floor);else if(F.roof&&id>=0)name+=' · Крыша';}
   if(name!==lastRoom){lastRoom=name;$('#room').textContent=name;$('#room').classList.add('on');roomT=2.2;}
   if(roomT>0){roomT-=dt;if(roomT<=0)$('#room').classList.remove('on');}
   // stairs
@@ -3690,7 +3771,7 @@ function startGame(){
   P=newPlayer();enemies=[];projs=[];zprojs=[];fxs=[];parts=[];gems=[];nums=[];decals=[];boxes=[];
   buildWorld();{const ST=MAPCUR.start||[22,12];P.x=(ST[0]+.5)*T;P.y=(ST[1]+.5)*T;P.floor=0;}SV=null;if(MODE==='guard')placeSurvivor();if(MODE==='tutorial'&&!isUnlocked(skinId)){}TUT=MODE==='tutorial'?{step:0,t:0,dist:0,lx:P.x,ly:P.y,slowOk:false}:null;const rid=++runId;committed=false;runBosses=new Set();runUnlocks=[];runMapUnlocks=[];notified=new Set(SKINS.filter(S=>isUnlocked(S.id)).map(S=>S.id));
   retreat=false;retreatT=0;left=0;exitField=null;time=0;kills=0;spawnAcc=0;pendingLv=0;eventIdx=0;bossIdx=0;hurtT=0;fade=1;lastRoom='';pfKey=-1;
-  curS=null;lastHit='';pendRise=[];RW=[];rwT=0;reviveFx=0;rwFx=0;slowT=0;slowCd=0;runHealPicked=false;runReal=0;runGems=0;runPicks=0;runBossKills=0;flashT=0;stormT=6;quarOpen=false;quakeT=0;quakeCd=rr(45,70);debT=0;goldT=40;runDmg=0;bonusLv=0;ambT=4;pendAmb=[];ambHint=false;
+  OCT=null;octoBlocks=[];curS=null;lastHit='';pendRise=[];RW=[];rwT=0;reviveFx=0;rwFx=0;slowT=0;slowCd=0;runHealPicked=false;runReal=0;runGems=0;runPicks=0;runBossKills=0;flashT=0;stormT=6;quarOpen=false;quakeT=0;quakeCd=rr(45,70);debT=0;goldT=40;runDmg=0;bonusLv=0;ambT=4;pendAmb=[];ambHint=false;
   if(QUAR)QUAR.forEach(q=>{const F=floors[q.f];for(let k=0,m=0;k<80&&m<7;k++){const x=q.r.x0+((rand()*(q.r.x1-q.r.x0+1))|0),y=q.r.y0+((rand()*(q.r.y1-q.r.y0+1))|0);if(SOLID[F.g[y*MW+x]])continue;enemies.push(makeZombie(rand()<.2?'sumo':'student',q.f,x*T+T/2,y*T+T/2));m++;}});
   for(const k in H)delete H[k];for(const k in HW)delete HW[k];
   if(RUN.ids.has('gift')){const own=P.weapons.map(w=>w.id);{const cand=Object.keys(WDEF).filter(id=>!own.includes(id)&&wPoolOk(id));if(cand.length)P.weapons.push({id:pick(cand),lvl:2,t:.5});}}
@@ -3737,7 +3818,7 @@ function startRetreat(){
   const F=floors[0];let tg=F.entrance.map(e=>Math.floor(e.iy/T)*MW+Math.floor(e.ix/T));
   exitField=tg.length?buildField(0,tg):null;
   if(!exitField||exitField[hubOf(F)]>=1e9){tg=F.windows.map(w=>Math.floor(w.iy/T)*MW+Math.floor(w.ix/T));if(!tg.length)tg=F.stairIdx.slice(0,1);exitField=buildField(0,tg);}
-  enemies.forEach(e=>{e.slowT=0;});
+  enemies.forEach(e=>{e.slowT=0;});octoBlocks.forEach(b=>b.until=time);
   banner('Рассвет!','Зомби уходят через главный вход',false);sfx('bell');haptic('success');
 }
 function endGame(win){
