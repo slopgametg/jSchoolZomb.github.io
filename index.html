@@ -988,7 +988,7 @@ function mapOf(id){return MAPS.find(m=>m.id===id)||MAPS[0];}
 function mapPrev(id){const i=MAPS.findIndex(m=>m.id===id);return i>0?MAPS[i-1]:null;}
 function mapOpen(id){const pv=mapPrev(id);return !pv||((prog.mapFull||{})[pv.id]||0)>0;}
 function mapLockText(id){const pv=mapPrev(id);return 'Откроется, когда ты полностью продержишься до рассвета (15:00) на карте «'+pv.name+'» в режиме «Обычный», «Хардкор» или «Защита выжившего». «Короткая смена», «Сокращённый день» и «Сломанные часы» не засчитываются.';}
-const NEWS=['Физрук делает два рывка подряд, а его аура свистка ускоряет зомби рядом на 50%.','Защита выжившего: каждые 2–5 минут выживший обязательно меняет укрытие и идёт на новое место — прикрой его по пути. Время до переезда видно под его здоровьем.','Новый босс — Огромный краб: может появиться на любой карте. Носится по диагонали, бьёт клешнями по кругу и широкой дугой с отбрасыванием, делает молниеносные рывки и комбинирует атаки. На половине здоровья звереет.','Новое оружие — Колода карт. К нему 4 предмета: Козырная карта (карта зависает на зомби, крутится и взрывается), Дополнительная карта, Дизайнерская колода (эффект по масти: червы взрываются, трефы оглушают, бубны отталкивают, пики переманивают зомби на твою сторону) и Выбор масти.','Новые предметы: Рикошетные шарики для пейнтбольного ружья, Пакет льда (ледяной след замедляет зомби и заменяет кисть) и рискованная карточка «Чистый лист» — стирает всё и даёт выбрать заново.','Магазин стал Супермаркетом: два этажа, эскалатор, много отделов и цветной пол.','Больница перестроена: приёмный покой, травмпункт, аптека, морг, хирургия, реанимация и детское отделение — без школьных подсобок. Медсёстры там встречаются на 30% чаще.','Пятиэтажка: в квартирах теперь гостиная, спальня, кухня, ванная и прихожая с подходящей мебелью.','Метро: новый вестибюль с кассами, турникетами и эскалатором. Поезда длиннее на 10 вагонов, иногда идут сразу два, а иногда поезд встаёт на пару минут и перекрывает путь.','Машинист: поезд-призрак идёт по ряду, столбцу или диагонали и может сразу помчаться обратно. Ещё Машинист делает рывки.','Зомби ищут обходные пути и заходят с разных сторон. Часть зомби по-прежнему идёт напролом.','Тележка у зомби перерисована.','Оружие снова бьёт сквозь стены и укрытия.','Оглушение теперь действует и на боссов.','Пейнтбольное ружьё: урон уменьшен в 3 раза. Мини-глобусы уменьшают глобусы до ×0,7 за уровень.','Землетрясение случается вдвое чаще.','Сумоист открывается за победу над Гигантским осьминогом.'];
+const NEWS=['Физрук делает два рывка подряд, а его аура свистка ускоряет зомби рядом на 50%.','Защита выжившего: каждые 2–5 минут выживший обязательно меняет укрытие и идёт на новое место — прикрой его по пути. Время до переезда видно под его здоровьем.','Новый босс — Огромный краб: может появиться на любой карте. Носится по диагонали, бьёт клешнями по кругу и широкой дугой с отбрасыванием, делает молниеносные рывки и комбинирует атаки. На половине здоровья звереет.','Новое оружие — Колода карт. К нему 4 предмета: Козырная карта (карта зависает на зомби, крутится и взрывается), Дополнительная карта, Дизайнерская колода (эффект по масти: червы взрываются, трефы оглушают, бубны отталкивают, пики переманивают зомби на твою сторону) и Выбор масти.','Новые предметы: Рикошетные шарики для пейнтбольного ружья, Пакет льда (ледяной след замедляет зомби и заменяет кисть) и рискованная карточка «Чистый лист» — стирает всё и даёт выбрать заново.','Магазин стал Супермаркетом: два этажа, эскалатор, много отделов и цветной пол.','Больница перестроена: приёмный покой, травмпункт, аптека, морг, хирургия, реанимация и детское отделение — без школьных подсобок. Медсёстры там встречаются на 30% чаще.','Пятиэтажка: в квартирах теперь гостиная, спальня, кухня, ванная и прихожая с подходящей мебелью.','Метро: новый вестибюль с кассами, турникетами и эскалатором. Поезда длиннее на 10 вагонов, иногда идут сразу два, а иногда поезд встаёт на пару минут и перекрывает путь.','Машинист: поезд-призрак идёт по ряду, столбцу или диагонали и может сразу помчаться обратно. Ещё Машинист делает рывки.','Зомби ищут обходные пути и заходят с разных сторон. Часть зомби по-прежнему идёт напролом.','Тележка у зомби перерисована.','Сквозь стены бьют только удары вблизи, волны, молнии и падающие горшки. Стреляющее оружие целится только в тех, кого видно, а его снаряды разбиваются о стены и укрытия.','Оглушение теперь действует и на боссов.','Пейнтбольное ружьё: урон уменьшен в 3 раза. Мини-глобусы уменьшают глобусы до ×0,7 за уровень.','Землетрясение случается вдвое чаще.','Сумоист открывается за победу над Гигантским осьминогом.'];
 
 /* ---------- MAIN MENU ---------- */
 const MODES={normal:{name:'Обычный',d:'Продержись до рассвета — 15:00. Классические правила.'},
@@ -2549,7 +2549,7 @@ function forNear(f,x,y,rad,cb){
 function nearestList(x,y,range,n,any){
   const out=[];range*=(curS?curS.rng:1);const r2=range*range;
   for(const e of enemies){if(!e.alive||e.floor!==P.floor)continue;const d2=(e.x-x)**2+(e.y-y)**2;if(d2<r2)out.push([d2,e]);}
-  out.sort((a,b)=>a[0]-b[0]);const res=[];for(const [,e] of out){{res.push(e);if(res.length>=n)break;}}return res;
+  out.sort((a,b)=>a[0]-b[0]);const res=[];for(const [,e] of out){if(any||losB(P.floor,x,y,e.x,e.y)){res.push(e);if(res.length>=n)break;}}return res;
 }
 
 /* ---------- DAMAGE ---------- */
@@ -2982,7 +2982,7 @@ function updateWeapons(dt){
         const ts=nearestList(P.x,P.y,Rg,n+8).filter(los).slice(0,n);if(!ts.length){w.t=.3;break;}
         ts.forEach(t=>{damage(t,dm,0,0,0);fxs.push({k:'sunflash',x:t.x,y:t.y,f:P.floor,t:0,dur:.4});for(let q=0;q<6;q++)parts.push({x:t.x,y:t.y,vx:rr(-40,40),vy:rr(-70,-20),life:.4,max:.4,col:q%2?'#ffb347':'#fff2b0',s:3,f:P.floor});});
         tone(1700,.08,'sine',.03,.6);break;}
-      case 'pots':{const n=ws(D,'n',L)+AMT(),ts=nearestList(P.x,P.y,520,40).filter(e=>inView(e.x,e.y,0)),Rr=ws(D,'r',L)*AREA()*(1+.15*X);
+      case 'pots':{const n=ws(D,'n',L)+AMT(),ts=nearestList(P.x,P.y,520,40,true).filter(e=>inView(e.x,e.y,0)),Rr=ws(D,'r',L)*AREA()*(1+.15*X);
         for(let i=0;i<n;i++){const t=ts.length?ts.splice((rand()*ts.length)|0,1)[0]:null,x=t?t.x+t.vx*.5:P.x+rr(-200,200),y=t?t.y+t.vy*.5:P.y+rr(-200,200);
           fxs.push({k:'pot',x,y,f:P.floor,t:-i*.12,dur:.75,R:Rr,dmg:ws(D,'dmg',L)*WM,st:.55*X,hit:false,c:pick(['#ff86a6','#ffd36b','#f4f1e8','#8c5fb3'])});}
         break;}
@@ -3017,7 +3017,7 @@ function updateProjs(dt,zk){zk=zk||1;
     if(p.k==='chalk'||p.k==='shuriken'||p.k==='arrow'||p.k==='laser'||p.k==='refl'||p.k==='paint'||p.k==='card'){
       if(p.k==='shuriken')p.a+=dt*18;if(p.k==='card')p.a+=dt*14;
       p.x+=p.vx*dt;p.y+=p.vy*dt;
-      if(p.bounce&&blockedAt(p.f,p.x,p.y)){const ox=p.x-p.vx*dt,oy=p.y-p.vy*dt,hx=blockedAt(p.f,p.x,oy),hy=blockedAt(p.f,ox,p.y);p.x=ox;p.y=oy;if(hx||!hy)p.vx=-p.vx;if(hy||!hx)p.vy=-p.vy;}
+      if(blockedAt(p.f,p.x,p.y)){if(p.bounce){const ox=p.x-p.vx*dt,oy=p.y-p.vy*dt,hx=blockedAt(p.f,p.x,oy),hy=blockedAt(p.f,ox,p.y);p.x=ox;p.y=oy;if(hx||!hy)p.vx=-p.vx;if(hy||!hx)p.vy=-p.vy;}else{p.dead=true;for(let i=0;i<4;i++)parts.push({x:p.x,y:p.y,vx:rr(-60,60),vy:rr(-60,60),life:.3,max:.3,col:p.c||'#f2f2ea',s:2,f:p.f});continue;}}
       forNear(p.f,p.x,p.y,30,e=>{if(p.dead||p.hit.has(e.id))return;if(Math.hypot(e.x-p.x,e.y-p.y)<e.cr+5){const first=p.hit.size===0;p.hit.add(e.id);const l=Math.hypot(p.vx,p.vy);damage(e,p.dmg,p.vx/l,p.vy/l,p.k==='paint'?50:110,false,p.k==='paint'?!first:undefined);if(p.k==='paint')for(let q=0;q<5;q++)parts.push({x:e.x,y:e.y,vx:rr(-80,80),vy:rr(-80,80),life:.4,max:.4,col:p.c,s:3,f:p.f});
         if(p.bounce){const nx=nearestList(p.x,p.y,260,6).find(o=>!p.hit.has(o.id)&&o!==e);if(nx){const sp=Math.hypot(p.vx,p.vy),dd=Math.hypot(nx.x-p.x,nx.y-p.y)||1;p.vx=(nx.x-p.x)/dd*sp;p.vy=(nx.y-p.y)/dd*sp;}}
         if(p.k==='card')cardHit(p,e);if(--p.pierce<=0)p.dead=true;}});
@@ -3026,14 +3026,14 @@ function updateProjs(dt,zk){zk=zk||1;
       if(!p.target||!p.target.alive||p.target.floor!==p.f){
         const c=nearestList(p.x,p.y,300,12).find(e=>!p.hit.has(e.id));if(!c){p.dead=true;continue;}p.target=c;}
       const dx=p.target.x-p.x,dy=p.target.y-p.y,d=Math.hypot(dx,dy)||1;
-      const bs=620*(curS?curS.proj:1);p.x+=dx/d*bs*dt;p.y+=dy/d*bs*dt;
+      const bs=620*(curS?curS.proj:1);p.x+=dx/d*bs*dt;p.y+=dy/d*bs*dt;if(blockedAt(p.f,p.x,p.y)){p.dead=true;for(let i=0;i<4;i++)parts.push({x:p.x,y:p.y,vx:rr(-60,60),vy:rr(-60,60),life:.3,max:.3,col:p.c||'#f2f2ea',s:2,f:p.f});continue;}
       if(d<p.target.cr+8){const t=p.target;p.hit.add(t.id);damage(t,p.dmg,dx/d,dy/d,140);p.target=null;if(--p.b<=0)p.dead=true;}
     }else if(p.k==='bubble'){
       p.ph+=dt*3;
       if(!p.target||!p.target.alive||p.target.floor!==p.f)p.target=nearestList(p.x,p.y,300,1)[0]||null;
       if(p.target){const dx=p.target.x-p.x,dy=p.target.y-p.y,d=Math.hypot(dx,dy)||1;p.vx+=(dx/d*p.sp-p.vx)*Math.min(1,dt*1.5);p.vy+=(dy/d*p.sp-p.vy)*Math.min(1,dt*1.5);}
       p.x+=(p.vx+Math.sin(p.ph)*20)*dt;p.y+=p.vy*dt;
-      let pop=p.life<=dt*1.5;
+      let pop=p.life<=dt*1.5||blockedAt(p.f,p.x,p.y);
       if(!pop)forNear(p.f,p.x,p.y,40,e=>{if(Math.hypot(e.x-p.x,e.y-p.y)<e.cr+9)pop=true;});
       if(pop){p.dead=true;fxs.push({k:'pop',x:p.x,y:p.y,f:p.f,R:p.R,t:0,dur:.3});tone(900,.05,'sine',.02,2);
         forNear(p.f,p.x,p.y,p.R+20,e=>{const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<p.R+e.cr){damage(e,p.dmg,(e.x-p.x)/(d||1),(e.y-p.y)/(d||1),90);e.slowT=1.5;}});}
@@ -3046,7 +3046,7 @@ function updateProjs(dt,zk){zk=zk||1;
       forNear(p.f,p.x,p.y,40,e=>{if(Math.hypot(e.x-p.x,e.y-p.y)<e.cr+10*gz&&(!p.hitAt[e.id]||time-p.hitAt[e.id]>.4)){p.hitAt[e.id]=time;const l=Math.hypot(p.vx,p.vy)||1;damage(e,p.dmg,p.vx/l,p.vy/l,120);}});
     }else if(p.k==='ruler'){
       p.a+=dt*16;
-      if(!p.back){p.x+=p.dx*p.sp*dt;p.y+=p.dy*p.sp*dt;p.sp-=700*dt;if(p.sp<=0){p.back=true;p.hit.clear();p.sp=100;}}
+      if(!p.back){p.x+=p.dx*p.sp*dt;p.y+=p.dy*p.sp*dt;p.sp-=700*dt;if(p.sp<=0||blockedAt(p.f,p.x,p.y)){p.back=true;p.hit.clear();p.sp=100;}}
       else{const dx=P.x-p.x,dy=P.y-p.y,d=Math.hypot(dx,dy)||1;p.sp=Math.min(720,p.sp+900*dt);p.x+=dx/d*p.sp*dt;p.y+=dy/d*p.sp*dt;if(d<18){p.dead=true;continue;}}
       forNear(p.f,p.x,p.y,34,e=>{if(p.hit.has(e.id))return;if(Math.hypot(e.x-p.x,e.y-p.y)<e.cr+10+(p.big||0)){p.hit.add(e.id);damage(e,p.dmg,0,0,0);}});
     }else if(p.k==='ofuda'){
@@ -3057,13 +3057,13 @@ function updateProjs(dt,zk){zk=zk||1;
         continue;}
       if(!p.target||!p.target.alive||p.target.floor!==p.f)p.target=nearestList(p.x,p.y,420,6)[0]||null;
       let vx=p.vx,vy=p.vy;if(p.target){const dx=p.target.x-p.x,dy=p.target.y-p.y,d=Math.hypot(dx,dy)||1;vx+=(dx/d*p.sp-vx)*Math.min(1,dt*5);vy+=(dy/d*p.sp-vy)*Math.min(1,dt*5);}
-      const l=Math.hypot(vx,vy)||1;p.vx=vx/l*p.sp;p.vy=vy/l*p.sp;p.x+=p.vx*dt;p.y+=p.vy*dt;
+      const l=Math.hypot(vx,vy)||1;p.vx=vx/l*p.sp;p.vy=vy/l*p.sp;p.x+=p.vx*dt;p.y+=p.vy*dt;if(blockedAt(p.f,p.x,p.y)){p.dead=true;for(let i=0;i<4;i++)parts.push({x:p.x,y:p.y,vx:rr(-60,60),vy:rr(-60,60),life:.3,max:.3,col:p.c||'#f2f2ea',s:2,f:p.f});continue;}
       forNear(p.f,p.x,p.y,30,e=>{if(p.stick)return;if(Math.hypot(e.x-p.x,e.y-p.y)<e.cr+6){p.stick=e;p.timer=.55;damage(e,p.dmg*.4,p.vx/p.sp,p.vy/p.sp,40);}});
     }else if(p.k==='plane'){
       if(!p.target||!p.target.alive||p.target.floor!==p.f)p.target=nearestList(p.x,p.y,420,10).find(e=>!p.hit.has(e.id))||null;
       let vx=p.vx,vy=p.vy;
       if(p.target){const dx=p.target.x-p.x,dy=p.target.y-p.y,d=Math.hypot(dx,dy)||1;vx+=(dx/d*p.sp-vx)*Math.min(1,dt*4);vy+=(dy/d*p.sp-vy)*Math.min(1,dt*4);}
-      const l=Math.hypot(vx,vy)||1;p.vx=vx/l*p.sp;p.vy=vy/l*p.sp;p.x+=p.vx*dt;p.y+=p.vy*dt;
+      const l=Math.hypot(vx,vy)||1;p.vx=vx/l*p.sp;p.vy=vy/l*p.sp;p.x+=p.vx*dt;p.y+=p.vy*dt;if(blockedAt(p.f,p.x,p.y)){p.dead=true;for(let i=0;i<4;i++)parts.push({x:p.x,y:p.y,vx:rr(-60,60),vy:rr(-60,60),life:.3,max:.3,col:p.c||'#f2f2ea',s:2,f:p.f});continue;}
       forNear(p.f,p.x,p.y,30,e=>{if(p.dead||p.hit.has(e.id))return;if(Math.hypot(e.x-p.x,e.y-p.y)<e.cr+6){p.hit.add(e.id);damage(e,p.dmg,p.vx/p.sp,p.vy/p.sp,80);if(--p.pierce<=0)p.dead=true;else p.target=null;}});
     }
   }
