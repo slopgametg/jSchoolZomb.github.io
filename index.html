@@ -189,6 +189,34 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
  .bigplay{position:relative;overflow:hidden}
  #startBtn::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,transparent,rgba(255,214,110,.55) 35%,rgba(255,255,255,.95) 50%,rgba(255,214,110,.55) 65%,transparent);transform:skewX(-20deg);pointer-events:none;animation:shine 3.4s ease-in-out 1.2s infinite}
  @keyframes shine{0%{left:-40%}35%,100%{left:125%}}
+ .selsum button{position:relative;overflow:hidden;transition:transform .2s cubic-bezier(.2,1.5,.4,1),border-color .18s,background .18s}
+ .selsum button:hover{transform:translateY(-3px);border-color:rgba(255,211,107,.65)}
+ .selsum button:active,.skins .skin:active{transform:scale(.93)!important;transition-duration:.06s}
+ #mvHome:not([hidden]) .selsum button{animation:tIn .5s cubic-bezier(.2,1.4,.4,1) .16s backwards}
+ #mvHome:not([hidden]) .selsum button:nth-child(2){animation-delay:.24s}#mvHome:not([hidden]) .selsum button:nth-child(3){animation-delay:.32s}
+ .selsum button>canvas,.selsum button>.mapic{animation:sBob 2.6s ease-in-out infinite}
+ .selsum button:nth-child(2)>canvas{animation-delay:-.85s}.selsum button:nth-child(3)>.mapic{animation-delay:-1.7s}
+ .selsum button:hover>canvas,.selsum button:hover>.mapic{animation:icWig .55s ease-in-out}
+ .selsum button::after{content:"";position:absolute;top:0;bottom:0;left:-70%;width:45%;background:linear-gradient(100deg,transparent,rgba(255,240,200,.22),transparent);transform:skewX(-20deg);pointer-events:none}
+ .selsum button:hover::after{left:140%;transition:left .65s ease-out}
+ @keyframes sBob{0%,100%{transform:none}50%{transform:translateY(-3px) rotate(-3deg)}}
+ @keyframes tIn{from{opacity:0;transform:translateY(16px) scale(.86)}to{opacity:1;transform:none}}
+ .skins .skinpage{padding:7px 6px}
+ .skins .skin{position:relative;transition:transform .2s cubic-bezier(.2,1.5,.4,1),border-color .15s,background .15s}
+ .skins .skin:hover{transform:translateY(-3px)}
+ .skins .skin:hover>canvas,.skins .skin:hover .tpic{animation:icWig .55s ease-in-out}
+ .skins .skin[aria-pressed=true]{animation:selGlow 1.8s ease-in-out infinite}
+ .skins .skin[aria-pressed=true]:not(.locked)>canvas,.skins .skin[aria-pressed=true]:not(.locked) .tpic{animation:sBob 1.7s ease-in-out infinite}
+ @keyframes selGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,211,107,0)}50%{box-shadow:0 0 0 3px rgba(255,211,107,.2),0 0 14px rgba(255,211,107,.28)}}
+ .tEnter .skins .skin{animation:tIn .42s cubic-bezier(.2,1.4,.4,1) backwards}
+ .tEnter .skins .skin[aria-pressed=true]{animation:tIn .42s cubic-bezier(.2,1.4,.4,1) backwards,selGlow 1.8s ease-in-out .45s infinite}
+ .tEnter .skinpage .skin:nth-child(2){animation-delay:.05s}.tEnter .skinpage .skin:nth-child(3){animation-delay:.1s}.tEnter .skinpage .skin:nth-child(4){animation-delay:.15s}.tEnter .skinpage .skin:nth-child(5){animation-delay:.2s}.tEnter .skinpage .skin:nth-child(6){animation-delay:.25s}
+ .skins .skin.pop,.skins .skin.pop[aria-pressed=true]{animation:tPop .42s cubic-bezier(.2,1.6,.4,1),selGlow 1.8s ease-in-out .42s infinite}
+ .skins .skin.pop::after{content:"";position:absolute;inset:-3px;border-radius:12px;border:2px solid var(--gold);pointer-events:none;animation:tRing .55s ease-out forwards}
+ .skins .skin.nope,.skins .skin.nope[aria-pressed=true]{animation:tNope .42s ease-in-out}
+ @keyframes tPop{0%{transform:scale(.9)}45%{transform:scale(1.06)}100%{transform:none}}
+ @keyframes tRing{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(1.1)}}
+ @keyframes tNope{0%,100%{transform:none}20%{transform:translateX(-6px) rotate(-2deg)}40%{transform:translateX(5px) rotate(2deg)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
 }
 .pmenu{width:min(380px,100%)}.prow.p3 .btn,.prow.p2 .btn{flex:1;padding:9px 6px!important;font-size:13px!important}.prow.p3 #resumeBtn{flex:1.35}.prow .btn{flex:1;padding-top:8px;padding-bottom:8px;font-size:13px}
 .pmenu .btn{width:100%}
@@ -477,11 +505,13 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
     <div class="mview" id="mvSet" hidden><div class="mhead"><button type="button" class="mback">‹ Назад</button><h2>Настройки</h2></div>
       <div class="setlist">
         <div class="setrow"><span>Громкость звуков</span><input type="range" class="volSl" min="0" max="100" step="5" aria-label="Громкость звуков"><b class="volVal">80%</b></div>
+        <div class="setrow"><span>Громкость музыки</span><input type="range" class="musSl" min="0" max="100" step="5" aria-label="Громкость музыки"><b class="musVal">60%</b></div>
         <div class="setrow"><span>Звук</span><button class="btn ghost small" id="soundBtn">Звук: вкл</button></div>
         <div class="setrow"><span>Графика</span><button class="btn ghost small" id="gfxBtn2">Графика</button></div>
         <div class="setrow"><span>Джойстик на экране<small>если выключить, круг джойстика не появляется совсем — бегать можно так же, ведя пальцем по экрану</small></span><button class="btn ghost small tog" id="setJoy"></button></div>
         <div class="setrow"><span>Плавный джойстик<small>скорость зависит от того, как далеко отвёл палец, повороты сглажены</small></span><button class="btn ghost small tog" id="setSmooth"></button></div>
         <div class="setrow"><span>Цифры урона</span><button class="btn ghost small tog" id="setNums"></button></div>
+        <div class="setrow"><span>Тряска экрана<small>при взрывах, сильных ударах и победе над боссом</small></span><button class="btn ghost small tog" id="setShake"></button></div>
         <div class="setrow"><span>Полный экран</span><button class="btn ghost small fsBtn" id="fsBtn">На весь экран</button></div>
         <div class="best" id="fsNote" hidden></div>
         <div class="setrow kbrow kbhead"><span>Управление на компьютере<small>нажми на кнопку и затем на нужную клавишу; стрелки работают всегда</small></span><button class="btn ghost small" id="kbReset" type="button">Сбросить</button></div>
@@ -1087,7 +1117,7 @@ function mapOf(id){return MAPS.find(m=>m.id===id)||MAPS[0];}
 function mapPrev(id){const i=MAPS.findIndex(m=>m.id===id);return i>0?MAPS[i-1]:null;}
 function mapOpen(id){const pv=mapPrev(id);return !pv||((prog.mapFull||{})[pv.id]||0)>0;}
 function mapLockText(id){const pv=mapPrev(id);return 'Откроется, когда ты полностью продержишься до рассвета (15:00) на карте «'+pv.name+'» в режиме «Обычный», «Хардкор» или «Защита выжившего». «Короткая смена», «Сокращённый день» и «Сломанные часы» не засчитываются.';}
-const NEWS=['Новое оружие — Джойстик: луч управления делает задетых зомби союзниками — они дерутся с сородичами, постепенно теряя здоровье. Предмет «Сенсорный джойстик» делает атаку круговой.','Ножницы стали бить сильнее (примерно +20% урона).','Кнопка замедления времени стала понятнее: на перезарядке видно секунды до готовности, а когда она снова доступна — кнопка светится золотом, звенит и показывает «ГОТОВО».','Тренировка: поиск по меню, вкладка «Особое» (выживший, мимик, свойства оружия) и настройка характеристик — скорость, урон, перезарядка, радиус, получаемый урон, здоровье.','Новая рискованная карточка «Таинственная наклейка»: случайное оружие получает новое свойство (заморозка, мелки, пузыри, молнии, поджог, оглушение, отталкивание или крит-всплеск), но ты получаешь на 35% больше урона.','Разбитая копилка стала Лотерейным билетом — действие прежнее.','Школа: на 2-м этаже вместо туалетов и кладовых — открытые рекреации с автоматами и скамейками. Крыша перестроена: спортплощадка, солнечные панели, теплица и метеостанция вместо водонапорного бака.','По кнопке «Играть» в главном меню пробегает блик.','Новое оружие — Музыкальная шкатулка: мелодия ранит зомби вокруг. Бегай кругами — зомби в зоне закружатся вместе с мелодией и будут получать половину урона каждые 0,5 с.','Лук: стрелы теперь бьют только одного зомби, зато урон выше. Новый предмет «Колчан мастера» — выбери огненные, ледяные, расщепляющиеся или тяжёлые стрелы.','Новая рискованная карточка «Учебник квантовой физики»: выбери любое оружие или предмет из всего списка, но каждая атака зомби оглушает тебя на 0,1 с (до 5 с).','Новый зомби — Мимик: притворяется выжившим и зовёт на помощь, а когда подходишь — превращается в случайного босса с половиной здоровья.','Новый режим — Тренировка: призывай любых зомби и боссов, выдавай любое оружие, предметы и карточки через меню 🛠.','Меню паузы стало компактнее, а главное меню и выбор улучшений — анимированными.','Исправлено: краб и другие боссы больше не выталкивают тебя за стены и ограждения, а экран завершения забега открывается надёжнее.','Телефон теперь оружие: круговая вибро-волна, эхо-волны от убитых зомби и +5% к скорости за волну без убийств (удар по тебе сбрасывает бонус). Батарея иногда садится — заряди, удерживая кружки на экране. Рискованная карточка «Телефон» убрана.','Новое условие дня — «Последний день»: зомби вдвое больше, и они лезут чаще.','Появление окна улучшений теперь сопровождается звуком.','Новые условия дня: «Золотая лихорадка» — из зомби иногда выпадают золотые кристаллы на целый уровень, но зомби крепче; «Большая перемена» — каждые 75 секунд по этажу проносится толпа бегунов.','Игра работает плавнее: облегчены иконки, цифры урона, частицы и кристаллы. Если кристаллов на карте слишком много, дальние сливаются в один крупный.','Выбор улучшения теперь звучит по-разному: новое оружие, прокачка оружия, новый предмет, прокачка предмета и рискованная карточка. При наведении на карточку — лёгкий щелчок.','Новая атака у боссов — таран: под оранжевой стрелкой босс замирает, а затем бросается вперёд и расталкивает всех зомби на пути. Не стой у него на линии!','Новое условие дня — «Урезанный выбор»: на новом уровне только 2 карточки улучшений.','Использованные Омамори и Плеер пропадают из ячеек слева и освобождают место под новый предмет. Разовые рискованные карточки тоже больше не висят слева после срабатывания.','Новый предмет для Колоды карт — Джокер в рукаве: каждый третий бросок добавляет Джокера ★, который бьёт в 1,5 раза сильнее и отскакивает от зомби к зомби.','Звуки атак стали разнообразнее: к прежним добавились новые варианты, а у линейки, самолётика, мыльных пузырей, горшков и петард появился свой звук.','Обновлённые иконки: тёмная обводка и мягкая тень. Мел, огнетушитель, тряпка, дрон, топот сумоиста и катушка Теслы перерисованы.','Школа: на 2-м этаже вместо кладовых теперь туалеты, а на 1-м этаже у лестниц больше нет пролёта вниз.','Новые звуки: шипение огнетушителя на старте и всю струю, звон за серии убийств и кристаллов, звук выбора улучшения и перекрутки, щелчки кнопок меню, мелодии победы и поражения.','Хардкор стал вдвое суровее: зомби вдвое крепче и кусают на 60% сильнее, боссы на 60% крепче, еда и аптечки выпадают вчетверо реже. Бонус опыта прежний — +20%.','Обучение стало короче — 2 минуты — и теперь в нём есть шаг про сборку билда. При первом запуске игра предложит его пройти.','Новые эффекты: светящиеся кристаллы, кольца при убийстве, вспышка нового уровня, «прыгающие» цифры урона.','Клавиши на компьютере можно переназначить в настройках: движение, пауза, замедление времени и лестницы.','В выборе карты появились 12 закрытых карт — они ещё в разработке.','Физрук делает два рывка подряд, а его аура свистка ускоряет зомби рядом на 50%.','Защита выжившего: каждые 2–5 минут выживший обязательно меняет укрытие и идёт на новое место — прикрой его по пути. Время до переезда видно под его здоровьем.','Новый босс — Огромный краб: может появиться на любой карте. Носится по диагонали, бьёт клешнями по кругу и широкой дугой с отбрасыванием, делает молниеносные рывки и комбинирует атаки. На половине здоровья звереет.','Новое оружие — Колода карт. К нему 4 предмета: Козырная карта (карта зависает на зомби, крутится и взрывается), Дополнительная карта, Дизайнерская колода (эффект по масти: червы взрываются, трефы оглушают, бубны отталкивают, пики переманивают зомби на твою сторону) и Выбор масти.','Новые предметы: Рикошетные шарики для пейнтбольного ружья, Пакет льда (ледяной след замедляет зомби и заменяет кисть) и рискованная карточка «Чистый лист» — стирает всё и даёт выбрать заново.','Магазин стал Супермаркетом: два этажа, эскалатор, много отделов и цветной пол.','Больница перестроена: приёмный покой, травмпункт, аптека, морг, хирургия, реанимация и детское отделение — без школьных подсобок. Медсёстры там встречаются на 30% чаще.','Пятиэтажка: в квартирах теперь гостиная, спальня, кухня, ванная и прихожая с подходящей мебелью.','Метро: новый вестибюль с кассами, турникетами и эскалатором. Поезда длиннее на 10 вагонов, иногда идут сразу два, а иногда поезд встаёт на пару минут и перекрывает путь.','Машинист: поезд-призрак идёт по ряду, столбцу или диагонали и может сразу помчаться обратно. Ещё Машинист делает рывки.','Зомби ищут обходные пути и заходят с разных сторон. Часть зомби по-прежнему идёт напролом.','Тележка у зомби перерисована.','Сквозь стены бьют только удары вблизи, волны, молнии и падающие горшки. Стреляющее оружие целится только в тех, кого видно, а его снаряды разбиваются о стены и укрытия.','Оглушение теперь действует и на боссов.','Пейнтбольное ружьё: урон уменьшен в 3 раза. Мини-глобусы уменьшают глобусы до ×0,7 за уровень.','Землетрясение случается вдвое чаще.','Сумоист открывается за победу над Гигантским осьминогом.'];
+const NEWS=['Анимированные кнопки выбора карты, персонажа и режима: иконки покачиваются, выбранный вариант мягко светится, при выборе — «пружинка» и золотое кольцо, а закрытые варианты встряхиваются.','Новые звуки: оглушение (у зомби — короткий «бонк», у тебя — «звёздочки» над головой), приятный щелчок у всех кнопок. В паузе музыка и звуки окружения затихают.','Фоновая музыка, которая меняется вместе с ночью: спокойная в начале, тревожная к середине, мрачная к утру, боевая при боссе и светлая на рассвете. Громкость — в настройках.','Звуки окружения: гул ламп и капли в школе, ветер и вороны на крыше и кладбище, кассы и объявления в супермаркете, поезда в метро, мониторы в больнице.','Новые условия открытия персонажей: выживание 15 минут на картах, убийства зомби, победы над боссами, заходы в игру в разные дни и последний — за всех остальных. Уже открытые персонажи остаются открытыми.','Немного изменены характеристики предметов: одни чуть сильнее, другие чуть слабее.','Тряска экрана и короткое «замедление удара»: при взрывах, сильных критах, мощных ударах по тебе и особенно при победе над боссом. Отключается в настройках.','Иногда в здании прячется ученик (жёлтый «!», к нему ведёт зелёная стрелка). Подойди — он пойдёт за тобой; доведи его до лестницы и получи золотой кристалл, а иногда и аптечку. Береги его от зомби!','Новое оружие — Джойстик: луч управления делает задетых зомби союзниками — они дерутся с сородичами, постепенно теряя здоровье. Предмет «Сенсорный джойстик» делает атаку круговой.','Ножницы стали бить сильнее (примерно +20% урона).','Кнопка замедления времени стала понятнее: на перезарядке видно секунды до готовности, а когда она снова доступна — кнопка светится золотом, звенит и показывает «ГОТОВО».','Тренировка: поиск по меню, вкладка «Особое» (выживший, мимик, свойства оружия) и настройка характеристик — скорость, урон, перезарядка, радиус, получаемый урон, здоровье.','Новая рискованная карточка «Таинственная наклейка»: случайное оружие получает новое свойство (заморозка, мелки, пузыри, молнии, поджог, оглушение, отталкивание или крит-всплеск), но ты получаешь на 35% больше урона.','Разбитая копилка стала Лотерейным билетом — действие прежнее.','Школа: на 2-м этаже вместо туалетов и кладовых — открытые рекреации с автоматами и скамейками. Крыша перестроена: спортплощадка, солнечные панели, теплица и метеостанция вместо водонапорного бака.','По кнопке «Играть» в главном меню пробегает блик.','Новое оружие — Музыкальная шкатулка: мелодия ранит зомби вокруг. Бегай кругами — зомби в зоне закружатся вместе с мелодией и будут получать половину урона каждые 0,5 с.','Лук: стрелы теперь бьют только одного зомби, зато урон выше. Новый предмет «Колчан мастера» — выбери огненные, ледяные, расщепляющиеся или тяжёлые стрелы.','Новая рискованная карточка «Учебник квантовой физики»: выбери любое оружие или предмет из всего списка, но каждая атака зомби оглушает тебя на 0,1 с (до 5 с).','Новый зомби — Мимик: притворяется выжившим и зовёт на помощь, а когда подходишь — превращается в случайного босса с половиной здоровья.','Новый режим — Тренировка: призывай любых зомби и боссов, выдавай любое оружие, предметы и карточки через меню 🛠.','Меню паузы стало компактнее, а главное меню и выбор улучшений — анимированными.','Исправлено: краб и другие боссы больше не выталкивают тебя за стены и ограждения, а экран завершения забега открывается надёжнее.','Телефон теперь оружие: круговая вибро-волна, эхо-волны от убитых зомби и +5% к скорости за волну без убийств (удар по тебе сбрасывает бонус). Батарея иногда садится — заряди, удерживая кружки на экране. Рискованная карточка «Телефон» убрана.','Новое условие дня — «Последний день»: зомби вдвое больше, и они лезут чаще.','Появление окна улучшений теперь сопровождается звуком.','Новые условия дня: «Золотая лихорадка» — из зомби иногда выпадают золотые кристаллы на целый уровень, но зомби крепче; «Большая перемена» — каждые 75 секунд по этажу проносится толпа бегунов.','Игра работает плавнее: облегчены иконки, цифры урона, частицы и кристаллы. Если кристаллов на карте слишком много, дальние сливаются в один крупный.','Выбор улучшения теперь звучит по-разному: новое оружие, прокачка оружия, новый предмет, прокачка предмета и рискованная карточка. При наведении на карточку — лёгкий щелчок.','Новая атака у боссов — таран: под оранжевой стрелкой босс замирает, а затем бросается вперёд и расталкивает всех зомби на пути. Не стой у него на линии!','Новое условие дня — «Урезанный выбор»: на новом уровне только 2 карточки улучшений.','Использованные Омамори и Плеер пропадают из ячеек слева и освобождают место под новый предмет. Разовые рискованные карточки тоже больше не висят слева после срабатывания.','Новый предмет для Колоды карт — Джокер в рукаве: каждый третий бросок добавляет Джокера ★, который бьёт в 1,5 раза сильнее и отскакивает от зомби к зомби.','Звуки атак стали разнообразнее: к прежним добавились новые варианты, а у линейки, самолётика, мыльных пузырей, горшков и петард появился свой звук.','Обновлённые иконки: тёмная обводка и мягкая тень. Мел, огнетушитель, тряпка, дрон, топот сумоиста и катушка Теслы перерисованы.','Школа: на 2-м этаже вместо кладовых теперь туалеты, а на 1-м этаже у лестниц больше нет пролёта вниз.','Новые звуки: шипение огнетушителя на старте и всю струю, звон за серии убийств и кристаллов, звук выбора улучшения и перекрутки, щелчки кнопок меню, мелодии победы и поражения.','Хардкор стал вдвое суровее: зомби вдвое крепче и кусают на 60% сильнее, боссы на 60% крепче, еда и аптечки выпадают вчетверо реже. Бонус опыта прежний — +20%.','Обучение стало короче — 2 минуты — и теперь в нём есть шаг про сборку билда. При первом запуске игра предложит его пройти.','Новые эффекты: светящиеся кристаллы, кольца при убийстве, вспышка нового уровня, «прыгающие» цифры урона.','Клавиши на компьютере можно переназначить в настройках: движение, пауза, замедление времени и лестницы.','В выборе карты появились 12 закрытых карт — они ещё в разработке.','Физрук делает два рывка подряд, а его аура свистка ускоряет зомби рядом на 50%.','Защита выжившего: каждые 2–5 минут выживший обязательно меняет укрытие и идёт на новое место — прикрой его по пути. Время до переезда видно под его здоровьем.','Новый босс — Огромный краб: может появиться на любой карте. Носится по диагонали, бьёт клешнями по кругу и широкой дугой с отбрасыванием, делает молниеносные рывки и комбинирует атаки. На половине здоровья звереет.','Новое оружие — Колода карт. К нему 4 предмета: Козырная карта (карта зависает на зомби, крутится и взрывается), Дополнительная карта, Дизайнерская колода (эффект по масти: червы взрываются, трефы оглушают, бубны отталкивают, пики переманивают зомби на твою сторону) и Выбор масти.','Новые предметы: Рикошетные шарики для пейнтбольного ружья, Пакет льда (ледяной след замедляет зомби и заменяет кисть) и рискованная карточка «Чистый лист» — стирает всё и даёт выбрать заново.','Магазин стал Супермаркетом: два этажа, эскалатор, много отделов и цветной пол.','Больница перестроена: приёмный покой, травмпункт, аптека, морг, хирургия, реанимация и детское отделение — без школьных подсобок. Медсёстры там встречаются на 30% чаще.','Пятиэтажка: в квартирах теперь гостиная, спальня, кухня, ванная и прихожая с подходящей мебелью.','Метро: новый вестибюль с кассами, турникетами и эскалатором. Поезда длиннее на 10 вагонов, иногда идут сразу два, а иногда поезд встаёт на пару минут и перекрывает путь.','Машинист: поезд-призрак идёт по ряду, столбцу или диагонали и может сразу помчаться обратно. Ещё Машинист делает рывки.','Зомби ищут обходные пути и заходят с разных сторон. Часть зомби по-прежнему идёт напролом.','Тележка у зомби перерисована.','Сквозь стены бьют только удары вблизи, волны, молнии и падающие горшки. Стреляющее оружие целится только в тех, кого видно, а его снаряды разбиваются о стены и укрытия.','Оглушение теперь действует и на боссов.','Пейнтбольное ружьё: урон уменьшен в 3 раза. Мини-глобусы уменьшают глобусы до ×0,7 за уровень.','Землетрясение случается вдвое чаще.','Сумоист открывается за победу над Гигантским осьминогом.'];
 
 /* ---------- MAIN MENU ---------- */
 const MODES={normal:{name:'Обычный',d:'Продержись до рассвета — 15:00. Классические правила.'},
@@ -1098,10 +1128,11 @@ MODES.guard={name:'Защита выжившего',d:'В здании пряч�
 MODES.train={name:'Тренировка',d:'Песочница без прогресса и рекордов. Через кнопку 🛠 можно призвать любых зомби и боссов, выдать любое оружие, предметы и рискованные карточки, включить бессмертие и спавн зомби.'};
 MODES.clear={name:'Зачистка',d:'Зомби появляются один раз — их много, и новых не будет. Найди и уничтожь всех за 10 минут. Пока зомби тебя не заметили, они дремлют на месте.'};
 let MODE='normal';let prevMode=null,prevMap=null;try{const v=localStorage.getItem('szz-mode');if(v&&MODES[v])MODE=v;}catch(e){}
-const SET={smooth:true,nums:true,joy:true,kb:null};try{Object.assign(SET,JSON.parse(localStorage.getItem('szz-set')||'{}'));}catch(e){}
+const SET={smooth:true,nums:true,joy:true,kb:null,shake:true};try{Object.assign(SET,JSON.parse(localStorage.getItem('szz-set')||'{}'));}catch(e){}
 function saveSet(){try{localStorage.setItem('szz-set',JSON.stringify(SET));}catch(e){}}
 function mView(v){document.querySelectorAll('#menu .mview').forEach(el=>el.hidden=el.id!=='mv'+v);curView=v;
   if(v==='Map')renderMaps();if(v==='Mode')renderModes();if(v==='Char')renderSkins();if(v==='Info'){infoWhere='menu';renderInfo();}if(v==='Stats')renderGStats();if(v==='Set')renderSet();if(v==='Dev')renderDev();if(v==='Home')renderHome();
+  {const ve=$('#mv'+v);if(ve&&(v==='Map'||v==='Mode'||v==='Char')){ve.classList.remove('tEnter');void ve.offsetWidth;ve.classList.add('tEnter');clearTimeout(ve._tE);ve._tE=setTimeout(()=>ve.classList.remove('tEnter'),900);}}
   const ov=$('#menu');ov.scrollTop=0;}
 let curView='Home';
 function heroCanvas(id,sz){const c=document.createElement('canvas');c.width=sz*2;c.height=sz*2;const x=c.getContext('2d');x.scale(2,2);x.translate(sz/2,sz/2+2);x.fillStyle='rgba(0,0,0,.3)';x.beginPath();x.ellipse(0,sz*.18,sz*.3,sz*.12,0,0,7);x.fill();drawHero(x,sz*.3,Math.PI/2,0,skinOf(id));return c;}
@@ -1128,7 +1159,7 @@ function mkPager(host,items,cur,onPick){
     const b=document.createElement('button');b.type='button';b.className='skin tile'+(it.pic==null?' txt':'')+(it.locked?' locked':'');b.setAttribute('aria-pressed',String(it.key===cur));
     const pc=document.createElement('div');pc.className='tpic'+(it.pic==null?' none':'');if(typeof it.pic==='string')pc.innerHTML=it.pic;else if(it.pic)pc.appendChild(it.pic);b.appendChild(pc);
     const sp=document.createElement('span');sp.textContent=it.name;b.appendChild(sp);if(it.tick){const t=document.createElement('i');t.className='tick';t.textContent=it.tick;b.appendChild(t);}
-    b.addEventListener('click',()=>{box.querySelectorAll('.tile').forEach(q=>q.setAttribute('aria-pressed',String(q===b)));onPick(it,i);});page.appendChild(b);});
+    b.addEventListener('click',()=>{box.querySelectorAll('.tile').forEach(q=>{q.setAttribute('aria-pressed',String(q===b));q.classList.remove('pop','nope');});void b.offsetWidth;b.classList.add(it.locked?'nope':'pop');onPick(it,i);});page.appendChild(b);});
   let sync=()=>{};
   if(n>1){const nav=document.createElement('div');nav.className='skinnav';
     nav.innerHTML='<button type="button" aria-label="Назад">‹</button><div class="dots"></div><span class="pg"></span><button type="button" aria-label="Вперёд">›</button>';host.appendChild(nav);
@@ -1174,7 +1205,7 @@ function setBind(a,code){const K=keyMap();const other=Object.keys(K).find(k=>k!=
 function updHint(){const K=keyMap();const h=$('#hint');if(h&&!(matchMedia&&matchMedia('(pointer:coarse)').matches)&&h.dataset.kb)h.textContent=kbHintText();}
 function kbHintText(){const K=keyMap();return keyName(K.up)+keyName(K.left)+keyName(K.down)+keyName(K.right)+' / стрелки — бег · '+keyName(K.stUp)+' / '+keyName(K.stDown)+' — лестница · '+keyName(K.pause)+' — пауза · '+keyName(K.slow)+' — замедление';}
 function togLabel(id,on){const b=$(id);b.textContent=on?'Вкл':'Выкл';b.setAttribute('aria-pressed',String(on));}
-function renderSet(){renderKB();togLabel('#setSmooth',SET.smooth);togLabel('#setNums',SET.nums);togLabel('#setJoy',SET.joy);gfxLabel();fsLabel();setSound(muted);}
+function renderSet(){renderKB();togLabel('#setSmooth',SET.smooth);togLabel('#setNums',SET.nums);togLabel('#setShake',SET.shake!==false);togLabel('#setJoy',SET.joy);gfxLabel();fsLabel();setSound(muted);}
 function fmtHM(t){t=Math.floor(t);const h=Math.floor(t/3600),m=Math.floor(t%3600/60);return h?h+' ч '+m+' мин':m+' мин';}
 function renderGStats(){const p=prog,cell=(k,v)=>'<div><span>'+k+'</span><b>'+v+'</b></div>';
   const runs=p.runs||0,wins=p.wins||0,fav=o=>{let best=null,bv=0;for(const k in (o||{}))if(o[k]>bv){bv=o[k];best=k;}return best;};
@@ -1603,6 +1634,7 @@ function buildWorld(){
   if(MAPCUR.id==='school')RUN.bossList=rollSchoolBosses();
   GOAL=(MODE==='endless'||MODE==='train')?Infinity:MODE==='clear'?600:MODE==='tutorial'?120:(ids.has('shortday')?720:900);
   RUN.mimT=(MODE==='tutorial'||MODE==='train'||MODE==='clear')?undefined:(rand()<.15?rr(150,360):undefined);
+  RUN.npcT=['normal','quick','hard','endless'].includes(MODE)?rr(80,170):undefined;
   RUN.crabT=(MODE==='tutorial'||MODE==='train')?undefined:(MODE==='clear'?(rand()<.4?rr(120,440):undefined):(rand()<.4?(MODE==='endless'?rr(300,800):GOAL*rr(.3,.85)):undefined));
   RUN.octoT=(MODE==='tutorial'||MODE==='train')?undefined:(MODE==='clear'?(rand()<.45?rr(150,420):undefined):(rand()<.45?(MODE==='endless'?rr(380,700):GOAL*rr(.4,.8)):undefined));
   if(RUN.octoT!==undefined&&RUN.crabT!==undefined&&Math.abs(RUN.octoT-RUN.crabT)<120)RUN.crabT=RUN.octoT+(RUN.octoT>GOAL*.6?-150:150);
@@ -2096,11 +2128,11 @@ let suitPick=false,pickKind='';
 const ARRN=['Огненные','Ледяные','Расщепляющиеся','Тяжёлые'],ARRI=['🔥','❄','✦','⚓'],ARRC=['#ff8a3a','#9fe8ff','#c79bff','#c9b28a'],
   ARRD=['Стрела взрывается при попадании и ранит зомби рядом.','Стрела сильно замедляет зомби на 2 с и замораживает на 0,4 с.','При попадании стрела распадается на 3 маленькие стрелы.','+25% урона, мощное отбрасывание и оглушение на 0,6 с.'];
 const PDEF={
- shoes:{name:'Сменка-увабаки',icon:'shoes',ds:'+8% к скорости бега.'},
+ shoes:{name:'Сменка-увабаки',icon:'shoes',ds:'+9% к скорости бега.'},
  bento:{name:'Бэнто от мамы',icon:'bento',ds:'+15 к максимуму здоровья и лечение 0,3 HP/с.'},
  badge:{name:'Значок старосты',icon:'badge',ds:'+10% к урону всего оружия.'},
- notebook:{name:'Тетрадь отличника',icon:'notebook',ds:'+12% к получаемому опыту.'},
- magnet:{name:'Магнит из кабинета физики',icon:'magnet',ds:'+30% к радиусу сбора кристаллов.'},
+ notebook:{name:'Тетрадь отличника',icon:'notebook',ds:'+11% к получаемому опыту.'},
+ magnet:{name:'Магнит из кабинета физики',icon:'magnet',ds:'+35% к радиусу сбора кристаллов.'},
  watch:{name:'Наручные часы',icon:'watch',ds:'Оружие перезаряжается на 7% быстрее.'},
  armband:{name:'Повязка дежурного',icon:'armband',ds:'−8% получаемого урона.'},
 };
@@ -2172,25 +2204,25 @@ const NEWP=[
  ['kanabo2','Железные шипы','w:kanabo',{wx_kanabo:1}],['shuriken2','Плотная бумага для оригами','w:shuriken',{wx_shuriken:1}],['ruler2','Металлическая линейка','w:ruler',{wx_ruler:1}],
  ['acid2','Концентрированная кислота','w:acid',{wx_acid:1}],['boombox2','Новая кассета','w:boombox',{wx_boombox:1}],['plane2','Конструктор самолётиков','w:plane',{wx_plane:1}],
  ['tesla2','Медная обмотка','w:tesla',{wx_tesla:1}],
- ['readglasses','Очки отличника','glasses:#5b8fd9',{crit:.06}],['luckypencil','Счастливый карандаш','pencil:#f2c94c',{critd:.25,crit:.02}],
- ['spikes','Кроссовки с шипами','shoe:#e05a6a',{spd:.05,kb:.1}],['bar','Протеиновый батончик','bar:#c97b3a',{regen:.2}],
- ['firstaid','Аптечка медпункта','box:#e0313f',{hp:15,heal:.1}],['plaster','Запас пластырей','plaster:#e8c39e',{heal:.25,regen:.05}],
- ['cocoa','Кружка какао','cup:#8a5a3a',{regen:.15,arm:.03}],['uniform','Спортивная форма','shirt:#1f7a5a',{arm:.04,spd:.03}],
- ['helmet','Каска с субботника','helmet:#f2c94c',{arm:.05,hp:5}],['kneepads','Наколенники','shield:#5d6670',{arm:.04,spd:.02}],
+ ['readglasses','Очки отличника','glasses:#5b8fd9',{crit:.07}],['luckypencil','Счастливый карандаш','pencil:#f2c94c',{critd:.3,crit:.02}],
+ ['spikes','Кроссовки с шипами','shoe:#e05a6a',{spd:.06,kb:.1}],['bar','Протеиновый батончик','bar:#c97b3a',{regen:.25}],
+ ['firstaid','Аптечка медпункта','box:#e0313f',{hp:15,heal:.1}],['plaster','Запас пластырей','plaster:#e8c39e',{heal:.2,regen:.05}],
+ ['cocoa','Кружка какао','cup:#8a5a3a',{regen:.2,arm:.03}],['uniform','Спортивная форма','shirt:#1f7a5a',{arm:.04,spd:.03}],
+ ['helmet','Каска с субботника','helmet:#f2c94c',{arm:.04,hp:5}],['kneepads','Наколенники','shield:#5d6670',{arm:.04,spd:.02}],
  ['bigbag','Вместительная сумка','bag:#3a6ad1',{mag:.15,hp:5}],['butterfly','Сачок кружка биологии','net:#4e9a63',{mag:.15,luck:.1}],
  ['clover','Четырёхлистный клевер','clover:#4e9a63',{luck:.2}],['omamori','Омамори из храма','omamori:#d63b4a',{revive:1,hp:5}],
- ['flag','Флажок старосты','flag:#e0313f',{area:.05,boss:.1}],['megaphone','Мегафон','mega:#f2c94c',{area:.06,kb:.1}],
- ['magnifier','Циркуль','magnify:#9aa7b3',{area:.1}],['hourglass','Песочные часы','hourglass:#d9b23a',{dur:.2,cd:.02}],
- ['schedule','Расписание звонков','book:#b8343a',{cd:.04,dur:.1}],['metronome','Метроном музыкального клуба','metro:#7a5234',{cd:.04,proj:.05}],
- ['slingshot','Рогатка','sling:#8a5a32',{proj:.12,crit:.02}],['pencilcase','Пенал','case:#8c5fb3',{amount:.5}],
+ ['flag','Флажок старосты','flag:#e0313f',{area:.05,boss:.1}],['megaphone','Мегафон','mega:#f2c94c',{area:.07,kb:.1}],
+ ['magnifier','Циркуль','magnify:#9aa7b3',{area:.1}],['hourglass','Песочные часы','hourglass:#d9b23a',{dur:.15,cd:.02}],
+ ['schedule','Расписание звонков','book:#b8343a',{cd:.05,dur:.1}],['metronome','Метроном музыкального клуба','metro:#7a5234',{cd:.04,proj:.05}],
+ ['slingshot','Рогатка','sling:#8a5a32',{proj:.11,crit:.02}],['pencilcase','Пенал','case:#8c5fb3',{amount:.5}],
  ['hachimaki','Повязка «Победа»','headband:#f4f4f4',{dm:.06,low:.15}],['locket','Кулон с фото класса','locket:#d9b23a',{low:.2}],
- ['whistle','Свисток физрука','whistle:#c0c6d0',{boss:.25,kb:.05}],['diary','Дневник','book:#3a7bd5',{xp:.05,luck:.1}],
- ['kanji','Словарь кандзи','book:#2b2b33',{xp:.06,cd:.02}],['catears','Кошачьи ушки с фестиваля','ears:#2a1b14',{spd:.04,luck:.05}],
- ['scarf','Колючий шарф','scarf:#8c5fb3',{thorns:16}],['cactus','Кактус с подоконника','cactus:#4e9a63',{thorns:9,arm:.03}],
- ['fangs','Клыки вампира из костюмерной','fang:#f4f4f4',{life:.5}],['unagi','Бэнто с угрём','box:#5a3b24',{life:.3,regen:.1}],
+ ['whistle','Свисток физрука','whistle:#c0c6d0',{boss:.2,kb:.05}],['diary','Дневник','book:#3a7bd5',{xp:.05,luck:.1}],
+ ['kanji','Словарь кандзи','book:#2b2b33',{xp:.06,cd:.02}],['catears','Кошачьи ушки с фестиваля','ears:#2a1b14',{spd:.05,luck:.05}],
+ ['scarf','Колючий шарф','scarf:#8c5fb3',{thorns:21}],['cactus','Кактус с подоконника','cactus:#4e9a63',{thorns:10,arm:.03}],
+ ['fangs','Клыки вампира из костюмерной','fang:#f4f4f4',{life:.45}],['unagi','Бэнто с угрём','box:#5a3b24',{life:.35,regen:.1}],
  ['flashlight','Фонарик','lamp:#f2c94c',{blind:.12,vis:.5}],['schoolmap','Коллекционная карточка','map:#d8c79a',{spd:.036,mag:.096}],
  ['umbrella','Зонтик-трость','umbrella:#2b6cd6',{arm:.03,kb:.1}],['tamago','Тамагояки в коробочке','box:#f2c94c',{hp:10,heal:.1}],
- ['headphones','Наушники','phones:#333a4a',{cd:.03,area:.04}],
+ ['headphones','Наушники','phones:#333a4a',{cd:.03,area:.05}],
  ['bow2','Оперение для стрел','w:bow',{wx_bow:1}],['pan2','Антипригарное покрытие','w:pan',{wx_pan:1}],['drone2','Запасной аккумулятор','w:drone',{wx_drone:1}],
  ['bubble2','Густой мыльный раствор','w:bubble',{wx_bubble:1}],['fire2','Порох с фестиваля','w:fire',{wx_fire:1}],['brush2','Тушь для каллиграфии','w:brush',{wx_brush:1}],
  ['globe2','Смазанная подставка глобуса','w:globe',{wx_globe:1}],['globe3','Мини-глобусы','w:globe',{wx_globe:0,gmini:1}],['paint2','Яркая краска','w:paint',{wx_paint:1}],['rag2','Ведро с мыльной водой','w:rag',{wx_rag:1}],['ofuda2','Святая тушь','w:ofuda',{wx_ofuda:1}],['firstaid','Аптечка первой помощи','box:#d63b4a',{emerg:1}],['mints','Мятные леденцы','box:#7dd8c0',{gemheal:.25}],['boxglove','Боксёрская перчатка','box:#c62a3c',{kb:.25,dm:.04}],['popper','Хлопушка-отпугиватель','box:#f2c94c',{pulse:1}],['magnifier2','Линза Френеля','w:magnifier',{wx_magnifier:1}],['rope2','Утяжелители для скакалки','w:rope',{wx_rope:1}],['pots2','Тяжёлые кашпо','w:pots',{wx_pots:1}],['camera2','Мощная вспышка','w:camera',{wx_camera:1}],
@@ -2475,10 +2507,10 @@ function addCurse(id){P.curses.push(id);if(id==='neko'){P.nekoBan=true;}}
 const pw=(b,id)=>Math.pow(b,cc(id));
 function sumFx(k){let t=0;for(const p of P.passives){const d=PDEF[p.id];if(d&&d.fx&&d.fx[k])t+=d.fx[k]*p.lvl;}return t;}
 function stats(){
-  const S={spd:(P.giftT>0?.15:1)*(P.barT>0?1.25:1)*(1+(P.phSpd||0))*Math.max(60,Math.min(P.baseSpd*3,P.baseSpd*(1+.08*pl('shoes')+sumFx('spd'))*(1+.35*cc('energy'))/(1+.25*cc('bag'))*Math.pow(.85,cc('gum')))+50*cc('spring')),
+  const S={spd:(P.giftT>0?.15:1)*(P.barT>0?1.25:1)*(1+(P.phSpd||0))*Math.max(60,Math.min(P.baseSpd*3,P.baseSpd*(1+.09*pl('shoes')+sumFx('spd'))*(1+.35*cc('energy'))/(1+.25*cc('bag'))*Math.pow(.85,cc('gum')))+50*cc('spring')),
     dm:(1+.1*pl('badge')+sumFx('dm'))*(1+.5*cc('blacknote'))*Math.pow(.85,cc('teru'))*Math.pow(.8,cc('biology')),
-    xpm:Math.min(6,(P.C&&P.C.xpm||1)*(1+.12*pl('notebook')+sumFx('xp'))*Math.pow(.8,cc('cdiary'))*(1+.6*cc('crib'))*(1+.8*cc('candle'))*(1+cc('neko'))*(RUN.ids.has('moon')?1.3:1)*(RUN.ids.has('night')?1.2:1)*(RUN.ids.has('exams')?1.35:1)*(RUN.ids.has('festival')?1.15:1)*(RUN.mode==='hard'?1.2:1)),
-    mag:Math.min(1200,70*(1+.3*pl('magnet')+sumFx('mag'))*(1+1.5*cc('glasses'))*(RUN.ids.has('magstorm')?20:1)*(RUN.ids.has('sakura')?.7:1)),
+    xpm:Math.min(6,(P.C&&P.C.xpm||1)*(1+.11*pl('notebook')+sumFx('xp'))*Math.pow(.8,cc('cdiary'))*(1+.6*cc('crib'))*(1+.8*cc('candle'))*(1+cc('neko'))*(RUN.ids.has('moon')?1.3:1)*(RUN.ids.has('night')?1.2:1)*(RUN.ids.has('exams')?1.35:1)*(RUN.ids.has('festival')?1.15:1)*(RUN.mode==='hard'?1.2:1)),
+    mag:Math.min(1200,70*(1+.35*pl('magnet')+sumFx('mag'))*(1+1.5*cc('glasses'))*(RUN.ids.has('magstorm')?20:1)*(RUN.ids.has('sakura')?.7:1)),
     cdm:Math.max(.15,(P.C&&P.C.cdMul||1)*Math.pow(.93,pl('watch'))*Math.pow(.7,cc('ribbon'))*Math.pow(.65,cc('coffee'))/(1+sumFx('cd'))*(RUN.ids.has('magstorm')?1.15:1)),
     arm:Math.max(.12,Math.pow(.92,pl('armband'))*Math.pow(.7,cc('bag'))/(1+sumFx('arm')))*(1+.5*cc('ribbon'))*(1+.3*cc('kitsune'))*(P.C&&P.C.armMul||1),
     regen:noHeal()?0:.3*pl('bento')+sumFx('regen')+(RUN.ids.has('sakura')?.6:0),
@@ -2510,6 +2542,78 @@ function tone(f,d,type,vol,slide,delay){
   o.connect(g).connect(ac.destination);o.start(t0);o.stop(t0+d+.02);
 }
 let NZB=null,kpopN=0;
+let MVOL=.6;try{const v=localStorage.getItem('szz-mvol');if(v!==null&&!isNaN(+v))MVOL=Math.max(0,Math.min(1,+v));}catch(e){}
+let MUS=null;const mf=s=>220*Math.pow(2,s/12);
+function musInit(){if(!ac||MUS)return;try{const g=ac.createGain();g.gain.value=0;const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5200;g.connect(lp);lp.connect(ac.destination);
+  const amb=ac.createGain();amb.gain.value=0;amb.connect(ac.destination);const nb=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  MUS={g,amb,nb,next:ac.currentTime+.15,step:0,mode:'calm',bossT:0,boss:false,map:'',layers:[],ev:{},roof:false};}catch(e){MUS=null;}}
+function mNote(f,t,d,type,vol,o){if(!MUS)return;o=o||{};const os=ac.createOscillator(),g=ac.createGain();os.type=type||'sine';os.frequency.setValueAtTime(f,t);if(o.slide)os.frequency.exponentialRampToValueAtTime(Math.max(20,f*o.slide),t+d);
+  const a=o.att||.01;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+a);g.gain.setValueAtTime(vol,t+Math.max(a,d*(o.hold||.3)));g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  let n=os;if(o.lp){const f2=ac.createBiquadFilter();f2.type='lowpass';f2.frequency.value=o.lp;os.connect(f2);n=f2;}n.connect(g);g.connect(o.bus||MUS.g);os.start(t);os.stop(t+d+.05);}
+function mNoise(t,d,vol,fq,q,type,bus){if(!MUS)return;const s=ac.createBufferSource(),bf=ac.createBiquadFilter(),g=ac.createGain();s.buffer=MUS.nb;bf.type=type||'bandpass';bf.frequency.value=fq;bf.Q.value=q||1;
+  g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(bf).connect(g).connect(bus||MUS.g);s.start(t,Math.random()*1.5);s.stop(t+d+.05);}
+const MCH={calm:[[0,3,7],[-4,0,3],[3,7,10],[-2,2,5]],tense:[[0,3,7],[5,8,12],[7,11,14],[0,3,7]],dark:[[0,3,7],[1,5,8],[0,3,7],[-1,2,5]],boss:[[0,3,7],[-4,0,3],[5,8,12],[7,11,14]],dawn:[[3,7,10],[-2,2,5],[0,3,7],[-4,0,3]]};
+const MBPM={calm:70,tense:88,dark:104,boss:134,dawn:78};
+const BOSSLEAD=[12,null,15,null,19,17,15,null,12,null,10,12,null,7,null,null];
+const DAWNMEL=[15,null,null,19,null,null,22,null,19,null,null,17,15,null,null,null];
+function musStep(st,t,mode){const bar=(st>>4)%4,s=st%16,ch=MCH[mode][bar],sd=60/MBPM[mode]/4,bl=sd*16;
+  if(mode==='calm'||mode==='dawn'){if(s===0)ch.forEach((n,i)=>mNote(mf(n+(mode==='dawn'?12:0)),t,bl*1.02,i?'sine':'triangle',.028,{att:.6,hold:.7,lp:1800}));
+    if(mode==='calm'&&s%4===2&&Math.random()<.55)mNote(mf(pick(ch)+12),t,.7,'triangle',.022,{att:.005,hold:.05});
+    if(mode==='dawn'){const m=DAWNMEL[s];if(m!=null){mNote(mf(m+12),t,1.1,'sine',.03,{att:.005,hold:.05});mNote(mf(m+24),t,.6,'sine',.009,{att:.005,hold:.05});}}
+    if(s===0)mNote(mf(ch[0]-12),t,bl,'sine',.035,{att:.3,hold:.6});}
+  else if(mode==='tense'||mode==='dark'){if(s===0)ch.forEach(n=>mNote(mf(n),t,bl,'triangle',.016,{att:.4,hold:.6,lp:1200}));
+    const arp=[0,1,2,1];if(s%2===0)mNote(mf(ch[arp[(s/2)%4]]+12),t,.22,mode==='dark'?'square':'triangle',mode==='dark'?.011:.016,{att:.004,hold:.1,lp:mode==='dark'?2200:3000});
+    if(mode==='tense'&&(s===0||s===8))mNote(mf(ch[0]-12),t,sd*7,'sine',.045,{att:.01,hold:.5});
+    if(mode==='dark'){if(s%4===0)mNote(mf(ch[0]-12),t,sd*3.5,'sawtooth',.02,{att:.01,hold:.4,lp:420});if(s===0||s===8)mNote(110,t,.22,'sine',.06,{slide:.35,att:.002,hold:.05});if(s%4===2)mNoise(t,.05,.012,7000,.8,'highpass');}}
+  else if(mode==='boss'){if(s%2===0)mNote(mf(ch[0]-12+(s%8===6?7:0)),t,sd*1.8,'square',.02,{att:.004,hold:.4,lp:700});
+    if(s%4===0)mNote(120,t,.2,'sine',.08,{slide:.3,att:.002,hold:.05});if(s===4||s===12)mNoise(t,.14,.03,1800,.9,'bandpass');if(s%2===1)mNoise(t,.04,.01,8000,.8,'highpass');
+    const m=BOSSLEAD[s];if(m!=null&&bar%2===1)mNote(mf(m+(bar===3?2:0)),t,sd*1.6,'square',.012,{att:.004,hold:.5,lp:2600});if(s===0)ch.forEach(n=>mNote(mf(n),t,bl,'sawtooth',.006,{att:.2,hold:.7,lp:900}));}}
+// ---- ambience ----
+function ambLoop(fq,q,type,vol,lfo){const s=ac.createBufferSource();s.buffer=MUS.nb;s.loop=true;const bf=ac.createBiquadFilter();bf.type=type;bf.frequency.value=fq;bf.Q.value=q;const g=ac.createGain();g.gain.value=vol;
+  if(lfo){const l=ac.createOscillator(),lg=ac.createGain();l.frequency.value=lfo;lg.gain.value=fq*.45;l.connect(lg).connect(bf.frequency);l.start();s.lfo=l;}s.connect(bf).connect(g).connect(MUS.amb);s.start();return {s,g,base:vol};}
+function ambHum(f,vol){const o=ac.createOscillator(),o2=ac.createOscillator(),lp=ac.createBiquadFilter(),g=ac.createGain();o.type='sawtooth';o.frequency.value=f;o2.type='sine';o2.frequency.value=f/2;lp.type='lowpass';lp.frequency.value=260;g.gain.value=vol;
+  o.connect(lp);o2.connect(lp);lp.connect(g).connect(MUS.amb);o.start();o2.start();return {s:o,s2:o2,g,base:vol};}
+function ambBuild(id){for(const l of MUS.layers){try{l.s.stop();if(l.s2)l.s2.stop();if(l.s.lfo)l.s.lfo.stop();}catch(e){}}MUS.layers=[];MUS.ev={};MUS.map=id;
+  const L2=MUS.layers;
+  if(id==='school'){L2.push(Object.assign(ambHum(100,.012),{tag:'in'}));L2.push(Object.assign(ambLoop(700,.6,'bandpass',.0,.08),{tag:'roof',base:.05}));}
+  else if(id==='shop'){L2.push(ambHum(60,.01));L2.push(ambLoop(450,.5,'bandpass',.008,.05));}
+  else if(id==='flats'){L2.push(ambHum(50,.009));L2.push(ambLoop(300,.5,'lowpass',.012,.03));}
+  else if(id==='hospital'){L2.push(ambLoop(520,.4,'lowpass',.02,.04));L2.push(ambHum(120,.006));}
+  else if(id==='metro'){L2.push(ambLoop(220,.5,'lowpass',.04,.06));}
+  else if(id==='cemetery'){L2.push(ambLoop(650,.7,'bandpass',.045,.07));}
+  else L2.push(ambHum(60,.008));}
+function ambEvents(dt,id){const E=MUS.ev,t=ac.currentTime+.02,due=(k,a,b)=>{if(E[k]===undefined)E[k]=rr(a,b)*.5;E[k]-=dt;if(E[k]<=0){E[k]=rr(a,b);return true;}return false;},B=MUS.amb;
+  if(id==='school'){if(due('drip',2,6)&&!MUS.roof){const f=rr(1500,2300);mNote(f,t,.09,'sine',.03,{slide:.45,att:.002,hold:.05,bus:B});mNote(f*.9,t+.18,.07,'sine',.01,{slide:.5,att:.002,hold:.05,bus:B});}
+    if(due('flick',9,20)&&!MUS.roof){for(let k=0;k<3;k++)mNoise(t+k*.07,.05,.02,3000,3,'bandpass',B);}
+    if(due('crow',14,30)&&MUS.roof)crow(t,B);}
+  else if(id==='shop'){if(due('beep',3,8)){const n=Math.random()<.4?2:1;for(let k=0;k<n;k++)mNote(2650,t+k*.16,.08,'square',.012,{att:.002,hold:.6,lp:4000,bus:B});}
+    if(due('pa',30,55)){[659,523,392].forEach((f,k)=>mNote(f,t+k*.38,.7,'sine',.03,{att:.01,hold:.3,bus:B}));for(let k=0;k<9;k++)mNoise(t+1.3+k*.17+Math.random()*.05,.13,.018,rr(700,1100),2.2,'bandpass',B);}}
+  else if(id==='flats'){if(due('knock',6,13)){for(let k=0;k<rr(1,3)|0+1;k++)mNote(rr(150,210),t+k*.22,.12,'triangle',.03,{slide:.6,att:.002,hold:.05,bus:B});}
+    if(due('dog',20,40))for(let k=0;k<2;k++){mNoise(t+k*.28,.12,.02,900,1.5,'bandpass',B);mNote(380,t+k*.28,.12,'sawtooth',.008,{slide:.7,att:.005,hold:.2,lp:1200,bus:B});}}
+  else if(id==='hospital'){if(due('mon',16,28)){for(let k=0;k<6;k++)mNote(990,t+k*.9,.12,'sine',.016,{att:.004,hold:.6,bus:B});}
+    if(due('drip',4,9)){const f=rr(1400,2000);mNote(f,t,.08,'sine',.02,{slide:.45,att:.002,hold:.05,bus:B});}}
+  else if(id==='metro'){if(due('train',22,40)){const s=ac.createBufferSource();s.buffer=MUS.nb;s.loop=true;const bf=ac.createBiquadFilter();bf.type='lowpass';bf.frequency.value=140;const g=ac.createGain();
+      g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.09,t+2.4);g.gain.linearRampToValueAtTime(.0001,t+5.5);s.connect(bf).connect(g).connect(B);s.start(t);s.stop(t+5.6);
+      for(let k=0;k<10;k++)mNoise(t+1.2+k*.32,.05,.02,2500,2,'bandpass',B);}
+    if(due('pa',35,60))[523,659].forEach((f,k)=>mNote(f,t+k*.42,.6,'sine',.022,{att:.01,hold:.3,bus:B}));}
+  else if(id==='cemetery'){if(due('crow',7,16))crow(t,B);if(due('bell',40,70))mNote(196,t,3.5,'sine',.03,{att:.005,hold:.05,bus:B});}}
+function crow(t,B){const n=2+(Math.random()*2|0);for(let k=0;k<n;k++){const tt=t+k*.32;mNote(rr(620,760),tt,.2,'sawtooth',.012,{slide:.7,att:.01,hold:.3,lp:1600,bus:B});mNoise(tt,.18,.02,1300,1.8,'bandpass',B);}}
+function audioTick(dt){if(!ac)return;if(!MUS)musInit();if(!MUS)return;const ct=ac.currentTime;
+  const playing=P&&(state==='play'||state==='levelup'||state==='pause'||state==='train'||state==='revive');
+  const hid=document.hidden,act=state==='play'?1:(state==='levelup'||state==='revive')?.45:0;
+  const tm=muted||!playing||hid?0:MVOL*.4*act,ta=muted||!playing||hid?0:Math.min(1,VOL*1.1)*(state==='play'?1:act*.75);
+  MUS.g.gain.setTargetAtTime(tm,ct,.4);MUS.amb.gain.setTargetAtTime(ta,ct,.5);
+  if(!playing){MUS.next=ct+.1;return;}
+  if((MUS.bossT-=dt)<=0){MUS.bossT=.5;MUS.boss=enemies.some(e=>e.alive&&e.kind==='boss');}
+  const p=GOAL===Infinity?Math.min(1,time/900):time/GOAL;MUS.mode=retreat?'dawn':MUS.boss?'boss':p<.34?'calm':p<.67?'tense':'dark';
+  if(MUS.next<ct-.3)MUS.next=ct+.05;
+  if(tm>0.001&&act>0){let guard=0;while(MUS.next<ct+.22&&guard++<16){musStep(MUS.step,MUS.next,MUS.mode);MUS.next+=60/MBPM[MUS.mode]/4;MUS.step++;}}else MUS.next=ct+.1;
+  const id=MAPCUR&&MAPCUR.id||'school';if(MUS.map!==id||MUS.runId!==runId){MUS.runId=runId;ambBuild(id);}
+  MUS.roof=!!(floors[P.floor]&&floors[P.floor].roof);for(const l of MUS.layers){const want=l.tag==='in'?(MUS.roof?0:l.base):l.tag==='roof'?(MUS.roof?l.base:0):l.base;l.g.gain.setTargetAtTime(want,ct,.6);}
+  if(state==='play'&&ta>0)ambEvents(dt,id);}
+let shakeT=0,shakeA=0,shakeD=.25,hitStopT=0,critShT=0;
+function shake(a,d){if(SET.shake===false)return;d=d||.25;if(shakeT<=0||a>=shakeA*Math.min(1,shakeT/shakeD)){shakeA=a;shakeD=d;shakeT=d;}}
+function hitStop(d){if(SET.shake===false)return;hitStopT=Math.max(hitStopT,d);}
 let dmgSrc=null,procLock=false;const wpCd={};
 const WPROPS={frost:['Заморозка','замедляет зомби, иногда замораживает'],splash:['Крит-всплеск','при крите половина урона бьёт зомби рядом'],push:['Отталкивание','отбрасывает зомби от тебя'],chalk:['Мелок','при попадании выпускает мелок в соседнего зомби'],
   stun:['Оглушение','20% шанс оглушить зомби на 0,6 с'],bubble:['Пузырь','иногда выпускает мыльный пузырь'],burn:['Поджог','поджигает зомби на 3 с'],zap:['Разряд','молния перескакивает на соседнего зомби']};
@@ -2545,7 +2649,7 @@ function trainItems(tab){const it=[];const A=(ic,nm,tag,fn,on)=>it.push({ic,nm,t
   else if(tab==='p')Object.keys(PDEF).forEach(id=>{const p=P.passives.find(q=>q.id===id),D=PDEF[id];if(!p&&!wxOk(id))return;A(IC[D.icon],D.name,p?'ур. '+p.lvl:'',()=>trainGive({t:'p',id,lvl:p?p.lvl+1:1}),!!p);});
   else if(tab==='c')Object.keys(CDEF).forEach(id=>{const n=cc(id);A(IC[CDEF[id].icon],CDEF[id].name,n?'×'+n:'',()=>trainGive({t:'c',id,lvl:n+1}),n>0);});
   else if(tab==='s'){A('','Выживший (как в защите)','',()=>{trainClose();placeSurvivor();banner('Выживший','Защити его — зомби идут к нему',false);});A('','Мимик','',()=>{trainClose();mimSpawn();});
-    A('','Убрать выжившего и мимика','',()=>{SV=null;MIM=null;$('#svBox').hidden=true;});A('','Дать случайное свойство оружию','',()=>{giveWProp();renderTrain();});}
+    A('','Прячущийся ученик','',()=>{trainClose();npcSpawn();});A('','Убрать выжившего, мимика и ученика','',()=>{SV=null;MIM=null;NPC=null;$('#svBox').hidden=true;});A('','Дать случайное свойство оружию','',()=>{giveWProp();renderTrain();});}
   else if(tab==='o'){A('','Бессмертие: '+(TRN.god?'вкл':'выкл'),'',()=>{TRN.god=!TRN.god;renderTrain();},TRN.god);A('','Спавн зомби: '+(TRN.spawn?'вкл':'выкл'),'',()=>{TRN.spawn=!TRN.spawn;renderTrain();},TRN.spawn);
     A('','+1 уровень','',()=>{trainClose();addXP(Math.max(.01,P.next-P.xp+.01));});A('','Полное здоровье','',()=>{P.hp=P.maxHp;sfx('heal');});
     A('','Убрать всех зомби','',()=>{enemies.forEach(e=>e.alive=false);OCT=null;CRB=null;octoBlocks.forEach(b=>{const F=floors[b.f];if(F.g[b.i]===TENT)F.g[b.i]=b.old;});octoBlocks=[];zprojs=[];sfx('bell');});
@@ -2618,7 +2722,7 @@ function killStreak(){const t=performance.now();kStreak=t-kStreakT<1300?kStreak+
 function gemStreak(){const t=performance.now();gStreak=t-gStreakT<500?gStreak+1:1;gStreakT=t;if(gStreak%12===0){const n=Math.min(6,gStreak/12-1);chime(1046*Math.pow(2,PENT[n]/12),.022);chime(1568*Math.pow(2,PENT[n]/12),.012,.06);}}
 function sfx(k){
   if(!ac||muted)return;const now=performance.now();
-  const gap={hit:45,kill:60,gem:40,hurt:250,chalk:90,laser:70,ui:60,pick:120,hov:50}[k]||0;
+  const gap={hit:45,kill:60,gem:40,hurt:250,chalk:90,laser:70,ui:60,pick:120,hov:50,zstun:110,pstun:400}[k]||0;
   if(gap&&sfxT[k]&&now-sfxT[k]<gap)return;sfxT[k]=now;if(!gap)sndBud=Math.max(sndBud,14);
   switch(k){
     case 'hit':tone(180+rand()*60,.06,'square',.025,.5);break;
@@ -2644,7 +2748,9 @@ function sfx(k){
     case 'hov':tone(1050,.03,'sine',.012,1.1);break;
     case 'lvopen':nz(.28,.022,900,.7,'bandpass',0,.12);tone(392,.3,'sine',.03,2,0);chime(1318,.026,.18);chime(1760,.02,.26);tone(2637,.25,'sine',.008,1,.32);break;
     case 'phone':nz(.11,.035,170,2.5,'bandpass');tone(140,.1,'square',.012,1);nz(.11,.035,170,2.5,'bandpass',.16);tone(140,.1,'square',.012,1,.16);break;
-    case 'ui':tone(720,.05,'sine',.022,.75);break;
+    case 'ui':tone(660,.07,'sine',.034,1.25);tone(990,.06,'sine',.016,1.12,.028);break;
+    case 'zstun':tone(520,.07,'triangle',.02,.6);tone(1568,.1,'sine',.011,1,.04);break;
+    case 'pstun':tone(900,.55,'sine',.03,.45);tone(905,.55,'triangle',.012,.5,.02);[1760,2093,1760,2349].forEach((f,i)=>tone(f,.07,'sine',.016,1.12,.12+i*.11));break;
     case 'roll':[0,1,2].forEach(i=>tone(480+i*170,.045,'triangle',.022,1.15,i*.055));break;
     case 'win':[523,659,784,1046,1318].forEach((f,i)=>chime(f,.04,i*.12));tone(262,1.1,'sine',.035,1,.55);tone(392,1.1,'sine',.025,1,.6);break;
     case 'lose':[392,330,262,196].forEach((f,i)=>tone(f,.32,'triangle',.04,.97,i*.17));break;
@@ -2747,7 +2853,44 @@ function crumbleWall(){
     flashT=.15;tone(70,.6,'sawtooth',.06,.4);haptic('heavy');banner('Стена рухнула!',floorName(f)+(f===P.floor?' — рядом с тобой':'')+': открылся новый проход',true);return true;}
   return false;
 }
-let recT=60,MIM=null;
+let recT=60,MIM=null,NPC=null;
+function npcOk(){return ['normal','quick','hard','endless'].includes(RUN.mode)&&floors.some(F=>F.stairIdx&&F.stairIdx.length);}
+function npcSpawn(){const f=P.floor,F=floors[f];if(!F.stairIdx||!F.stairIdx.length)return false;const si=Math.floor(P.y/T)*MW+Math.floor(P.x/T),d=buildField(f,[si]);const c=[];
+  for(let i=0;i<MW*MH;i++){const v=d[i];if(v>=1e8||v<10||v>24)continue;const x=i%MW,y=(i/MW)|0,g=F.g[i];if(g===STAIR||g===ENTR||solidT(f,x,y))continue;
+    if(solidT(f,x-1,y)||solidT(f,x+1,y)||solidT(f,x,y-1)||solidT(f,x,y+1))continue;if(F.roomId&&F.roomId[i]<0&&rand()<.8)continue;c.push(i);}
+  if(!c.length)return false;const i=pick(c);const sk=SKINS.filter(S=>S.id!==P.skin&&!charOf(S.id).rnd&&!['cat','tanuki','ghost','oni'].includes(S.id));
+  NPC={x:(i%MW+.5)*T,y:(((i/MW)|0)+.5)*T,f,skin:(pick(sk)||SKINS[0]).id,ang:rand()*6.28,r:12,hp:60,maxHp:60,st:'hide',t:0,hurtT:0};
+  banner('Кто-то прячется!','Найди ученика (зелёная стрелка) и доведи до лестницы — он отблагодарит',false);sfx('bell');return true;}
+function npcTick(dt){if(!P)return;
+  if(!NPC){if(RUN.npcT===undefined||retreat||!npcOk())return;if(time>=RUN.npcT){RUN.npcN=(RUN.npcN||0)+1;RUN.npcT=RUN.npcN>=3?undefined:time+rr(150,260);if(rand()<.75)npcSpawn();}return;}
+  const N=NPC;N.t+=dt;if(N.hurtT>0)N.hurtT-=dt;if(retreat){NPC=null;return;}
+  if(N.st==='hide'){if(N.f===P.floor&&Math.hypot(P.x-N.x,P.y-N.y)<85){N.st='follow';banner('Ученик идёт за тобой','Доведи его до лестницы · жёлтая стрелка покажет путь',false);sfx('heal');}return;}
+  // follow the player (or head for the stairs if separated)
+  const F=floors[N.f];let fd=null,sp=Math.max(130,(curS?curS.spd:150)*.95);const dP=Math.hypot(P.x-N.x,P.y-N.y);
+  if(N.f===P.floor){if(dP>46){fd=dP<64?[(P.x-N.x)/dP,(P.y-N.y)/dP]:flow(N.f,playerField,N.x,N.y)||[(P.x-N.x)/dP,(P.y-N.y)/dP];}}
+  else{fd=flow(N.f,stairField[N.f],N.x,N.y);sp*=.8;}
+  if(fd){N.x+=fd[0]*sp*dt;N.y+=fd[1]*sp*dt;N.ang=Math.atan2(fd[1],fd[0]);N.cr=N.r;collideCircle(N,N.f);N.step=(N.step||0)+dt*8;}
+  let took=0;forNear(N.f,N.x,N.y,40,e=>{if(!e.alive||e.charmT>0||e.enter>0)return;if(Math.hypot(e.x-N.x,e.y-N.y)<e.cr+N.r+3)took+=e.dmg*dt*.5;});
+  if(took>0){N.hp-=took;N.hurtT=.2;if((N.warn=(N.warn||0)-dt)<=0){N.warn=5;banner('Ученика кусают!','Отбей его у зомби',true);}}
+  if(N.hp<=0){banner('Ученик не выжил','Зомби оказались быстрее…',true);sfx('hurt');for(let q=0;q<14;q++)parts.push({x:N.x,y:N.y,vx:rr(-90,90),vy:rr(-90,90),life:.6,max:.6,col:'#b8343a',s:4,f:N.f,rd:1});NPC=null;return;}
+  if(tileAt(N.f,N.x,N.y)===STAIR||(N.f===P.floor&&dP<75&&tileAt(P.floor,P.x,P.y)===STAIR)){const gx=P.floor===N.f?P.x:N.x,gy=P.floor===N.f?P.y:N.y,gf=P.floor===N.f?P.floor:N.f;dropGem(gf,gx+30,gy,0,'gold');const med=rand()<.5;if(med)dropGem(gf,gx-30,gy,0,'medkit');
+    for(let q=0;q<22;q++)parts.push({x:N.x,y:N.y,vx:rr(-140,140),vy:rr(-160,40),life:.8,max:.8,col:q%2?'#ffd36b':'#9fe8a0',s:6,f:N.f,sp:1});
+    banner('Ученик спасён!','Награда: золотой кристалл'+(med?' и аптечка':'')+' рядом с тобой',false);sfx('level');haptic('success');RUN.npcSaved=(RUN.npcSaved||0)+1;NPC=null;}}
+function drawNPC(){const N=NPC,r=N.r;ctx.save();ctx.translate(N.x,N.y);
+  if(N.st==='hide'){ctx.fillStyle='rgba(140,230,160,'+(.12+.08*Math.sin(N.t*4))+')';ctx.beginPath();ctx.arc(0,0,r*2.6,0,7);ctx.fill();}
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(0,r*.55,r*1.05,r*.45,0,0,7);ctx.fill();
+  if(N.hurtT>0)ctx.globalAlpha=.6+.4*Math.sin(time*40);if(N.st==='hide')ctx.scale(.85,.85);
+  drawHero(ctx,r,N.ang,N.st==='follow'?Math.sin(N.step||0):0,skinOf(N.skin));ctx.globalAlpha=1;
+  ctx.restore();ctx.save();ctx.translate(N.x,N.y);
+  if(N.st==='hide'){ctx.font='bold 18px "Dela Gothic One", sans-serif';ctx.textAlign='center';ctx.fillStyle='#ffd36b';ctx.fillText('!',0,-r-14+Math.sin(N.t*5)*2);}
+  else{const w=34,fr=Math.max(0,N.hp/N.maxHp);ctx.fillStyle='rgba(10,13,28,.8)';ctx.fillRect(-w/2-1,-r-17,w+2,6);ctx.fillStyle=fr>.5?'#6fd47a':fr>.25?'#f2c94c':'#e5484d';ctx.fillRect(-w/2,-r-16,w*fr,4);}
+  ctx.restore();}
+function drawNPCArrow(){const N=NPC;if(!N)return;ctx.save();
+  if(N.st==='hide'){if(N.f===P.floor){const dx=N.x-P.x,dy=N.y-P.y,d=Math.hypot(dx,dy);if(d>140){const a=Math.atan2(dy,dx);ctx.translate(P.x+Math.cos(a)*66,P.y+Math.sin(a)*66);ctx.rotate(a);ctx.fillStyle='rgba(140,240,170,'+(.7+.3*Math.sin(time*6))+')';ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-5,-8);ctx.lineTo(-1,0);ctx.lineTo(-5,8);ctx.fill();}}
+    else{ctx.fillStyle='#9fe8a0';ctx.font='bold 12px "M PLUS Rounded 1c", sans-serif';ctx.textAlign='center';ctx.fillText((stUpDir()*(N.f-P.floor)>0?'▲ ':'▼ ')+'ученик: '+floorName(N.f),P.x,P.y-60);}}
+  else if(N.f===P.floor){const F2=floors[P.floor];let best=null,bd=1e9;for(const i of F2.stairIdx){const x=(i%MW+.5)*T,y=(((i/MW)|0)+.5)*T,d=Math.hypot(x-P.x,y-P.y);if(d<bd){bd=d;best=[x,y];}}
+    if(best&&bd>90){const a=Math.atan2(best[1]-P.y,best[0]-P.x);ctx.translate(P.x+Math.cos(a)*66,P.y+Math.sin(a)*66);ctx.rotate(a);ctx.fillStyle='rgba(255,211,107,'+(.75+.25*Math.sin(time*6))+')';ctx.beginPath();ctx.moveTo(13,0);ctx.lineTo(-5,-9);ctx.lineTo(-1,0);ctx.lineTo(-5,9);ctx.fill();}}
+  ctx.restore();}
 function mimSpawn(){const f=P.floor,F=floors[f],si=Math.floor(P.y/T)*MW+Math.floor(P.x/T),d=buildField(f,[si]);const c=[];
   for(let i=0;i<MW*MH;i++){const v=d[i];if(v>=1e8||v<9||v>24)continue;const x=i%MW,y=(i/MW)|0,g=F.g[i];if(g===STAIR||g===ENTR||solidT(f,x,y))continue;
     if(solidT(f,x-1,y)||solidT(f,x+1,y)||solidT(f,x,y-1)||solidT(f,x,y+1))continue;c.push([Math.abs(v-15)+(F.roomId&&F.roomId[i]>=0?0:3)+rand()*4,i]);}
@@ -2887,6 +3030,7 @@ function damage(e,amt,nx,ny,kb,tick,cm){
   if(e.shield>0){const ab=Math.min(e.shield,amt);e.shield-=ab;amt-=ab;runDmg+=ab;e.hitT=.1;
     if(e.shield<=0){e.uni='deskz0';e.spd*=1.4;for(let q=0;q<10;q++)parts.push({x:e.x,y:e.y,vx:rr(-110,110),vy:rr(-110,110),life:.5,max:.5,col:q%2?'#c99a5e':'#8e6638',s:4,f:e.floor});tone(160,.12,'square',.03,.5);}
     if(amt<=0){if(!tick){addNum(e.x,e.y-e.r,ab,'#e3c79a');sfx('hit');}return;}}
+  if(crit&&!tick&&amt>=60&&critShT<=0&&e.floor===P.floor){critShT=.3;shake(Math.min(5,1.5+amt/80),.14);if(amt>=150)hitStop(.035);}
   runDmg+=Math.max(0,Math.min(amt,e.hp));e.hp-=amt;e.hitT=.1;
   if(dmgSrc&&!procLock&&P&&P.wprop&&P.wprop[dmgSrc])wProc(e,amt,crit,tick,P.wprop[dmgSrc]);
   const res=e.kind==='boss'?.06:e.kind==='sumo'||e.kind==='commuter'?.4:1;
@@ -2908,9 +3052,9 @@ function kill(e){
   decals.push({x:e.x,y:e.y,r:e.r*rr(.7,1.1),f:e.floor,t:0,rot:rand()*6});
   const restB=e.kind==='boss'&&e.B.trio?enemies.filter(o=>o.alive&&o.kind==='boss'&&o.name===e.name):[];
   if(restB.length){restB.forEach(o=>{o.spd*=1.25;o.dmg*=1.2;});for(let i=0;i<4;i++)dropGem(e.floor,e.x+rr(-40,40),e.y+rr(-40,40),12,'xp');
-    banner('Проверяющий выбыл','Осталось: '+restB.length+' — остальные злятся!',true);sfx('kill');}
+    banner('Проверяющий выбыл','Осталось: '+restB.length+' — остальные злятся!',true);sfx('kill');shake(7,.3);hitStop(.1);}
   else if(e.kind==='boss'){
-    runBosses.add(e.name);runBossKills++;
+    shake(13,.6);hitStop(.22);runBosses.add(e.name);runBossKills++;
     for(let i=0;i<10;i++)dropGem(e.floor,e.x+rr(-50,50),e.y+rr(-50,50),12,'xp');
     dropGem(e.floor,e.x,e.y+20,0,'heal');dropGem(e.floor,e.x+20,e.y,0,'mag');
     banner(e.name+(e.B.trio?' распущена!':' повержен!'),'Собери кристаллы',true);sfx('level');
@@ -2948,7 +3092,7 @@ function updatePlayer(dt){
   let tvx=0,tvy=0;
   if(l>.05){const k=Math.min(1,l)/l;mx*=k;my*=k;tvx=mx*S.spd;tvy=my*S.spd;P.face=[mx/Math.hypot(mx,my),my/Math.hypot(mx,my)];P.moving=true;P.step+=dt*10;}
   else P.moving=false;
-  if(P.pstunT>0){P.pstunT-=dt;tvx=0;tvy=0;}
+  if(P.pstunT>0){if(!P.stS){P.stS=1;sfx('pstun');}P.pstunT-=dt;tvx=0;tvy=0;}else P.stS=0;
   if(P.bleedT>0&&!retreat){P.bleedT-=dt;P.hp-=3*dt;lastHit='кровотечение: Хирург';if(rand()<dt*6)parts.push({x:P.x+rr(-6,6),y:P.y+rr(-6,6),vx:0,vy:20,life:.5,max:.5,col:'#c62a3c',s:3,f:P.floor});}
   {if(choirWas&&!retreat){tvx*=.65;tvy*=.65;}const Fw=floors[P.floor].water;if(Fw&&Fw[Math.floor(P.y/T)*MW+Math.floor(P.x/T)]){tvx*=.6;tvy*=.6;}const Fs=floors[P.floor].snow;if(Fs&&Fs[Math.floor(P.y/T)*MW+Math.floor(P.x/T)]){tvx*=.25;tvy*=.25;}
    for(const f of fxs)if(f.k==='mop'&&f.f===P.floor&&Math.hypot(f.x-P.x,f.y-P.y)<f.R){tvx*=.55;tvy*=.55;break;}}
@@ -2986,6 +3130,7 @@ function updateEnemies(dt){
   const qStun=cc('quantum');const S=stats(),zSpd=Math.min(2,1+.2*cc('crib'))*(RUN.ids.has('moon')?1.2:1)*(retreat?1.15:1),slipZ=RUN.ids.has('slippery'),windZ=RUN.ids.has('wind'),wZx=45*Math.sin(time*.35+1),wZy=15*Math.sin(time*.5),snowZ=RUN.ids.has('snow');
   for(const e of enemies){
     if(!e.alive)continue;
+    if(e.stunT>0){if(!e.stS){e.stS=1;if(e.floor===P.floor&&inView(e.x,e.y,0))sfx('zstun');}}else if(e.stS)e.stS=0;
     if(e.burnT>0){e.burnT-=dt;procLock=true;damage(e,e.burnDps*dt,0,0,0,true);procLock=false;if(rand()<dt*8)parts.push({x:e.x+rr(-6,6),y:e.y-6,vx:rr(-10,10),vy:-40,life:.4,max:.4,col:rand()<.5?'#ff8a3a':'#ffd36b',s:4,f:e.floor,rd:1});if(!e.alive)continue;}
     if(e.idle){if(e.floor===P.floor&&Math.abs(e.x-P.x)<340&&Math.abs(e.y-P.y)<340&&Math.hypot(e.x-P.x,e.y-P.y)<340&&losB(e.floor,e.x,e.y,P.x,P.y))wakeZ(e);else{e.vx*=.8;e.vy*=.8;e.kbx*=.85;e.kby*=.85;e.x+=e.kbx*dt;e.y+=e.kby*dt;continue;}}
     let dx=0,dy=0,tf=P.floor;e.tgSV=false;
@@ -3465,6 +3610,7 @@ function updateFx(dt){
   if(state==='play'&&P&&floors[P.floor].snow&&rand()<(P.floor===roofI()?.8:.35))parts.push({x:P.x+rr(-340,340),y:P.y+rr(-460,300),vx:rr(-15,15),vy:rr(40,70),life:2,max:2,col:'rgba(255,255,255,.8)',s:2.5,f:P.floor});
   flashT=Math.max(0,flashT-dt);
   for(const f of fxs){dmgSrc=f.w||null;
+    if(f.k==='boom'&&!f.sh){f.sh=1;if(f.f===P.floor&&(f.R||0)>=45&&inView(f.x,f.y,60))shake(Math.min(9,2+f.R/18),.22);}
     f.t+=dt;
     if(f.k==='pot'&&!f.hit&&f.t>=f.dur-.2){f.hit=true;forNear(f.f,f.x,f.y,f.R+24,e=>{const d=Math.hypot(e.x-f.x,e.y-f.y);if(d<f.R+e.cr){damage(e,f.dmg,(e.x-f.x)/(d||1),(e.y-f.y)/(d||1),140);if(f.st&&e.alive)e.stunT=Math.max(e.stunT||0,f.st);}});
       if(f.f===P.floor&&state==='play'&&!retreat&&P.inv<=0&&Math.hypot(P.x-f.x,P.y-f.y)<f.R+P.r*.5){P.hp-=Math.min(40,f.dmg*.25)*(curS?curS.arm:1);hurtT=1;sfx('hurt');lastHit='свой же цветочный горшок';haptic('light');}
@@ -3895,35 +4041,35 @@ const skinOf=id=>SKINS.find(k=>k.id===id)||SKINS[0];
 /* ---------- CHARACTERS ---------- */
 const CHARS={
  duty:{pool:['chalk','rag','bell','ruler','globe','ext','brush','plane','musicbox'],hp:100,spd:150,w:[['chalk',1]],p:[],xpm:1.1,perk:'+10% опыта — она привыкла к дежурствам.'},
- gakuran:{pool:['bell','chalk','ruler','plane','globe','camera','magnifier','drone','joystick','phone'],hp:100,spd:145,w:[['bell',1]],p:[['badge',1]],perk:'Начинает со звонком и значком старосты.',unlock:{k:'best',v:300,t:'Продержаться 5:00 в одном забеге'}},
- kendo:{pool:['shinai','kanabo','bow','shuriken','pan','bell','ball'],hp:130,spd:140,w:[['shinai',2]],p:[],perk:'Много здоровья, синай сразу 2-го уровня.',unlock:{k:'kills',v:1000,t:'Убить 1000 зомби за все забеги'}},
- track:{pool:['ball','rope','shuriken','plane','ruler','globe','bubble','paint'],hp:85,spd:178,w:[['ball',1]],p:[['shoes',1]],perk:'Самая быстрая, но хрупкая.',unlock:{k:'level',v:15,t:'Достичь 15-го уровня в одном забеге'}},
- nurse:{hp:110,spd:150,w:[['scissors',1]],p:[['bento',2]],healMul:2,perk:'Онигири лечат вдвое сильнее, сразу есть регенерация.',unlock:{k:'best',v:600,t:'Продержаться 10:00 в одном забеге'}},
+ gakuran:{pool:['bell','chalk','ruler','plane','globe','camera','magnifier','drone','joystick','phone'],hp:100,spd:145,w:[['bell',1]],p:[['badge',1]],perk:'Начинает со звонком и значком старосты.',unlock:{k:'kills',v:500,t:'Убить 500 зомби за все забеги'}},
+ kendo:{pool:['shinai','kanabo','bow','shuriken','pan','bell','ball'],hp:130,spd:140,w:[['shinai',2]],p:[],perk:'Много здоровья, синай сразу 2-го уровня.',unlock:{k:'kills',v:1500,t:'Убить 1500 зомби за все забеги'}},
+ track:{pool:['ball','rope','shuriken','plane','ruler','globe','bubble','paint'],hp:85,spd:178,w:[['ball',1]],p:[['shoes',1]],perk:'Самая быстрая, но хрупкая.',unlock:{k:'kills',v:3000,t:'Убить 3000 зомби за все забеги'}},
+ nurse:{hp:110,spd:150,w:[['scissors',1]],p:[['bento',2]],healMul:2,perk:'Онигири лечат вдвое сильнее, сразу есть регенерация.',unlock:{k:'days',v:14,t:'Заходить в игру 14 разных дней'}},
  chem:{pool:['ext','acid','tesla','bubble','magnifier','fire','globe'],hp:90,spd:145,w:[['ext',2]],p:[['watch',1]],perk:'Огнетушитель 2-го уровня и быстрая перезарядка.',unlock:{k:'boss',v:'Завуч',t:'Победить Завуча'}},
- ghost:{pool:['ofuda','brush','scissors','tesla','camera','bubble','bell'],hp:70,spd:160,w:[['ofuda',1],['scissors',1]],p:[],armMul:.75,perk:'Два оружия сразу. Укусы ранят на 25% слабее — зомби промахиваются.',unlock:{k:'win',v:1,t:'Встретить рассвет'}},
- oni:{pool:['kanabo','fire','ofuda','pan','bell','ball','shinai'],hp:150,spd:135,w:[['kanabo',1]],p:[],life:.5,perk:'Огромный и выносливый: лечится на 0,5 HP за каждого убитого зомби. Начинает с канабо.',unlock:{k:'bossAll',v:3,t:'Победить Завуча, Директора и Физрука (за все забеги)'}},
- kyudo:{pool:['bow','shuriken','ofuda','plane','ruler','shinai','magnifier'],hp:90,spd:155,w:[['bow',2]],p:[],crit:.15,perk:'+15% к шансу крита. Начинает с луком кюдо 2-го уровня.',unlock:{k:'level',v:25,t:'Достичь 25-го уровня в одном забеге'}},
+ ghost:{pool:['ofuda','brush','scissors','tesla','camera','bubble','bell'],hp:70,spd:160,w:[['ofuda',1],['scissors',1]],p:[],armMul:.75,perk:'Два оружия сразу. Укусы ранят на 25% слабее — зомби промахиваются.',unlock:{k:'mapFull',m:'school',v:1,t:'Выжить 15 минут в Школе'}},
+ oni:{pool:['kanabo','fire','ofuda','pan','bell','ball','shinai'],hp:150,spd:135,w:[['kanabo',1]],p:[],life:.5,perk:'Огромный и выносливый: лечится на 0,5 HP за каждого убитого зомби. Начинает с канабо.',unlock:{k:'allChars',v:29,t:'Открыть всех остальных 29 персонажей'}},
+ kyudo:{pool:['bow','shuriken','ofuda','plane','ruler','shinai','magnifier'],hp:90,spd:155,w:[['bow',2]],p:[],crit:.15,perk:'+15% к шансу крита. Начинает с луком кюдо 2-го уровня.',unlock:{k:'days',v:3,t:'Заходить в игру 3 разных дня'}},
  chef:{pool:['pan','scissors','fire','bubble','ext','rag','pots'],hp:120,spd:140,w:[['pan',1]],p:[['bento',1]],healMul:3,perk:'Онигири лечат втрое сильнее. Начинает со сковородой и бэнто.',unlock:{k:'boss',v:'Повар столовой',t:'Победить Повара столовой'}},
- hacker:{pool:['drone','tesla','camera','boombox','magnifier','plane','globe','paint','cards','joystick','phone'],hp:85,spd:150,w:[['drone',1]],p:[['watch',1]],cdMul:.85,perk:'Оружие перезаряжается на 15% быстрее. Начинает с дроном и часами.',unlock:{k:'win',v:3,t:'Встретить рассвет 3 раза'}},
+ hacker:{pool:['drone','tesla','camera','boombox','magnifier','plane','globe','paint','cards','joystick','phone'],hp:85,spd:150,w:[['drone',1]],p:[['watch',1]],cdMul:.85,perk:'Оружие перезаряжается на 15% быстрее. Начинает с дроном и часами.',unlock:{k:'days',v:10,t:'Заходить в игру 10 разных дней'}},
  taiko:{pool:['boombox','bell','fire','kanabo','rope','ball','shinai'],hp:110,spd:145,w:[['boombox',2]],p:[],areaMul:1.2,perk:'Все атаки на 20% шире. Начинает с магнитофоном 2-го уровня.',unlock:{k:'boss',v:'Учительница музыки',t:'Победить Учительницу музыки'}},
- occult:{pool:['tesla','ofuda','brush','acid','bubble','camera','scissors','cards'],hp:80,spd:150,w:[['tesla',1]],p:[],revive:1,startCurse:true,perk:'Начинает со случайным рискованным предметом и одним вторым шансом. Оружие: катушка Теслы.',unlock:{k:'curses',v:5,t:'Собрать 5 рискованных предметов в одном забеге'}},
+ occult:{pool:['tesla','ofuda','brush','acid','bubble','camera','scissors','cards'],hp:80,spd:150,w:[['tesla',1]],p:[],revive:1,startCurse:true,perk:'Начинает со случайным рискованным предметом и одним вторым шансом. Оружие: катушка Теслы.',unlock:{k:'days',v:7,t:'Заходить в игру 7 разных дней'}},
  ninjac:{pool:['shuriken','ruler','scissors','plane','fire','rope','bow','cards'],hp:85,spd:175,w:[['shuriken',2]],p:[],armMul:.8,perk:'Очень быстрая, укусы ранят на 20% слабее. Начинает с сюрикенами 2-го уровня.',unlock:{k:'boss',v:'Председатель школьного совета',t:'Победить Председателя школьного совета'}},
- senpai:{pool:['fire','ball','kanabo','pan','rope','shinai','bell','paint','cards'],hp:130,spd:160,w:[['fire',2],['ball',2]],p:[],xpm:.9,closeDm:1.5,kbMul:1.5,armMul:.85,perk:'Дерётся вблизи: по зомби рядом с ним урон +50%, отбрасывает их на 50% сильнее, укусы ранят на 15% слабее. Учиться не любит — опыта на 10% меньше. Начинает с петардами и бейсбольным мячом 2-го уровня.',unlock:{k:'allChars',v:15,t:'Открыть 15 персонажей (не считая тех, что появились в версии 1.3)'}},
- cat:{pool:['chalk','ball','rope','scissors','bubble','plane','globe','cards'],hp:90,spd:165,w:[['chalk',1]],p:[['magnet',2]],revive:1,perk:'Девять жизней: один раз за забег встаёт после поражения.',unlock:{k:'kills',v:5000,t:'Убить 5000 зомби за все забеги'}},
+ senpai:{pool:['fire','ball','kanabo','pan','rope','shinai','bell','paint','cards'],hp:130,spd:160,w:[['fire',2],['ball',2]],p:[],xpm:.9,closeDm:1.5,kbMul:1.5,armMul:.85,perk:'Дерётся вблизи: по зомби рядом с ним урон +50%, отбрасывает их на 50% сильнее, укусы ранят на 15% слабее. Учиться не любит — опыта на 10% меньше. Начинает с петардами и бейсбольным мячом 2-го уровня.',unlock:{k:'boss',v:'Огромный краб',t:'Победить Огромного краба'}},
+ cat:{pool:['chalk','ball','rope','scissors','bubble','plane','globe','cards'],hp:90,spd:165,w:[['chalk',1]],p:[['magnet',2]],revive:1,perk:'Девять жизней: один раз за забег встаёт после поражения.',unlock:{k:'kills',v:6000,t:'Убить 6000 зомби за все забеги'}},
  honor:{pool:['magnifier','chalk','ruler','globe','plane','camera','tesla','drone','phone'],hp:85,spd:150,w:[['magnifier',2]],p:[['notebook',1]],xpm:1.25,crit:.05,late:true,perk:'+25% опыта и +5% к шансу крита. Начинает с лупой 2-го уровня и тетрадью отличника.',unlock:{k:'boss',v:'Учитель математики',t:'Победить Учителя математики'}},
  gym:{pool:['rope','ball','ruler','shuriken','bubble','plane','globe','paint'],hp:90,spd:172,w:[['rope',2]],p:[['shoes',1]],armMul:.9,late:true,perk:'Очень быстрая и ловкая: укусы ранят на 10% слабее. Начинает со скакалкой 2-го уровня и сменкой.',unlock:{k:'boss',v:'Дежурный',t:'Победить Дежурного'}},
  photo:{pool:['camera','magnifier','drone','plane','tesla','boombox','globe','paint','musicbox','phone'],hp:95,spd:152,w:[['camera',2]],p:[['flashlight',1]],crit:.1,cdMul:.92,late:true,perk:'+10% к шансу крита, оружие перезаряжается на 8% быстрее. Начинает с фотоаппаратом 2-го уровня и фонариком.',unlock:{k:'boss',v:'Комиссия',t:'Победить Комиссию'}},
  transfer:{hp:100,spd:155,w:[],p:[],rnd:true,xpm:1.1,late:true,perk:'Каждый забег начинает со случайным оружием 2-го уровня и случайным предметом. +10% опыта.',unlock:{k:'kills',v:15000,t:'Убить 15 000 зомби за все забеги'}},
  sumo:{hp:160,spd:125,w:[['stomp',1]],p:[],armMul:.8,kbMul:1.5,late:true,pool:['stomp','ball','kanabo','pan','bell','fire'],perk:'Огромный и непробиваемый: укусы ранят на 20% слабее, отбрасывает в 1,5 раза сильнее. Его оружие — топот: звуковая волна отталкивает зомби и ранит на 3, а прижатых к стене — на 6.',unlock:{k:'boss',v:'Гигантский осьминог',t:'Победить Гигантского осьминога'}},
- bookworm:{hp:80,spd:145,w:[['ruler',2]],p:[['notebook',1]],xpm:1.3,late:true,pool:['ruler','plane','magnifier','globe','chalk','brush','camera'],perk:'+30% опыта, но хрупкий. Начинает с линейкой 2-го уровня и тетрадью отличника.',unlock:{k:'level',v:20,t:'Достичь 20-го уровня в одном забеге'}},
- rocker:{hp:105,spd:150,w:[['boombox',2]],p:[],areaMul:1.25,late:true,pool:['boombox','bell','fire','tesla','rope','kanabo'],perk:'Громкий: все атаки на 25% шире. Начинает с магнитофоном 2-го уровня.',unlock:{k:'mapWin',m:'metro',v:1,t:'Встретить рассвет в Метро'}},
- janitor:{hp:110,spd:145,w:[['rag',2]],p:[['armband',1]],armMul:.85,late:true,pool:['rag','ext','bubble','acid','brush','pots','scissors'],perk:'Привычная к грязи: укусы ранят на 15% слабее. Начинает с мокрой тряпкой 2-го уровня и повязкой дежурного.',unlock:{k:'mapWin',m:'shop',v:1,t:'Встретить рассвет в Супермаркете'}},
- soccer:{hp:100,spd:168,w:[['ball',2]],p:[['shoes',1]],kbMul:1.3,late:true,pool:['ball','rope','globe','shuriken','plane','ruler','bell','paint'],perk:'Быстрый, отбрасывает на 30% сильнее. Начинает с мячом 2-го уровня и сменкой.',unlock:{k:'runs',v:20,t:'Сыграть 20 забегов'}},
- sensei:{hp:95,spd:145,w:[['chalk',2],['bell',1]],p:[],cdMul:.85,late:true,pool:['chalk','bell','ruler','globe','camera','magnifier','plane'],perk:'Опытная: оружие перезаряжается на 15% быстрее. Начинает с мелом 2-го уровня и звонком.',unlock:{k:'win',v:10,t:'Встретить рассвет 10 раз'}},
- miko:{hp:90,spd:150,w:[['ofuda',2]],p:[],revive:1,healMul:1.5,late:true,pool:['ofuda','bell','bow','brush','magnifier','tesla'],perk:'Жрица храма: один второй шанс, лечение на 50% сильнее. Начинает с талисманами офуда 2-го уровня.',unlock:{k:'mapWin',m:'cemetery',v:1,t:'Встретить рассвет на Кладбище'}},
- inventor:{hp:90,spd:145,w:[['drone',2]],p:[['magnet',1]],cdMul:.9,crit:.05,late:true,pool:['joystick','drone','tesla','magnifier','camera','globe','pots','boombox','paint'],perk:'Перезарядка на 10% быстрее, +5% крита. Начинает с дроном 2-го уровня и магнитом.',unlock:{k:'mapWin',m:'hospital',v:1,t:'Встретить рассвет в Больнице'}},
- tanuki:{hp:100,spd:155,w:[['pots',1],['ball',1]],p:[],luckMul:2,late:true,pool:['pots','ball','fire','bubble','rope','globe','kanabo','cards'],perk:'Талисман школы: удача ×2 — еда, аптечки и магниты выпадают вдвое чаще. Начинает с горшками и мячом.',unlock:{k:'mapWin',m:'flats',v:1,t:'Встретить рассвет в Пятиэтажке'}},
- garden:{pool:['pots','rag','ext','scissors','bubble','magnifier','acid','musicbox'],hp:115,spd:145,w:[['pots',2]],p:[['bento',1]],healMul:1.5,areaMul:1.1,late:true,perk:'Онигири лечат на 50% сильнее, атаки на 10% шире. Начинает с цветочными горшками 2-го уровня и бэнто.',unlock:{k:'level',v:35,t:'Достичь 35-го уровня в одном забеге'}},
+ bookworm:{hp:80,spd:145,w:[['ruler',2]],p:[['notebook',1]],xpm:1.3,late:true,pool:['ruler','plane','magnifier','globe','chalk','brush','camera'],perk:'+30% опыта, но хрупкий. Начинает с линейкой 2-го уровня и тетрадью отличника.',unlock:{k:'kills',v:30000,t:'Убить 30 000 зомби за все забеги'}},
+ rocker:{hp:105,spd:150,w:[['boombox',2]],p:[],areaMul:1.25,late:true,pool:['boombox','bell','fire','tesla','rope','kanabo'],perk:'Громкий: все атаки на 25% шире. Начинает с магнитофоном 2-го уровня.',unlock:{k:'mapFull',m:'metro',v:1,t:'Выжить 15 минут в Метро'}},
+ janitor:{hp:110,spd:145,w:[['rag',2]],p:[['armband',1]],armMul:.85,late:true,pool:['rag','ext','bubble','acid','brush','pots','scissors'],perk:'Привычная к грязи: укусы ранят на 15% слабее. Начинает с мокрой тряпкой 2-го уровня и повязкой дежурного.',unlock:{k:'mapFull',m:'shop',v:1,t:'Выжить 15 минут в Супермаркете'}},
+ soccer:{hp:100,spd:168,w:[['ball',2]],p:[['shoes',1]],kbMul:1.3,late:true,pool:['ball','rope','globe','shuriken','plane','ruler','bell','paint'],perk:'Быстрый, отбрасывает на 30% сильнее. Начинает с мячом 2-го уровня и сменкой.',unlock:{k:'days',v:5,t:'Заходить в игру 5 разных дней'}},
+ sensei:{hp:95,spd:145,w:[['chalk',2],['bell',1]],p:[],cdMul:.85,late:true,pool:['chalk','bell','ruler','globe','camera','magnifier','plane'],perk:'Опытная: оружие перезаряжается на 15% быстрее. Начинает с мелом 2-го уровня и звонком.',unlock:{k:'mapsFull',v:3,t:'Выжить 15 минут на 3 разных картах'}},
+ miko:{hp:90,spd:150,w:[['ofuda',2]],p:[],revive:1,healMul:1.5,late:true,pool:['ofuda','bell','bow','brush','magnifier','tesla'],perk:'Жрица храма: один второй шанс, лечение на 50% сильнее. Начинает с талисманами офуда 2-го уровня.',unlock:{k:'mapFull',m:'cemetery',v:1,t:'Выжить 15 минут на Кладбище'}},
+ inventor:{hp:90,spd:145,w:[['drone',2]],p:[['magnet',1]],cdMul:.9,crit:.05,late:true,pool:['joystick','drone','tesla','magnifier','camera','globe','pots','boombox','paint'],perk:'Перезарядка на 10% быстрее, +5% крита. Начинает с дроном 2-го уровня и магнитом.',unlock:{k:'mapFull',m:'hospital',v:1,t:'Выжить 15 минут в Больнице'}},
+ tanuki:{hp:100,spd:155,w:[['pots',1],['ball',1]],p:[],luckMul:2,late:true,pool:['pots','ball','fire','bubble','rope','globe','kanabo','cards'],perk:'Талисман школы: удача ×2 — еда, аптечки и магниты выпадают вдвое чаще. Начинает с горшками и мячом.',unlock:{k:'mapFull',m:'flats',v:1,t:'Выжить 15 минут в Пятиэтажке'}},
+ garden:{pool:['pots','rag','ext','scissors','bubble','magnifier','acid','musicbox'],hp:115,spd:145,w:[['pots',2]],p:[['bento',1]],healMul:1.5,areaMul:1.1,late:true,perk:'Онигири лечат на 50% сильнее, атаки на 10% шире. Начинает с цветочными горшками 2-го уровня и бэнто.',unlock:{k:'mapsFull',v:6,t:'Выжить 15 минут на всех 6 картах'}},
 };
 const charOf=id=>CHARS[id]||CHARS.duty;
 function loadProg(){
@@ -3933,9 +4079,13 @@ function loadProg(){
 }
 let prog=loadProg(), runBosses=new Set(), committed=true, notified=new Set(), runUnlocks=[], runMapUnlocks=[];
 function saveProg(){try{localStorage.setItem('szz-prog',JSON.stringify(prog));}catch(e){}}
-function progCur(u,pr){switch(u.k){case 'best':return pr.best;case 'kills':return pr.kills;case 'level':return pr.level;case 'win':return pr.wins;case 'boss':return pr.bosses.includes(u.v)?1:0;case 'curses':return pr.curses||0;case 'runs':return pr.runs||0;case 'mapWin':return (pr.mapWins&&pr.mapWins[u.m])||0;case 'hardNoHeal':return pr.hardNoHeal||0;case 'bossAll':return BOSS3.filter(b=>pr.bosses.includes(b)).length;case 'allChars':return SKINS.filter(k=>{const C=charOf(k.id),u=C.unlock;return !(u&&u.k==='allChars')&&!C.late&&isUnlocked(k.id,pr);}).length;}return 0;}
-function isUnlocked(id,pr){const u=charOf(id).unlock;if(!u)return true;pr=pr||prog;return u.k==='boss'?pr.bosses.includes(u.v):progCur(u,pr)>=u.v;}
-function liveProg(){if(committed)return prog;return {runs:prog.runs||0,mapWins:prog.mapWins||{},hardNoHeal:prog.hardNoHeal||0,curses:Math.max(prog.curses||0,P.curses.length),kills:prog.kills+kills,wins:prog.wins,best:Math.max(prog.best,time),level:Math.max(prog.level,P.level),bosses:prog.bosses.concat([...runBosses])};}
+function progCur(u,pr){switch(u.k){case 'best':return pr.best;case 'kills':return pr.kills;case 'level':return pr.level;case 'win':return pr.wins;case 'boss':return pr.bosses.includes(u.v)?1:0;case 'curses':return pr.curses||0;case 'runs':return pr.runs||0;case 'mapWin':return (pr.mapWins&&pr.mapWins[u.m])||0;case 'hardNoHeal':return pr.hardNoHeal||0;case 'bossAll':return BOSS3.filter(b=>pr.bosses.includes(b)).length;case 'allChars':return SKINS.filter(k=>{const u=charOf(k.id).unlock;return !(u&&u.k==='allChars')&&isUnlocked(k.id,pr);}).length;case 'mapFull':return (pr.mapFull&&pr.mapFull[u.m])||0;case 'mapsFull':return pr.mapFull?Object.keys(pr.mapFull).filter(k=>pr.mapFull[k]>0).length:0;case 'days':return (pr.days||[]).length;case 'bossKills':return pr.bossKills||0;}return 0;}
+const OLDU={gakuran:{k:'best',v:300,t:'Продержаться 5:00 в одном забеге'},kendo:{k:'kills',v:1000,t:'Убить 1000 зомби за все забеги'},track:{k:'level',v:15,t:'Достичь 15-го уровня в одном забеге'},cat:{k:'kills',v:5000,t:'Убить 5000 зомби за все забеги'},transfer:{k:'kills',v:15000,t:'Убить 15 000 зомби за все забеги'},bookworm:{k:'level',v:20,t:'Достичь 20-го уровня в одном забеге'},ghost:{k:'win',v:1,t:'Встретить рассвет'},janitor:{k:'mapWin',m:'shop',v:1,t:'Встретить рассвет в Супермаркете'},tanuki:{k:'mapWin',m:'flats',v:1,t:'Встретить рассвет в Пятиэтажке'},inventor:{k:'mapWin',m:'hospital',v:1,t:'Встретить рассвет в Больнице'},miko:{k:'mapWin',m:'cemetery',v:1,t:'Встретить рассвет на Кладбище'},rocker:{k:'mapWin',m:'metro',v:1,t:'Встретить рассвет в Метро'},sensei:{k:'win',v:10,t:'Встретить рассвет 10 раз'},garden:{k:'level',v:35,t:'Достичь 35-го уровня в одном забеге'},chem:{k:'boss',v:'Завуч',t:'Победить Завуча'},chef:{k:'boss',v:'Повар столовой',t:'Победить Повара столовой'},taiko:{k:'boss',v:'Учительница музыки',t:'Победить Учительницу музыки'},ninjac:{k:'boss',v:'Председатель школьного совета',t:'Победить Председателя школьного совета'},honor:{k:'boss',v:'Учитель математики',t:'Победить Учителя математики'},gym:{k:'boss',v:'Дежурный',t:'Победить Дежурного'},photo:{k:'boss',v:'Комиссия',t:'Победить Комиссию'},sumo:{k:'boss',v:'Гигантский осьминог',t:'Победить Гигантского осьминога'},senpai:{k:'allChars',v:15,t:'Открыть 15 персонажей (не считая тех, что появились в версии 1.3)'},kyudo:{k:'level',v:25,t:'Достичь 25-го уровня в одном забеге'},soccer:{k:'runs',v:20,t:'Сыграть 20 забегов'},occult:{k:'curses',v:5,t:'Собрать 5 рискованных предметов в одном забеге'},hacker:{k:'win',v:3,t:'Встретить рассвет 3 раза'},nurse:{k:'best',v:600,t:'Продержаться 10:00 в одном забеге'},oni:{k:'bossAll',v:3,t:'Победить Завуча, Директора и Физрука (за все забеги)'}};
+function oldUnl(id,pr){const u=OLDU[id];if(!u)return true;if(u.k==='boss')return pr.bosses.includes(u.v);if(u.k==='allChars')return SKINS.filter(k=>{const v=OLDU[k.id];return !(v&&v.k==='allChars')&&!charOf(k.id).late&&oldUnl(k.id,pr);}).length>=u.v;return progCur(u,pr)>=u.v;}
+function isUnlocked(id,pr){const u=charOf(id).unlock;if(!u)return true;pr=pr||prog;if(prog.legacy&&prog.legacy.includes(id))return true;if(u.k==='allChars')return SKINS.filter(k=>k.id!==id&&isUnlocked(k.id,pr)).length>=u.v;return u.k==='boss'?pr.bosses.includes(u.v):progCur(u,pr)>=u.v;}
+(function(){try{const d=new Date(),ds=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();prog.days=Array.isArray(prog.days)?prog.days:[];let ch=false;if(!prog.days.includes(ds)){prog.days.push(ds);if(prog.days.length>400)prog.days=prog.days.slice(-400);ch=true;}
+  if(!prog.legacyV){prog.legacy=SKINS.filter(k=>oldUnl(k.id,prog)).map(k=>k.id);prog.legacyV=1;ch=true;}if(ch)saveProg();}catch(e){}})();
+function liveProg(){if(committed)return prog;return {legacy:prog.legacy,days:prog.days,mapFull:prog.mapFull||{},bossKills:(prog.bossKills||0)+runBossKills,runs:prog.runs||0,mapWins:prog.mapWins||{},hardNoHeal:prog.hardNoHeal||0,curses:Math.max(prog.curses||0,P.curses.length),kills:prog.kills+kills,wins:prog.wins,best:Math.max(prog.best,time),level:Math.max(prog.level,P.level),bosses:prog.bosses.concat([...runBosses])};}
 function commitRun(win){
   if(committed)return;committed=true;
   if(RUN.mode==='tutorial'){if(win){prog.tutDone=1;saveProg();}return;}
@@ -4203,7 +4353,7 @@ function kitHTML(C){
   return C.w.map(([id,l])=>'<span class="slot" data-t="w" data-id="'+id+'" title="'+WDEF[id].name+'">'+IC[WDEF[id].icon]+'<b>'+l+'</b></span>').join('')+
     C.p.map(([id,l])=>'<span class="slot pas" data-t="p" data-id="'+id+'" title="'+PDEF[id].name+'">'+IC[PDEF[id].icon]+'<b>'+l+'</b></span>').join('');
 }
-let skPage=-1;
+let skPage=-1,skPop=null;
 function skGo(p){const box=$('#skins'),n=Math.ceil(SKINS.length/6);p=Math.max(0,Math.min(n-1,p));box.scrollTo({left:p*box.clientWidth,behavior:'smooth'});}
 function skSync(){const box=$('#skins'),n=Math.ceil(SKINS.length/6),p=box.clientWidth?Math.round(box.scrollLeft/box.clientWidth):0;skPage=p;
   $('#skPrev').disabled=p<=0;$('#skNext').disabled=p>=n-1;$('#skPg').textContent=(p+1)+' / '+n;
@@ -4219,9 +4369,10 @@ function renderSkins(){
     drawHero(x,17,Math.PI/2,0,S);
     const n=document.createElement('span');n.textContent=open?S.name:'Закрыт';
     b.appendChild(c);b.appendChild(n);
-    b.addEventListener('click',()=>{skinId=S.id;if(open){try{localStorage.setItem('szz-skin',S.id);}catch(e){}if(P&&state==='menu')P.skin=S.id;}renderSkins();});
+    if(skPop&&skPop.id===S.id)b.classList.add(skPop.ok?'pop':'nope');
+    b.addEventListener('click',()=>{skPop={id:S.id,ok:open};skinId=S.id;if(open){try{localStorage.setItem('szz-skin',S.id);}catch(e){}if(P&&state==='menu')P.skin=S.id;}renderSkins();});
     page.appendChild(b);
-  });
+  });skPop=null;
   const n=Math.ceil(SKINS.length/6),dots=$('#skDots');dots.innerHTML='';for(let i=0;i<n;i++){const d=document.createElement('i');d.addEventListener('click',()=>skGo(i));dots.appendChild(d);}
   if(first){const si=SKINS.findIndex(k=>k.id===skinId);requestAnimationFrame(()=>{box.scrollLeft=Math.floor(Math.max(0,si)/6)*box.clientWidth;skSync();});}else box.scrollLeft=keep;
   skSync();
@@ -4251,6 +4402,7 @@ function render(){
   const vwW=vw/zoom,vwH=vh/zoom;
   camX=WW<=vwW?(WW-vwW)/2:Math.max(0,Math.min(WW-vwW,P.x-vwW/2));
   camY=WH<=vwH?(WH-vwH)/2:Math.max(0,Math.min(WH-vwH,P.y-vwH/2));
+  if(shakeT>0){const k=shakeA*Math.min(1,shakeT/shakeD);camX+=(Math.random()*2-1)*k;camY+=(Math.random()*2-1)*k;}
   if(quakeT>0&&state==='play'){camX+=rr(-4,4);camY+=rr(-4,4);}
   const s=dpr*zoom;ctx.setTransform(s,0,0,s,-camX*s,-camY*s);
   const sx=Math.max(0,camX),sy=Math.max(0,camY),sw=Math.min(WW-sx,vwW+2),sh=Math.min(WH-sy,vwH+2);
@@ -4307,7 +4459,7 @@ function render(){
   for(const e of vis)drawZombieFast(e);
   if(SV&&SV.go&&!SV.dead&&SV.floor===P.floor){const g2=SV.go;ctx.save();ctx.strokeStyle='rgba(120,230,150,.5)';ctx.lineWidth=3;ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo(SV.x,SV.y);ctx.lineTo(g2.x,g2.y);ctx.stroke();ctx.setLineDash([]);
     ctx.fillStyle='rgba(120,230,150,.18)';ctx.beginPath();ctx.arc(g2.x,g2.y,26+4*Math.sin(time*5),0,7);ctx.fill();ctx.strokeStyle='#7ee69a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(g2.x-4,g2.y+14);ctx.lineTo(g2.x-4,g2.y-22);ctx.stroke();ctx.fillStyle='#7ee69a';ctx.beginPath();ctx.moveTo(g2.x-4,g2.y-22);ctx.lineTo(g2.x+18,g2.y-15);ctx.lineTo(g2.x-4,g2.y-8);ctx.closePath();ctx.fill();ctx.restore();}
-  if(SV&&!SV.escaped&&SV.floor===P.floor)drawSurvivor();if(MIM&&MIM.f===P.floor)drawMimic();drawMimArrow();
+  if(SV&&!SV.escaped&&SV.floor===P.floor)drawSurvivor();if(MIM&&MIM.f===P.floor)drawMimic();drawMimArrow();if(NPC&&NPC.f===P.floor)drawNPC();drawNPCArrow();
   drawPlayer();
   for(const w of P.weapons){
     if(w.id==='rope'&&state!=='menu'){const D=WDEF.rope,L=w.lvl-1,X=curS&&curS.wx?curS.wx.rope||0:0,n=Math.min(4,ws(D,'n',L)+AMT()),Ln=ws(D,'r',L)*AREA()*(1+.12*X);
@@ -4525,7 +4677,7 @@ function startGame(){
   P=newPlayer();enemies=[];projs=[];zprojs=[];fxs=[];parts=[];gems=[];nums=[];decals=[];boxes=[];
   buildWorld();{const ST=MAPCUR.start||[22,12];P.x=(ST[0]+.5)*T;P.y=(ST[1]+.5)*T;P.floor=0;}SV=null;if(MODE==='guard')placeSurvivor();if(MODE==='tutorial'&&!isUnlocked(skinId)){}TUT=MODE==='tutorial'?{step:0,t:0,dist:0,lx:P.x,ly:P.y,slowOk:false}:null;const rid=++runId;committed=false;runBosses=new Set();runUnlocks=[];runMapUnlocks=[];notified=new Set(SKINS.filter(S=>isUnlocked(S.id)).map(S=>S.id));
   retreat=false;retreatT=0;left=0;exitField=null;time=0;kills=0;spawnAcc=0;pendingLv=0;eventIdx=0;bossIdx=0;hurtT=0;fade=1;lastRoom='';pfKey=-1;
-  recT=60;MIM=null;phCharge=null;{const tb=$('#trainBtn');if(tb)tb.hidden=MODE!=='train';}{const c=$('#phCirc');if(c)c.hidden=true;}OCT=null;CRB=null;octoBlocks=[];flankF=[null,null,null,null];flankT=0;flankKey=-1;curS=null;lastHit='';pendRise=[];RW=[];rwT=0;reviveFx=0;rwFx=0;slowT=0;slowCd=0;runHealPicked=false;runReal=0;runGems=0;runPicks=0;runBossKills=0;flashT=0;stormT=6;quarOpen=false;quakeT=0;quakeCd=rr(22,35);debT=0;goldT=40;runDmg=0;bonusLv=0;bonusSrc='';suitPick=false;ambT=4;pendAmb=[];ambHint=false;
+  recT=60;MIM=null;NPC=null;phCharge=null;{const tb=$('#trainBtn');if(tb)tb.hidden=MODE!=='train';}{const c=$('#phCirc');if(c)c.hidden=true;}OCT=null;CRB=null;octoBlocks=[];flankF=[null,null,null,null];flankT=0;flankKey=-1;curS=null;lastHit='';pendRise=[];RW=[];rwT=0;reviveFx=0;rwFx=0;slowT=0;slowCd=0;runHealPicked=false;runReal=0;runGems=0;runPicks=0;runBossKills=0;flashT=0;stormT=6;quarOpen=false;quakeT=0;quakeCd=rr(22,35);debT=0;goldT=40;runDmg=0;bonusLv=0;bonusSrc='';suitPick=false;ambT=4;pendAmb=[];ambHint=false;
   if(QUAR)QUAR.forEach(q=>{const F=floors[q.f];for(let k=0,m=0;k<80&&m<7;k++){const x=q.r.x0+((rand()*(q.r.x1-q.r.x0+1))|0),y=q.r.y0+((rand()*(q.r.y1-q.r.y0+1))|0);if(SOLID[F.g[y*MW+x]])continue;enemies.push(makeZombie(rand()<.2?'sumo':'student',q.f,x*T+T/2,y*T+T/2));m++;}});
   for(const k in H)delete H[k];for(const k in HW)delete HW[k];
   if(RUN.ids.has('gift')){const own=P.weapons.map(w=>w.id);{const cand=Object.keys(WDEF).filter(id=>!own.includes(id)&&wPoolOk(id));if(cand.length)P.weapons.push({id:pick(cand),lvl:2,t:.5});}}
@@ -4614,7 +4766,7 @@ for(const k in IC)IC[k]=icStyle(IC[k]);
 setSound(muted);
 $('#startBtn').addEventListener('click',startGame);
 $('#rerollBtn').addEventListener('click',doReroll);
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.tile');if(!b||b.disabled||b.closest('#lvup')||b.id==='sndBtn')return;if(ac)sfx('ui');},true);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button,.tile');if(!b||b.disabled||b.closest('#lvup')||b.id==='sndBtn')return;initAudio();sfx('ui');},true);
 $('#adRerollBtn').addEventListener('click',adReroll);
 $('#trainBtn').addEventListener('click',e=>{e.stopPropagation();trainOpen();});$('#tSearch').addEventListener('input',e=>{TRN.q=e.target.value;renderTrain();});$('#tClose').addEventListener('click',trainClose);
 {const c=$('#phCirc');const on=e=>{e.preventDefault();e.stopPropagation();if(phCharge){phCharge.hold=true;c.classList.add('on');try{c.setPointerCapture(e.pointerId);}catch(_){}}};const off=()=>{if(phCharge){phCharge.hold=false;}c.classList.remove('on');};c.addEventListener('pointerdown',on);c.addEventListener('pointerup',off);c.addEventListener('pointercancel',off);c.addEventListener('lostpointercapture',off);}
@@ -4644,6 +4796,9 @@ function openPSet(){$('#setHost').appendChild(document.querySelector('.setlist')
 function closePSet(){$('#mvSet').appendChild(document.querySelector('.setlist'));hideOv('setOv');showOv('pause');}
 $('#pSetBtn').addEventListener('click',openPSet);$('#setBack').addEventListener('click',closePSet);
 $('#restartBtn').addEventListener('click',()=>{commitRun(false);hideOv('pause');hideOv('statsOv');startGame();});
+{const all=[...document.querySelectorAll('.musSl')],labs=[...document.querySelectorAll('.musVal')];
+  const sync=()=>{all.forEach(x=>x.value=String(Math.round(MVOL*100)));labs.forEach(l=>l.textContent=Math.round(MVOL*100)+'%');};sync();
+  all.forEach(vs=>vs.addEventListener('input',()=>{MVOL=(+vs.value)/100;sync();try{localStorage.setItem('szz-mvol',String(MVOL));}catch(e){}}));}
 {const all=[...document.querySelectorAll('.volSl')],labs=[...document.querySelectorAll('.volVal')];
   const sync=()=>{all.forEach(x=>x.value=String(Math.round(VOL*100)));labs.forEach(l=>l.textContent=Math.round(VOL*100)+'%');};sync();
   all.forEach(vs=>{vs.addEventListener('input',()=>{VOL=(+vs.value)/100;sync();try{localStorage.setItem('szz-vol',String(VOL));}catch(e){}if(VOL>0&&muted)setSound(false);});
@@ -4687,6 +4842,7 @@ document.querySelectorAll('#menu .mback').forEach(b=>b.addEventListener('click',
 $('#charOk').addEventListener('click',()=>mView('Home'));
 $('#gfxBtn2').addEventListener('click',()=>{qi=(qi+1)%QDPR.length;perfAcc=0;perfN=0;resize();gfxLabel();});
 $('#setSmooth').addEventListener('click',()=>{SET.smooth=!SET.smooth;saveSet();renderSet();});
+$('#setShake').addEventListener('click',()=>{SET.shake=SET.shake===false;saveSet();renderSet();if(SET.shake)shake(8,.3);});
 $('#setNums').addEventListener('click',()=>{SET.nums=!SET.nums;saveSet();renderSet();});
 $('#setJoy').addEventListener('click',()=>{SET.joy=!SET.joy;saveSet();renderSet();});
 $('#kbReset').addEventListener('click',()=>{SET.kb=Object.assign({},KBDEF);bindWait=null;saveSet();renderKB();updHint();});
@@ -4743,13 +4899,17 @@ function frame(now){
 }
 function frameInner(now){
   frameNo++;
-  const rawDt=now-last;let dt=Math.min(.05,rawDt/1000);last=now;try{phTick(state==='play'?dt:0);}catch(_){}
+  const rawDt=now-last;let dt=Math.min(.05,rawDt/1000);last=now;
+  try{audioTick(Math.min(.05,rawDt/1000));}catch(_){}
+  if(shakeT>0){shakeT=Math.max(0,shakeT-Math.min(.05,rawDt/1000));if(!shakeT)shakeA=0;}if(critShT>0)critShT-=dt;
+  if(hitStopT>0&&state==='play'){hitStopT-=dt;dt*=.12;}try{phTick(state==='play'?dt:0);}catch(_){}
   if(state==='play'&&rawDt<250){perfAcc+=rawDt;perfN++;if(perfN>=90){const avg=perfAcc/perfN;perfAcc=0;perfN=0;if(avg>21&&qi<QDPR.length-1){qi++;resize();}}}else{perfAcc=0;perfN=0;}
   if(state==='play'){
     runReal+=dt;if(!retreat)time+=dt*Math.min(5,1+cc('clock')+(RUN.mode==='quick'?1:0));else retreatT+=dt;
     if(pl('mp3')&&!P.rwUsed){rwT-=dt;if(rwT<=0){rwT=4;rwSnap();}}
     if(slowT>0)slowT-=dt;if(slowCd>0)slowCd=Math.max(0,slowCd-dt);const zk=slowT>0?.25:1;
-    updatePlayer(dt);if(TUT)updateTut(dt);updateSpawns(dt);buildHash();updateEnemies(dt*zk);updateWeapons(dt);updateProjs(dt,zk);updateFx(dt);dmgSrc=null;updateGems(dt);pGuard();
+    updatePlayer(dt);if(TUT)updateTut(dt);updateSpawns(dt);buildHash();updateEnemies(dt*zk);updateWeapons(dt);updateProjs(dt,zk);updateFx(dt);dmgSrc=null;updateGems(dt);pGuard();npcTick(dt);
+    {const dh=(P.hpPrev===undefined?P.hp:P.hpPrev)-P.hp;if(dh>=10){shake(Math.min(10,2+dh/3),.25);if(dh>=22)hitStop(.06);}P.hpPrev=P.hp;}
     enemies=enemies.filter(e=>e.alive);
     if((unlockT-=dt)<=0&&RUN.mode!=='train'){unlockT=1;checkUnlocks();}
     if(RUN.mode==='train'&&TRN.god&&P.hp<P.maxHp*.25)P.hp=P.maxHp*.25;
