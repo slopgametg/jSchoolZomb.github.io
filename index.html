@@ -276,6 +276,50 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
 .credits span{color:var(--gold);letter-spacing:.06em}
 .chalk-doodle{position:absolute;right:14px;top:12px;font:800 11px/1.2 var(--body);color:rgba(238,242,230,.45);text-align:right;transform:rotate(3deg)}
 
+
+/* codex progress + boss chest */
+.cxprog{margin:0 0 10px;background:rgba(0,0,0,.2);border-radius:10px;padding:8px 12px;font:800 12px/1.2 var(--body);color:var(--chalk);display:flex;align-items:center;gap:10px}
+.cxprog b{white-space:nowrap;font-variant-numeric:tabular-nums}.cxprog .bar{flex:1;height:8px;border-radius:99px;background:rgba(0,0,0,.35);overflow:hidden}.cxprog .bar i{display:block;height:100%;background:linear-gradient(90deg,#7dff9a,#ffd36b);border-radius:99px}
+.cxprog.full{color:var(--gold)}
+.tile.unk .tpic{filter:brightness(0) opacity(.5)!important}.tile.unk span{color:var(--muted)}
+#cxToast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9;pointer-events:none;background:rgba(10,24,20,.9);border:2px solid var(--gold);color:var(--chalk);font:800 12.5px/1.2 var(--body);padding:7px 13px;border-radius:99px;opacity:0;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+#cxToast.show{animation:cxT 2.8s ease both}
+@keyframes cxT{0%{opacity:0;transform:translate(-50%,10px)}10%,82%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-6px)}}
+.chestbox{text-align:center;width:min(460px,94vw)}
+.chestbox h2{margin:2px 0 4px}.chestbox h2,.chestbox .kicker,.chestbox .row{position:relative;z-index:3}
+.chestArt{position:relative;width:150px;height:128px;margin:16px auto 2px}
+.chestArt svg{position:relative;width:150px;height:128px;overflow:visible;z-index:1;display:block}
+.chestArt .rays{position:absolute;left:50%;top:46%;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,220,120,.42) 0 10deg,transparent 10deg 30deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 66%);mask:radial-gradient(circle,#000 18%,transparent 66%);opacity:0;transform:scale(.4);transition:opacity .4s,transform .5s;pointer-events:none}
+.chestArt.open .rays{opacity:1;transform:scale(1);animation:raySpin 7s linear infinite}
+@keyframes raySpin{from{transform:scale(1) rotate(0)}to{transform:scale(1) rotate(360deg)}}
+.chestArt .lid{transform-origin:25px 64px;transition:transform .4s cubic-bezier(.2,1.7,.4,1)}
+.chestArt.open .lid{transform:translate(-2px,-17px) rotate(-14deg)}
+.chestArt .glow{opacity:0;transform-origin:75px 62px;transform:scale(.5);transition:opacity .3s,transform .45s}
+.chestArt.open .glow{opacity:1;transform:scale(1.25)}
+.chestArt.pop svg{animation:chIn .5s cubic-bezier(.2,1.6,.4,1) both}
+.chestArt.shake svg{animation:chShake .3s ease-in-out 3}
+@keyframes chIn{from{transform:scale(.3) translateY(30px);opacity:0}to{transform:none;opacity:1}}
+@keyframes chShake{0%,100%{transform:none}25%{transform:rotate(-7deg) translateY(-3px)}75%{transform:rotate(7deg) translateY(-3px)}}
+.chestArt .sp{position:absolute;left:50%;top:48%;width:7px;height:7px;border-radius:2px;background:#ffd36b;z-index:2;pointer-events:none;animation:chSp .9s cubic-bezier(.1,.7,.3,1) forwards}
+@keyframes chSp{from{transform:translate(-50%,-50%) scale(1);opacity:1}to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.3) rotate(220deg);opacity:0}}
+.chTier{font:28px/1.1 var(--display);color:var(--gold);min-height:32px;opacity:0;transform:scale(.4);transition:transform .4s cubic-bezier(.2,1.9,.4,1),opacity .2s}
+.chTier.on{opacity:1;transform:none}
+.chTier.t3{color:#7dff9a;text-shadow:0 0 16px rgba(125,255,154,.55)}
+.chTier.t5{color:#ff9ad8;text-shadow:0 0 18px rgba(255,120,200,.6);animation:t5h 1.2s linear infinite}
+@keyframes t5h{to{filter:hue-rotate(360deg)}}
+.chSlots{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:8px 0 10px;min-height:108px}
+.chSlot{width:74px;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0;transform:translateY(14px) scale(.9);transition:opacity .25s,transform .3s cubic-bezier(.2,1.5,.4,1)}
+.chSlot.in{opacity:1;transform:none}
+.chSlot .reel{width:58px;height:58px;border-radius:12px;background:rgba(0,0,0,.38);border:2px solid rgba(238,242,230,.3);display:grid;place-items:center;overflow:hidden}
+.chSlot .reel span{width:44px;height:44px;display:block}.chSlot .reel svg{width:100%;height:100%;display:block}
+.chSlot.spin .reel span{filter:blur(.6px);animation:reelJ .07s linear infinite}
+@keyframes reelJ{0%{transform:translateY(-5px)}100%{transform:translateY(5px)}}
+.chSlot.done .reel{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,211,107,.2),0 0 18px rgba(255,211,107,.4);animation:chPop .42s cubic-bezier(.2,1.7,.4,1)}
+@keyframes chPop{0%{transform:scale(.85)}50%{transform:scale(1.14)}100%{transform:none}}
+.chSlot b{font:800 10.5px/1.15 var(--body);color:var(--chalk);min-height:25px;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.chSlot em{font:800 10px/1 var(--body);font-style:normal;color:var(--gold);min-height:10px}
+@media (max-width:420px){.chSlot{width:58px}.chSlot .reel{width:50px;height:50px}.chSlot .reel span{width:38px;height:38px}.chSlot b{font-size:9.5px}}
+@media (prefers-reduced-motion:reduce){.chestArt *,.chestArt svg,.chSlot .reel span{animation:none!important}}
 /* level up cards */
 .cards{display:flex;flex-direction:column;gap:10px;margin-top:14px}
 #cards.anyp{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));max-height:min(58vh,520px);overflow-y:auto;gap:6px;padding:2px}
@@ -468,6 +512,7 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
 
 <div id="errToast" hidden style="position:fixed;z-index:20;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 40px);transform:translateX(-50%);max-width:90vw;background:rgba(120,20,30,.92);color:#fff;font:700 11px/1.35 var(--body);padding:6px 10px;border-radius:8px;pointer-events:none;text-align:center"></div>
 <div id="banner"><div class="t" id="banT"></div><div class="s" id="banS"></div></div>
+<div id="cxToast" aria-live="polite"></div>
 <div id="phCirc" hidden><i></i><span id="phCircT">Держи</span></div>
 <button id="slowBtn" hidden aria-label="Замедлить время" title="Замедлить время (пробел)"><i id="slowCd"></i><span>⏳</span><b id="slowNum"></b><em id="slowRdy">ГОТОВО</em></button>
 <div id="stairs" hidden>
@@ -549,6 +594,17 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
     <h2 id="lvTitle">Уровень 2</h2>
     <div class="cards" id="cards"></div>
     <div class="row" style="margin-top:10px;justify-content:center"><button class="btn ghost small" id="rerollBtn" type="button" hidden>🍀 Перекрутить</button><button class="btn ghost small adbtn" id="adRerollBtn" type="button" hidden>📺 Перекрутить за рекламу</button></div>
+  </div>
+</div>
+
+<div class="ov" id="chestOv" hidden>
+  <div class="boardbox chestbox">
+    <div class="kicker" id="chKick">Награда за победу над боссом</div>
+    <h2 id="chTitle">Сундук босса</h2>
+    <div class="chestArt" id="chArt"></div>
+    <div class="chTier" id="chTier"></div>
+    <div class="chSlots" id="chSlots"></div>
+    <div class="row" style="justify-content:center"><button class="btn" id="chTake" type="button">Забрать</button></div>
   </div>
 </div>
 
@@ -1117,7 +1173,7 @@ function mapOf(id){return MAPS.find(m=>m.id===id)||MAPS[0];}
 function mapPrev(id){const i=MAPS.findIndex(m=>m.id===id);return i>0?MAPS[i-1]:null;}
 function mapOpen(id){const pv=mapPrev(id);return !pv||((prog.mapFull||{})[pv.id]||0)>0;}
 function mapLockText(id){const pv=mapPrev(id);return 'Откроется, когда ты полностью продержишься до рассвета (15:00) на карте «'+pv.name+'» в режиме «Обычный», «Хардкор» или «Защита выжившего». «Короткая смена», «Сокращённый день» и «Сломанные часы» не засчитываются.';}
-const NEWS=['Анимированные кнопки выбора карты, персонажа и режима: иконки покачиваются, выбранный вариант мягко светится, при выборе — «пружинка» и золотое кольцо, а закрытые варианты встряхиваются.','Новые звуки: оглушение (у зомби — короткий «бонк», у тебя — «звёздочки» над головой), приятный щелчок у всех кнопок. В паузе музыка и звуки окружения затихают.','Фоновая музыка, которая меняется вместе с ночью: спокойная в начале, тревожная к середине, мрачная к утру, боевая при боссе и светлая на рассвете. Громкость — в настройках.','Звуки окружения: гул ламп и капли в школе, ветер и вороны на крыше и кладбище, кассы и объявления в супермаркете, поезда в метро, мониторы в больнице.','Новые условия открытия персонажей: выживание 15 минут на картах, убийства зомби, победы над боссами, заходы в игру в разные дни и последний — за всех остальных. Уже открытые персонажи остаются открытыми.','Немного изменены характеристики предметов: одни чуть сильнее, другие чуть слабее.','Тряска экрана и короткое «замедление удара»: при взрывах, сильных критах, мощных ударах по тебе и особенно при победе над боссом. Отключается в настройках.','Иногда в здании прячется ученик (жёлтый «!», к нему ведёт зелёная стрелка). Подойди — он пойдёт за тобой; доведи его до лестницы и получи золотой кристалл, а иногда и аптечку. Береги его от зомби!','Новое оружие — Джойстик: луч управления делает задетых зомби союзниками — они дерутся с сородичами, постепенно теряя здоровье. Предмет «Сенсорный джойстик» делает атаку круговой.','Ножницы стали бить сильнее (примерно +20% урона).','Кнопка замедления времени стала понятнее: на перезарядке видно секунды до готовности, а когда она снова доступна — кнопка светится золотом, звенит и показывает «ГОТОВО».','Тренировка: поиск по меню, вкладка «Особое» (выживший, мимик, свойства оружия) и настройка характеристик — скорость, урон, перезарядка, радиус, получаемый урон, здоровье.','Новая рискованная карточка «Таинственная наклейка»: случайное оружие получает новое свойство (заморозка, мелки, пузыри, молнии, поджог, оглушение, отталкивание или крит-всплеск), но ты получаешь на 35% больше урона.','Разбитая копилка стала Лотерейным билетом — действие прежнее.','Школа: на 2-м этаже вместо туалетов и кладовых — открытые рекреации с автоматами и скамейками. Крыша перестроена: спортплощадка, солнечные панели, теплица и метеостанция вместо водонапорного бака.','По кнопке «Играть» в главном меню пробегает блик.','Новое оружие — Музыкальная шкатулка: мелодия ранит зомби вокруг. Бегай кругами — зомби в зоне закружатся вместе с мелодией и будут получать половину урона каждые 0,5 с.','Лук: стрелы теперь бьют только одного зомби, зато урон выше. Новый предмет «Колчан мастера» — выбери огненные, ледяные, расщепляющиеся или тяжёлые стрелы.','Новая рискованная карточка «Учебник квантовой физики»: выбери любое оружие или предмет из всего списка, но каждая атака зомби оглушает тебя на 0,1 с (до 5 с).','Новый зомби — Мимик: притворяется выжившим и зовёт на помощь, а когда подходишь — превращается в случайного босса с половиной здоровья.','Новый режим — Тренировка: призывай любых зомби и боссов, выдавай любое оружие, предметы и карточки через меню 🛠.','Меню паузы стало компактнее, а главное меню и выбор улучшений — анимированными.','Исправлено: краб и другие боссы больше не выталкивают тебя за стены и ограждения, а экран завершения забега открывается надёжнее.','Телефон теперь оружие: круговая вибро-волна, эхо-волны от убитых зомби и +5% к скорости за волну без убийств (удар по тебе сбрасывает бонус). Батарея иногда садится — заряди, удерживая кружки на экране. Рискованная карточка «Телефон» убрана.','Новое условие дня — «Последний день»: зомби вдвое больше, и они лезут чаще.','Появление окна улучшений теперь сопровождается звуком.','Новые условия дня: «Золотая лихорадка» — из зомби иногда выпадают золотые кристаллы на целый уровень, но зомби крепче; «Большая перемена» — каждые 75 секунд по этажу проносится толпа бегунов.','Игра работает плавнее: облегчены иконки, цифры урона, частицы и кристаллы. Если кристаллов на карте слишком много, дальние сливаются в один крупный.','Выбор улучшения теперь звучит по-разному: новое оружие, прокачка оружия, новый предмет, прокачка предмета и рискованная карточка. При наведении на карточку — лёгкий щелчок.','Новая атака у боссов — таран: под оранжевой стрелкой босс замирает, а затем бросается вперёд и расталкивает всех зомби на пути. Не стой у него на линии!','Новое условие дня — «Урезанный выбор»: на новом уровне только 2 карточки улучшений.','Использованные Омамори и Плеер пропадают из ячеек слева и освобождают место под новый предмет. Разовые рискованные карточки тоже больше не висят слева после срабатывания.','Новый предмет для Колоды карт — Джокер в рукаве: каждый третий бросок добавляет Джокера ★, который бьёт в 1,5 раза сильнее и отскакивает от зомби к зомби.','Звуки атак стали разнообразнее: к прежним добавились новые варианты, а у линейки, самолётика, мыльных пузырей, горшков и петард появился свой звук.','Обновлённые иконки: тёмная обводка и мягкая тень. Мел, огнетушитель, тряпка, дрон, топот сумоиста и катушка Теслы перерисованы.','Школа: на 2-м этаже вместо кладовых теперь туалеты, а на 1-м этаже у лестниц больше нет пролёта вниз.','Новые звуки: шипение огнетушителя на старте и всю струю, звон за серии убийств и кристаллов, звук выбора улучшения и перекрутки, щелчки кнопок меню, мелодии победы и поражения.','Хардкор стал вдвое суровее: зомби вдвое крепче и кусают на 60% сильнее, боссы на 60% крепче, еда и аптечки выпадают вчетверо реже. Бонус опыта прежний — +20%.','Обучение стало короче — 2 минуты — и теперь в нём есть шаг про сборку билда. При первом запуске игра предложит его пройти.','Новые эффекты: светящиеся кристаллы, кольца при убийстве, вспышка нового уровня, «прыгающие» цифры урона.','Клавиши на компьютере можно переназначить в настройках: движение, пауза, замедление времени и лестницы.','В выборе карты появились 12 закрытых карт — они ещё в разработке.','Физрук делает два рывка подряд, а его аура свистка ускоряет зомби рядом на 50%.','Защита выжившего: каждые 2–5 минут выживший обязательно меняет укрытие и идёт на новое место — прикрой его по пути. Время до переезда видно под его здоровьем.','Новый босс — Огромный краб: может появиться на любой карте. Носится по диагонали, бьёт клешнями по кругу и широкой дугой с отбрасыванием, делает молниеносные рывки и комбинирует атаки. На половине здоровья звереет.','Новое оружие — Колода карт. К нему 4 предмета: Козырная карта (карта зависает на зомби, крутится и взрывается), Дополнительная карта, Дизайнерская колода (эффект по масти: червы взрываются, трефы оглушают, бубны отталкивают, пики переманивают зомби на твою сторону) и Выбор масти.','Новые предметы: Рикошетные шарики для пейнтбольного ружья, Пакет льда (ледяной след замедляет зомби и заменяет кисть) и рискованная карточка «Чистый лист» — стирает всё и даёт выбрать заново.','Магазин стал Супермаркетом: два этажа, эскалатор, много отделов и цветной пол.','Больница перестроена: приёмный покой, травмпункт, аптека, морг, хирургия, реанимация и детское отделение — без школьных подсобок. Медсёстры там встречаются на 30% чаще.','Пятиэтажка: в квартирах теперь гостиная, спальня, кухня, ванная и прихожая с подходящей мебелью.','Метро: новый вестибюль с кассами, турникетами и эскалатором. Поезда длиннее на 10 вагонов, иногда идут сразу два, а иногда поезд встаёт на пару минут и перекрывает путь.','Машинист: поезд-призрак идёт по ряду, столбцу или диагонали и может сразу помчаться обратно. Ещё Машинист делает рывки.','Зомби ищут обходные пути и заходят с разных сторон. Часть зомби по-прежнему идёт напролом.','Тележка у зомби перерисована.','Сквозь стены бьют только удары вблизи, волны, молнии и падающие горшки. Стреляющее оружие целится только в тех, кого видно, а его снаряды разбиваются о стены и укрытия.','Оглушение теперь действует и на боссов.','Пейнтбольное ружьё: урон уменьшен в 3 раза. Мини-глобусы уменьшают глобусы до ×0,7 за уровень.','Землетрясение случается вдвое чаще.','Сумоист открывается за победу над Гигантским осьминогом.'];
+const NEWS=['Сундук босса: с каждого побеждённого босса падает сундук (на краю экрана к нему ведёт оранжевая стрелка). Подбери его — сундук трясётся, распахивается, и рулетка выдаёт 1, 3 или 5 улучшений твоего оружия и предметов.','Справочник с прогрессом: пока зомби, оружие, предметы и находки не встречены, они скрыты как «???». У каждого раздела есть счётчик «Собрано», а в игре появляется подсказка «Новое в справочнике».','Анимированные кнопки выбора карты, персонажа и режима: иконки покачиваются, выбранный вариант мягко светится, при выборе — «пружинка» и золотое кольцо, а закрытые варианты встряхиваются.','Новые звуки: оглушение (у зомби — короткий «бонк», у тебя — «звёздочки» над головой), приятный щелчок у всех кнопок. В паузе музыка и звуки окружения затихают.','Фоновая музыка, которая меняется вместе с ночью: спокойная в начале, тревожная к середине, мрачная к утру, боевая при боссе и светлая на рассвете. Громкость — в настройках.','Звуки окружения: гул ламп и капли в школе, ветер и вороны на крыше и кладбище, кассы и объявления в супермаркете, поезда в метро, мониторы в больнице.','Новые условия открытия персонажей: выживание 15 минут на картах, убийства зомби, победы над боссами, заходы в игру в разные дни и последний — за всех остальных. Уже открытые персонажи остаются открытыми.','Немного изменены характеристики предметов: одни чуть сильнее, другие чуть слабее.','Тряска экрана и короткое «замедление удара»: при взрывах, сильных критах, мощных ударах по тебе и особенно при победе над боссом. Отключается в настройках.','Иногда в здании прячется ученик (жёлтый «!», к нему ведёт зелёная стрелка). Подойди — он пойдёт за тобой; доведи его до лестницы и получи золотой кристалл, а иногда и аптечку. Береги его от зомби!','Новое оружие — Джойстик: луч управления делает задетых зомби союзниками — они дерутся с сородичами, постепенно теряя здоровье. Предмет «Сенсорный джойстик» делает атаку круговой.','Ножницы стали бить сильнее (примерно +20% урона).','Кнопка замедления времени стала понятнее: на перезарядке видно секунды до готовности, а когда она снова доступна — кнопка светится золотом, звенит и показывает «ГОТОВО».','Тренировка: поиск по меню, вкладка «Особое» (выживший, мимик, свойства оружия) и настройка характеристик — скорость, урон, перезарядка, радиус, получаемый урон, здоровье.','Новая рискованная карточка «Таинственная наклейка»: случайное оружие получает новое свойство (заморозка, мелки, пузыри, молнии, поджог, оглушение, отталкивание или крит-всплеск), но ты получаешь на 35% больше урона.','Разбитая копилка стала Лотерейным билетом — действие прежнее.','Школа: на 2-м этаже вместо туалетов и кладовых — открытые рекреации с автоматами и скамейками. Крыша перестроена: спортплощадка, солнечные панели, теплица и метеостанция вместо водонапорного бака.','По кнопке «Играть» в главном меню пробегает блик.','Новое оружие — Музыкальная шкатулка: мелодия ранит зомби вокруг. Бегай кругами — зомби в зоне закружатся вместе с мелодией и будут получать половину урона каждые 0,5 с.','Лук: стрелы теперь бьют только одного зомби, зато урон выше. Новый предмет «Колчан мастера» — выбери огненные, ледяные, расщепляющиеся или тяжёлые стрелы.','Новая рискованная карточка «Учебник квантовой физики»: выбери любое оружие или предмет из всего списка, но каждая атака зомби оглушает тебя на 0,1 с (до 5 с).','Новый зомби — Мимик: притворяется выжившим и зовёт на помощь, а когда подходишь — превращается в случайного босса с половиной здоровья.','Новый режим — Тренировка: призывай любых зомби и боссов, выдавай любое оружие, предметы и карточки через меню 🛠.','Меню паузы стало компактнее, а главное меню и выбор улучшений — анимированными.','Исправлено: краб и другие боссы больше не выталкивают тебя за стены и ограждения, а экран завершения забега открывается надёжнее.','Телефон теперь оружие: круговая вибро-волна, эхо-волны от убитых зомби и +5% к скорости за волну без убийств (удар по тебе сбрасывает бонус). Батарея иногда садится — заряди, удерживая кружки на экране. Рискованная карточка «Телефон» убрана.','Новое условие дня — «Последний день»: зомби вдвое больше, и они лезут чаще.','Появление окна улучшений теперь сопровождается звуком.','Новые условия дня: «Золотая лихорадка» — из зомби иногда выпадают золотые кристаллы на целый уровень, но зомби крепче; «Большая перемена» — каждые 75 секунд по этажу проносится толпа бегунов.','Игра работает плавнее: облегчены иконки, цифры урона, частицы и кристаллы. Если кристаллов на карте слишком много, дальние сливаются в один крупный.','Выбор улучшения теперь звучит по-разному: новое оружие, прокачка оружия, новый предмет, прокачка предмета и рискованная карточка. При наведении на карточку — лёгкий щелчок.','Новая атака у боссов — таран: под оранжевой стрелкой босс замирает, а затем бросается вперёд и расталкивает всех зомби на пути. Не стой у него на линии!','Новое условие дня — «Урезанный выбор»: на новом уровне только 2 карточки улучшений.','Использованные Омамори и Плеер пропадают из ячеек слева и освобождают место под новый предмет. Разовые рискованные карточки тоже больше не висят слева после срабатывания.','Новый предмет для Колоды карт — Джокер в рукаве: каждый третий бросок добавляет Джокера ★, который бьёт в 1,5 раза сильнее и отскакивает от зомби к зомби.','Звуки атак стали разнообразнее: к прежним добавились новые варианты, а у линейки, самолётика, мыльных пузырей, горшков и петард появился свой звук.','Обновлённые иконки: тёмная обводка и мягкая тень. Мел, огнетушитель, тряпка, дрон, топот сумоиста и катушка Теслы перерисованы.','Школа: на 2-м этаже вместо кладовых теперь туалеты, а на 1-м этаже у лестниц больше нет пролёта вниз.','Новые звуки: шипение огнетушителя на старте и всю струю, звон за серии убийств и кристаллов, звук выбора улучшения и перекрутки, щелчки кнопок меню, мелодии победы и поражения.','Хардкор стал вдвое суровее: зомби вдвое крепче и кусают на 60% сильнее, боссы на 60% крепче, еда и аптечки выпадают вчетверо реже. Бонус опыта прежний — +20%.','Обучение стало короче — 2 минуты — и теперь в нём есть шаг про сборку билда. При первом запуске игра предложит его пройти.','Новые эффекты: светящиеся кристаллы, кольца при убийстве, вспышка нового уровня, «прыгающие» цифры урона.','Клавиши на компьютере можно переназначить в настройках: движение, пауза, замедление времени и лестницы.','В выборе карты появились 12 закрытых карт — они ещё в разработке.','Физрук делает два рывка подряд, а его аура свистка ускоряет зомби рядом на 50%.','Защита выжившего: каждые 2–5 минут выживший обязательно меняет укрытие и идёт на новое место — прикрой его по пути. Время до переезда видно под его здоровьем.','Новый босс — Огромный краб: может появиться на любой карте. Носится по диагонали, бьёт клешнями по кругу и широкой дугой с отбрасыванием, делает молниеносные рывки и комбинирует атаки. На половине здоровья звереет.','Новое оружие — Колода карт. К нему 4 предмета: Козырная карта (карта зависает на зомби, крутится и взрывается), Дополнительная карта, Дизайнерская колода (эффект по масти: червы взрываются, трефы оглушают, бубны отталкивают, пики переманивают зомби на твою сторону) и Выбор масти.','Новые предметы: Рикошетные шарики для пейнтбольного ружья, Пакет льда (ледяной след замедляет зомби и заменяет кисть) и рискованная карточка «Чистый лист» — стирает всё и даёт выбрать заново.','Магазин стал Супермаркетом: два этажа, эскалатор, много отделов и цветной пол.','Больница перестроена: приёмный покой, травмпункт, аптека, морг, хирургия, реанимация и детское отделение — без школьных подсобок. Медсёстры там встречаются на 30% чаще.','Пятиэтажка: в квартирах теперь гостиная, спальня, кухня, ванная и прихожая с подходящей мебелью.','Метро: новый вестибюль с кассами, турникетами и эскалатором. Поезда длиннее на 10 вагонов, иногда идут сразу два, а иногда поезд встаёт на пару минут и перекрывает путь.','Машинист: поезд-призрак идёт по ряду, столбцу или диагонали и может сразу помчаться обратно. Ещё Машинист делает рывки.','Зомби ищут обходные пути и заходят с разных сторон. Часть зомби по-прежнему идёт напролом.','Тележка у зомби перерисована.','Сквозь стены бьют только удары вблизи, волны, молнии и падающие горшки. Стреляющее оружие целится только в тех, кого видно, а его снаряды разбиваются о стены и укрытия.','Оглушение теперь действует и на боссов.','Пейнтбольное ружьё: урон уменьшен в 3 раза. Мини-глобусы уменьшают глобусы до ×0,7 за уровень.','Землетрясение случается вдвое чаще.','Сумоист открывается за победу над Гигантским осьминогом.'];
 
 /* ---------- MAIN MENU ---------- */
 const MODES={normal:{name:'Обычный',d:'Продержись до рассвета — 15:00. Классические правила.'},
@@ -1146,6 +1202,7 @@ function renderHome(){
   const md=document.createElement('div');md.className='mapic';md.innerHTML=MODEIC[MODE];mk('Режим',MODES[MODE].name,'Mode',md);
   const sb=$('#startBtn');sb.disabled=!open;sb.textContent=open?'Играть':'Персонаж закрыт';
   $('#best').textContent=bestText();
+  try{const s=document.querySelector('#menu .mgrid button[data-v="Info"] span');if(s){const q=cxCount();s.textContent='собрано '+q.got+' из '+q.tot;}}catch(_){}
 }
 const MODEIC={clear:'<svg viewBox="0 0 40 40" width="40" height="40"><circle cx="20" cy="20" r="13" fill="none" stroke="#ff8a8a" stroke-width="3.5"/><circle cx="20" cy="20" r="4" fill="#ff8a8a"/><path d="M20 2v9M20 29v9M2 20h9M29 20h9" stroke="#f4f1e8" stroke-width="3" stroke-linecap="round"/></svg>',tutorial:'<svg viewBox="0 0 40 40" width="40" height="40"><path d="M4 14l16-8 16 8-16 8z" fill="#f2c94c"/><path d="M11 18v8c0 3 4 5 9 5s9-2 9-5v-8l-9 4.5z" fill="#d9b23a"/></svg>',guard:'<svg viewBox="0 0 40 40" width="40" height="40"><path d="M20 4l13 5v9c0 9-6 15-13 18C13 33 7 27 7 18V9z" fill="#5aa35d" stroke="#e8f4e0" stroke-width="2.5"/><path d="M20 13v12M14 19h12" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>',normal:'<svg viewBox="0 0 40 40" width="40" height="40"><circle cx="20" cy="22" r="13" fill="#f4f1e8"/><path d="M20 13v9l6 4" stroke="#1b2a24" stroke-width="3" fill="none" stroke-linecap="round"/></svg>',
  quick:'<svg viewBox="0 0 40 40" width="40" height="40"><path d="M22 4L9 23h9l-2 13 15-20h-9z" fill="#ffd36b"/></svg>',
@@ -1156,7 +1213,7 @@ function mkPager(host,items,cur,onPick){
   host.innerHTML='';const box=document.createElement('div');box.className='skins';host.appendChild(box);
   const n=Math.max(1,Math.ceil(items.length/6));let page=null;
   items.forEach((it,i)=>{if(i%6===0){page=document.createElement('div');page.className='skinpage';box.appendChild(page);}
-    const b=document.createElement('button');b.type='button';b.className='skin tile'+(it.pic==null?' txt':'')+(it.locked?' locked':'');b.setAttribute('aria-pressed',String(it.key===cur));
+    const b=document.createElement('button');b.type='button';b.className='skin tile'+(it.pic==null?' txt':'')+(it.locked?' locked':'')+(it.cls?' '+it.cls:'');b.setAttribute('aria-pressed',String(it.key===cur));
     const pc=document.createElement('div');pc.className='tpic'+(it.pic==null?' none':'');if(typeof it.pic==='string')pc.innerHTML=it.pic;else if(it.pic)pc.appendChild(it.pic);b.appendChild(pc);
     const sp=document.createElement('span');sp.textContent=it.name;b.appendChild(sp);if(it.tick){const t=document.createElement('i');t.className='tick';t.textContent=it.tick;b.appendChild(t);}
     b.addEventListener('click',()=>{box.querySelectorAll('.tile').forEach(q=>{q.setAttribute('aria-pressed',String(q===b));q.classList.remove('pop','nope');});void b.offsetWidth;b.classList.add(it.locked?'nope':'pop');onPick(it,i);});page.appendChild(b);});
@@ -2599,8 +2656,8 @@ function ambEvents(dt,id){const E=MUS.ev,t=ac.currentTime+.02,due=(k,a,b)=>{if(E
   else if(id==='cemetery'){if(due('crow',7,16))crow(t,B);if(due('bell',40,70))mNote(196,t,3.5,'sine',.03,{att:.005,hold:.05,bus:B});}}
 function crow(t,B){const n=2+(Math.random()*2|0);for(let k=0;k<n;k++){const tt=t+k*.32;mNote(rr(620,760),tt,.2,'sawtooth',.012,{slide:.7,att:.01,hold:.3,lp:1600,bus:B});mNoise(tt,.18,.02,1300,1.8,'bandpass',B);}}
 function audioTick(dt){if(!ac)return;if(!MUS)musInit();if(!MUS)return;const ct=ac.currentTime;
-  const playing=P&&(state==='play'||state==='levelup'||state==='pause'||state==='train'||state==='revive');
-  const hid=document.hidden,act=state==='play'?1:(state==='levelup'||state==='revive')?.45:0;
+  const playing=P&&(state==='play'||state==='levelup'||state==='chest'||state==='pause'||state==='train'||state==='revive');
+  const hid=document.hidden,act=state==='play'?1:(state==='levelup'||state==='revive'||state==='chest')?.45:0;
   const tm=muted||!playing||hid?0:MVOL*.4*act,ta=muted||!playing||hid?0:Math.min(1,VOL*1.1)*(state==='play'?1:act*.75);
   MUS.g.gain.setTargetAtTime(tm,ct,.4);MUS.amb.gain.setTargetAtTime(ta,ct,.5);
   if(!playing){MUS.next=ct+.1;return;}
@@ -2722,7 +2779,7 @@ function killStreak(){const t=performance.now();kStreak=t-kStreakT<1300?kStreak+
 function gemStreak(){const t=performance.now();gStreak=t-gStreakT<500?gStreak+1:1;gStreakT=t;if(gStreak%12===0){const n=Math.min(6,gStreak/12-1);chime(1046*Math.pow(2,PENT[n]/12),.022);chime(1568*Math.pow(2,PENT[n]/12),.012,.06);}}
 function sfx(k){
   if(!ac||muted)return;const now=performance.now();
-  const gap={hit:45,kill:60,gem:40,hurt:250,chalk:90,laser:70,ui:60,pick:120,hov:50,zstun:110,pstun:400}[k]||0;
+  const gap={hit:45,kill:60,gem:40,hurt:250,chalk:90,laser:70,ui:60,pick:120,hov:50,zstun:110,pstun:400,chTick:55}[k]||0;
   if(gap&&sfxT[k]&&now-sfxT[k]<gap)return;sfxT[k]=now;if(!gap)sndBud=Math.max(sndBud,14);
   switch(k){
     case 'hit':tone(180+rand()*60,.06,'square',.025,.5);break;
@@ -2749,6 +2806,11 @@ function sfx(k){
     case 'lvopen':nz(.28,.022,900,.7,'bandpass',0,.12);tone(392,.3,'sine',.03,2,0);chime(1318,.026,.18);chime(1760,.02,.26);tone(2637,.25,'sine',.008,1,.32);break;
     case 'phone':nz(.11,.035,170,2.5,'bandpass');tone(140,.1,'square',.012,1);nz(.11,.035,170,2.5,'bandpass',.16);tone(140,.1,'square',.012,1,.16);break;
     case 'ui':tone(660,.07,'sine',.034,1.25);tone(990,.06,'sine',.016,1.12,.028);break;
+case 'chIn':tone(180,.18,'triangle',.05,.6);nz(.12,.03,900,1,'lowpass');break;
+case 'chKnock':tone(150,.09,'square',.035,.55);nz(.06,.04,1400,2,'bandpass');break;
+case 'chOpen':nz(.5,.05,2600,.7,'highpass',0,.08);[523,659,784,1046,1318].forEach((f,i)=>tone(f,.22,'triangle',.045,1,i*.06));chime(2093,.03,.32);break;
+case 'chTick':tone(1300+Math.random()*500,.025,'square',.012,1);break;
+case 'chJack':[784,988,1175,1568,1976,2349].forEach((f,i)=>tone(f,.16,'triangle',.04,1,i*.07));chime(3136,.025,.45);break;
     case 'zstun':tone(520,.07,'triangle',.02,.6);tone(1568,.1,'sine',.011,1,.04);break;
     case 'pstun':tone(900,.55,'sine',.03,.45);tone(905,.55,'triangle',.012,.5,.02);[1760,2093,1760,2349].forEach((f,i)=>tone(f,.07,'sine',.016,1.12,.12+i*.11));break;
     case 'roll':[0,1,2].forEach(i=>tone(480+i*170,.045,'triangle',.022,1.15,i*.055));break;
@@ -3056,7 +3118,7 @@ function kill(e){
   else if(e.kind==='boss'){
     shake(13,.6);hitStop(.22);runBosses.add(e.name);runBossKills++;
     for(let i=0;i<10;i++)dropGem(e.floor,e.x+rr(-50,50),e.y+rr(-50,50),12,'xp');
-    dropGem(e.floor,e.x,e.y+20,0,'heal');dropGem(e.floor,e.x+20,e.y,0,'mag');
+    dropGem(e.floor,e.x,e.y+20,0,'heal');dropGem(e.floor,e.x+20,e.y,0,'mag');if(RUN.mode!=='tutorial')dropGem(e.floor,e.x,e.y-6,0,'chest');
     banner(e.name+(e.B.trio?' распущена!':' повержен!'),'Собери кристаллы',true);sfx('level');
   }else{
     dropGem(e.floor,e.x,e.y,e.xp,'xp');
@@ -3130,6 +3192,7 @@ function updateEnemies(dt){
   const qStun=cc('quantum');const S=stats(),zSpd=Math.min(2,1+.2*cc('crib'))*(RUN.ids.has('moon')?1.2:1)*(retreat?1.15:1),slipZ=RUN.ids.has('slippery'),windZ=RUN.ids.has('wind'),wZx=45*Math.sin(time*.35+1),wZy=15*Math.sin(time*.5),snowZ=RUN.ids.has('snow');
   for(const e of enemies){
     if(!e.alive)continue;
+    if(!e.cxS){const ck=e.kind==='boss'?'b:'+e.name:e.kind;if(cxHas('z',ck))e.cxS=1;else if(e.floor===P.floor&&inView(e.x,e.y,-12)){e.cxS=1;cxSee('z',ck);}}
     if(e.stunT>0){if(!e.stS){e.stS=1;if(e.floor===P.floor&&inView(e.x,e.y,0))sfx('zstun');}}else if(e.stS)e.stS=0;
     if(e.burnT>0){e.burnT-=dt;procLock=true;damage(e,e.burnDps*dt,0,0,0,true);procLock=false;if(rand()<dt*8)parts.push({x:e.x+rr(-6,6),y:e.y-6,vx:rr(-10,10),vy:-40,life:.4,max:.4,col:rand()<.5?'#ff8a3a':'#ffd36b',s:4,f:e.floor,rd:1});if(!e.alive)continue;}
     if(e.idle){if(e.floor===P.floor&&Math.abs(e.x-P.x)<340&&Math.abs(e.y-P.y)<340&&Math.hypot(e.x-P.x,e.y-P.y)<340&&losB(e.floor,e.x,e.y,P.x,P.y))wakeZ(e);else{e.vx*=.8;e.vy*=.8;e.kbx*=.85;e.kby*=.85;e.x+=e.kbx*dt;e.y+=e.kby*dt;continue;}}
@@ -3669,10 +3732,11 @@ function updateGems(dt){
   for(const g of gems){
     if(g.f!==P.floor||g.got)continue;
     const dx=P.x-g.x,dy=P.y-g.y,d=Math.hypot(dx,dy)||1;
-    if(!g.pull&&d<S.mag)g.pull=true;
+    if(!g.pull&&d<S.mag&&g.type!=='chest')g.pull=true;
     if(g.pull){g.sp=Math.min(1000,(g.sp||100)+1500*dt);g.x+=dx/d*g.sp*dt;g.y+=dy/d*g.sp*dt;}
-    if(d<P.r+10){
-      g.got=true;
+    if(d<P.r+(g.type==='chest'?22:10)){
+      if(g.type==='chest'&&state!=='play')continue;
+      g.got=true;if(g.type!=='xp'&&g.type!=='gold'&&g.type!=='mag'&&g.type!=='chest')cxSee('f',g.type==='heal'?'onigiri':g.type);
       if(g.type==='xp'){addXP(g.v*S.xpm);sfx('gem');gemStreak();runGems++;if(parts.length<500)for(let q=0;q<2;q++)parts.push({x:g.x,y:g.y,vx:rr(-50,50),vy:rr(-70,-10),life:.35,max:.35,col:g.v>=10?'#ffc0ea':g.v>=3?'#c4ffd2':'#c8f0ff',s:6,f:g.f,sp:1});const gh=sumFx('gemheal');if(gh&&!noHeal())P.hp=Math.min(P.maxHp,P.hp+gh*S.heal);}
       else if(g.type==='plaster'||g.type==='medkit'||g.type==='tea'||g.type==='bar'){runHealPicked=true;
         if(noHeal()){addNum(P.x,P.y-20,0,'#ff9aa8');}
@@ -3684,7 +3748,8 @@ function updateGems(dt){
           sfx('heal');}}
       else if(g.type==='gold'){banner('Золотой кристалл!','Сразу новый уровень',false);sfx('level');addXP(Math.max(.01,P.next-P.xp+.01));}
       else if(g.type==='heal'){runHealPicked=true;if(noHeal())addNum(P.x,P.y-20,0,'#ff9aa8');else{const h=30*(P.C&&P.C.healMul||1)*S.heal;P.hp=Math.min(P.maxHp,P.hp+h);addNum(P.x,P.y-20,h,'#7dff9a');sfx('heal');}}
-      else if(g.type==='mag'){gems.forEach(o=>{if(o.f===P.floor)o.pull=true;});banner('Звонок на перемену!','Все кристаллы летят к тебе',false);sfx('bell');}
+      else if(g.type==='chest'){openChest();}
+      else if(g.type==='mag'){gems.forEach(o=>{if(o.f===P.floor&&o.type!=='chest')o.pull=true;});banner('Звонок на перемену!','Все кристаллы летят к тебе',false);sfx('bell');}
     }
   }
   gems=gems.filter(g=>!g.got);
@@ -3755,6 +3820,7 @@ function openLevelUp(){
   $('#lvKick').textContent=bonusLv>0?(bonusSrc||'Ластик директора')+' · осталось '+bonusLv:(pendingLv>1?'Новый уровень · ещё '+(pendingLv-1):'Новый уровень');
   const box=$('#cards');box.innerHTML='';box.classList.toggle('anyp',!!choices.any);if(choices.any)$('#lvKick').textContent='Учебник квантовой физики · выбери что угодно';
   choices.forEach((c,i)=>{
+    if(!choices.any&&(c.t==='w'||c.t==='p'||c.t==='c'))cxSee(c.t,c.id);
     const b=document.createElement('button');b.className='card';b.id='card'+i;
     let ic,nm,ds,tag='';
     if(c.t==='w'){const D=WDEF[c.id];ic=IC[D.icon];nm=D.name;ds=wDesc(c.id,c.lvl);if(c.lvl===1)tag='<span class="tag">ОРУЖИЕ</span>';}
@@ -3834,6 +3900,56 @@ function choose(i){
   if(pendingLv>0){openLevelUp();return;}
   hideOv('lvup');state='play';
 }
+
+
+/* ---------- BOSS CHEST ---------- */
+const CH_SVG='<svg viewBox="0 0 150 128" aria-hidden="true"><defs><radialGradient id="chG"><stop offset="0" stop-color="#fffbe0"/><stop offset=".5" stop-color="#ffe08a" stop-opacity=".8"/><stop offset="1" stop-color="#ffd36b" stop-opacity="0"/></radialGradient></defs><ellipse cx="75" cy="120" rx="54" ry="8" fill="#000" opacity=".35"/><rect x="25" y="62" width="100" height="54" rx="6" fill="#8a4f22" stroke="#3a1e08" stroke-width="3"/><rect x="27" y="64" width="96" height="9" fill="#6b3a16"/><rect x="27" y="100" width="96" height="6" fill="#5a3010" opacity=".55"/><rect x="38" y="62" width="11" height="54" fill="#e3b341" stroke="#7a5410" stroke-width="2"/><rect x="101" y="62" width="11" height="54" fill="#e3b341" stroke="#7a5410" stroke-width="2"/><ellipse class="glow" cx="75" cy="62" rx="46" ry="20" fill="url(#chG)"/><g class="lid"><path d="M25 64V48Q25 26 75 26T125 48V64Z" fill="#a0602a" stroke="#3a1e08" stroke-width="3"/><path d="M38 64V33L49 30V64Z" fill="#e3b341" stroke="#7a5410" stroke-width="2"/><path d="M101 30L112 33V64H101Z" fill="#e3b341" stroke="#7a5410" stroke-width="2"/><path d="M34 40Q75 24 116 40" stroke="#c88a46" stroke-width="3" fill="none" opacity=".6"/><rect x="66" y="53" width="18" height="20" rx="3" fill="#ffd36b" stroke="#7a5410" stroke-width="2"/><circle cx="75" cy="61" r="3" fill="#3a1e08"/><rect x="74" y="62" width="2" height="6" fill="#3a1e08"/></g></svg>';
+let CH=null;
+function chestRewards(n){const out=[],add={};
+  const lvOf=(t,id)=>{const o=t==='w'?P.weapons.find(x=>x.id===id):P.passives.find(x=>x.id===id);return (o?o.lvl:0)+(add[t+id]||0);};
+  for(let k=0;k<n;k++){const pool=[];P.weapons.forEach(w=>pool.push({t:'w',id:w.id,wgt:1.3}));
+    P.passives.forEach(q=>{const D=PDEF[q.id];if(D&&!(D.max&&lvOf('p',q.id)>=D.max))pool.push({t:'p',id:q.id,wgt:1});});
+    if(!pool.length){out.push({t:'max'});continue;}
+    let tot=pool.reduce((s,c)=>s+c.wgt,0),r=rand()*tot,i=0;for(;i<pool.length-1;i++){r-=pool[i].wgt;if(r<=0)break;}
+    const c=pool[i];add[c.t+c.id]=(add[c.t+c.id]||0)+1;out.push({t:c.t,id:c.id,lvl:lvOf(c.t,c.id)});}
+  return out;}
+const chIc=r=>r.t==='w'?IC[WDEF[r.id].icon]:r.t==='p'?IC[PDEF[r.id].icon]:IC.bento;
+const chNm=r=>r.t==='w'?WDEF[r.id].name:r.t==='p'?PDEF[r.id].name:'+10 к здоровью';
+function chT(f,ms){const id=setTimeout(()=>{if(CH)f();},ms);CH.tm.push(id);}
+function openChest(){
+  if(state!=='play')return;state='chest';
+  const q=rand(),n=q<.08?5:q<.36?3:1,rw=chestRewards(n);
+  const pool=[...new Set(P.weapons.map(w=>IC[WDEF[w.id].icon]).concat(P.passives.map(p=>IC[PDEF[p.id].icon])).concat(Object.keys(WDEF).slice(0,10).map(id=>IC[WDEF[id].icon])))];
+  CH={n,rw,pool,tm:[],stopped:0,done:false,spin:null};
+  const art=$('#chArt');art.className='chestArt';art.innerHTML='<div class="rays"></div>'+CH_SVG;void art.offsetWidth;art.classList.add('pop');
+  const tr=$('#chTier');tr.className='chTier';tr.textContent='';
+  const box=$('#chSlots');box.innerHTML='';
+  rw.forEach(()=>{const s=document.createElement('div');s.className='chSlot';s.innerHTML='<div class="reel"><span></span></div><b></b><em></em>';box.appendChild(s);});
+  $('#chTake').textContent='Пропустить';$('#chTitle').textContent='Сундук босса';
+  showOv('chestOv');sfx('chIn');haptic('medium');
+  [380,680,980].forEach((ms,i)=>chT(()=>{if(i===0){art.classList.remove('pop');art.classList.add('shake');}sfx('chKnock');haptic('light');},ms));
+  chT(chestOpenLid,1320);
+  chT(()=>{box.querySelectorAll('.chSlot').forEach(s=>s.classList.add('in','spin'));chestSpin();},1650);
+  rw.forEach((r,i)=>chT(()=>chestStop(i),2350+i*430));
+}
+function chestOpenLid(){const art=$('#chArt');art.classList.remove('shake','pop');art.classList.add('open');sfx('chOpen');haptic('heavy');
+  for(let i=0;i<16;i++){const s=document.createElement('i');s.className='sp';const a=Math.random()*6.28,d=60+Math.random()*70;s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',(Math.sin(a)*d-30)+'px');s.style.background=['#ffd36b','#fff6d0','#7dff9a','#ff9ad8','#6ad4ff'][i%5];s.style.animationDelay=(Math.random()*.12)+'s';art.appendChild(s);}
+  const tr=$('#chTier'),n=CH.n;tr.textContent=n===5?'×5 · Джекпот!':n===3?'×3 · Удача!':'×1';tr.className='chTier t'+n;void tr.offsetWidth;tr.classList.add('on');
+  if(n>1)setTimeout(()=>{if(CH)sfx('chJack');},250);}
+function chestSpin(){if(!CH||CH.spin)return;const box=$('#chSlots');
+  CH.spin=setInterval(()=>{if(!CH)return;let any=false;box.querySelectorAll('.chSlot.spin .reel span').forEach(sp=>{any=true;sp.innerHTML=CH.pool[(Math.random()*CH.pool.length)|0];});if(any)sfx('chTick');},70);}
+function chestStop(i){if(!CH)return;const s=$('#chSlots').children[i];if(!s||s.classList.contains('done'))return;const r=CH.rw[i];
+  s.classList.add('in');s.classList.remove('spin');s.querySelector('.reel span').innerHTML=chIc(r);s.querySelector('b').textContent=chNm(r);s.querySelector('em').textContent=r.lvl?'УР. '+r.lvl:'';s.classList.add('done');
+  const f=[523,659,784,1046,1318][i]||1318;tone(f,.18,'triangle',.05,1);chime(f*2,.02,.05);haptic('light');
+  CH.stopped++;if(CH.stopped>=CH.n)chestDone();}
+function chestDone(){if(!CH||CH.done)return;CH.done=true;clearInterval(CH.spin);CH.spin=null;$('#chTake').textContent='Забрать';if(CH.n>=3)sfx('pickWL');}
+function chestTake(){if(!CH||state!=='chest')return;
+  if(!CH.done){CH.tm.forEach(clearTimeout);CH.tm=[];const art=$('#chArt');if(!art.classList.contains('open'))chestOpenLid();CH.rw.forEach((r,i)=>chestStop(i));return;}
+  CH.tm.forEach(clearTimeout);clearInterval(CH.spin);
+  CH.rw.forEach(r=>{if(r.t==='w'){const w=P.weapons.find(x=>x.id===r.id);if(w)w.lvl++;}else if(r.t==='p'){const p=P.passives.find(x=>x.id===r.id);if(p)p.lvl++;}else P.baseMaxBonus=(P.baseMaxBonus||0)+10;});
+  CH=null;renderInv();hideOv('chestOv');state='play';sfx('pickPL');
+  if(pendingLv>0)openLevelUp();}
+$('#chTake').addEventListener('click',chestTake);
 
 /* ---------- STAIRS ---------- */
 function tryStairs(dir){
@@ -4098,6 +4214,21 @@ function commitRun(win){
   runBosses.forEach(b=>{if(!prog.bosses.includes(b))prog.bosses.push(b);});saveProg();
   SKINS.forEach(S=>{if(!notified.has(S.id)&&isUnlocked(S.id)){notified.add(S.id);runUnlocks.push(S.name);}});
 }
+
+/* ---------- CODEX PROGRESS ---------- */
+const CXF={onigiri:'Онигири',plaster:'Пластырь',tea:'Зелёный чай',bar:'Энергетический батончик',medkit:'Аптечка'};
+function cxInit(){const c=prog.cx=(prog.cx&&typeof prog.cx==='object')?prog.cx:{};['z','w','p','c','f'].forEach(k=>{if(!c[k]||typeof c[k]!=='object')c[k]={};});return c;}
+cxInit();
+let cxDirty=false,cxQ=[],cxQT=0;
+const cxHas=(t,id)=>!!(prog.cx&&prog.cx[t]&&prog.cx[t][id]);
+function cxName(t,id){if(t==='z'){if(id.startsWith('b:'))return id.slice(2);let z=null;try{z=INFO_Z.find(q=>q.kind===id);}catch(_){}return z?z.name:'';}
+  return t==='w'?(WDEF[id]&&WDEF[id].name):t==='p'?(PDEF[id]&&PDEF[id].name):t==='c'?(CDEF[id]&&CDEF[id].name):CXF[id];}
+function cxSee(t,id){if(!id||!RUN||RUN.mode==='train')return;const c=prog.cx||cxInit();if(!c[t]||c[t][id])return;c[t][id]=1;cxDirty=true;
+  const nm=cxName(t,id);if(nm&&(state==='play'||state==='levelup'||state==='chest'))cxToast(nm);}
+function cxToast(nm){const el=$('#cxToast');if(!el)return;const now=performance.now();if(now-cxQT<2600)cxQ.push(nm);else cxQ=[nm];cxQT=now;
+  el.textContent='📖 Новое в справочнике: '+nm+(cxQ.length>1?' и ещё '+(cxQ.length-1):'');el.classList.remove('show');void el.offsetWidth;el.classList.add('show');}
+function cxOwned(){if(!P)return;P.weapons.forEach(w=>cxSee('w',w.id));P.passives.forEach(q=>cxSee('p',q.id));(P.curses||[]).forEach(id=>cxSee('c',id));(P.spentP||[]).forEach(id=>cxSee('p',id));
+  if(cxDirty){cxDirty=false;saveProg();}}
 function checkUnlocks(){const lp=liveProg();SKINS.forEach(S=>{if(!notified.has(S.id)&&isUnlocked(S.id,lp)){notified.add(S.id);runUnlocks.push(S.name);banner('Открыт персонаж: '+S.name,'Выбери его в меню перед следующим забегом',false);sfx('level');haptic('success');}});}
 if(!isUnlocked(skinId))skinId='duty';
 function drawHero(c,r,a,sw,S){
@@ -4296,48 +4427,65 @@ const INFO_DAYS=[
 ];
 let infoSec='z',infoWhere='menu';
 function zPreview(e){const c=document.createElement('canvas');c.width=104;c.height=104;const x=c.getContext('2d');x.scale(2,2);x.translate(26,27);const sc=Math.min(1.5,17/e.r);x.scale(sc,sc);const old=ctx;ctx=x;try{drawZombie(e);}finally{ctx=old;}return c;}
+
+function cxLists(){const z=INFO_Z.map(q=>q.kind),b=BOSSES.map(B=>'b:'+B.name).concat(['b:'+OCTO.name,'b:'+CRABB.name]);
+  MAPS.forEach(M=>{if(M.id==='school')return;const B=MAPBOSS[M.id]&&MAPBOSS[M.id][0];if(B)b.push('b:'+B.name);});
+  return {z:z.concat(b).map(id=>['z',id]),w:Object.keys(WDEF).map(id=>['w',id]),p:Object.keys(PDEF).map(id=>['p',id]).concat(Object.keys(CXF).map(id=>['f',id])),c:Object.keys(CDEF).map(id=>['c',id])};}
+function cxCount(sec){const L=cxLists(),arr=sec?L[sec]||[]:[].concat(L.z,L.w,L.p,L.c);return {tot:arr.length,got:arr.filter(([t,id])=>cxHas(t,id)).length};}
+(function(){try{const c=cxInit();if(prog.cxV)return;prog.cxV=1;
+  (prog.bosses||[]).forEach(n=>{c.z['b:'+n]=1;});
+  const sec=s=>{const m=/(\d+):(\d+)/.exec(s||'');return m?(+m[1])*60+(+m[2]):0;},MN={};MAPS.forEach(M=>{MN[M.name]=M.id;});
+  const mr=prog.mapRuns||{},any=(prog.runs||0)>0||(prog.kills||0)>0;
+  INFO_Z.forEach(z=>{const ran=z.map?(mr[MN[z.map]]||0)>0:any;if(ran&&(prog.best||0)>=sec(z.when))c.z[z.kind]=1;});
+  Object.keys(prog.charRuns||{}).forEach(id=>{const C=charOf(id);(C.w||[]).forEach(a=>{c.w[a[0]]=1;});(C.p||[]).forEach(a=>{c.p[a[0]]=1;});});
+  if((prog.runs||0)>=3){c.f.plaster=1;c.f.onigiri=1;}
+  saveProg();}catch(e){}})();
 function renderInfo(){
   const chips=[['z','Зомби'],['w','Оружие'],['p','Предметы'],['c','Риск'],['d','Условия дня']];
-  const ch=$(infoWhere==='codex'?'#cxChips':'#infoChips');ch.innerHTML=chips.map(([k,n])=>'<button type="button" data-k="'+k+'" aria-pressed="'+(k===infoSec)+'">'+n+'</button>').join('');
+  const ch=$(infoWhere==='codex'?'#cxChips':'#infoChips');ch.innerHTML=chips.map(([k,n])=>{const q=k==='d'?null:cxCount(k);return '<button type="button" data-k="'+k+'" aria-pressed="'+(k===infoSec)+'">'+n+(q?' <small style="opacity:.7;font-variant-numeric:tabular-nums">'+q.got+'/'+q.tot+'</small>':'')+'</button>';}).join('');
   ch.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{infoSec=b.dataset.k;renderInfo();}));
   const body=$(infoWhere==='codex'?'#cxBody':'#infoBody');body.innerHTML='';
   const items=[],notes=[];let pre='';
-  const add=(pic,nm,txt,st,key)=>{items.push({key:key||(infoSec+'-'+items.length),pic,name:nm.replace(/^Босс: /,''),nm,txt:pre+txt,st});};
+  let cxGot=0,cxTot=0;
+  const add=(pic,nm,txt,st,key,cx)=>{const unk=!!cx&&!cxHas(cx[0],cx[1]);if(cx){cxTot++;if(!unk)cxGot++;}
+    if(unk)items.push({key:key||(infoSec+'-'+items.length),pic,name:'???',nm:'???',txt:pre+'<b>Ещё не встречено.</b> '+(cx[2]||''),st:[],unk:true,cls:'unk',locked:true,tick:'?'});
+    else items.push({key:key||(infoSec+'-'+items.length),pic,name:nm.replace(/^Босс: /,''),nm,txt:pre+txt,st});};
   const note=t=>{if(!items.length)notes.push(t);else pre='<i>'+t+'</i><br>';};
   const fake=(o)=>Object.assign({x:0,y:0,ang:Math.PI/2,seed:0,hitT:0,slowT:0,hp:1,maxHp:1,scarf:'#c63a4a',preview:true},o);
   if(infoSec==='z'){
     note('Здоровье обычных зомби растёт со временем: к рассвету примерно в 6 раз. Укус ранит каждую секунду, пока зомби касается тебя.');
-    INFO_Z.forEach(z=>{const d=ZT[z.kind];pre='';add(zPreview(fake({kind:z.kind,uni:z.uni||z.kind,r:d.r})),z.name,(z.map?'<b>Только: '+z.map+'.</b> ':'')+z.d,['HP '+d.hp,'скорость '+d.spd,(z.st&&z.kind!=='kendoz'?z.st:'укус '+d.dmg+'/с'),'опыт '+d.xp,z.when].concat(z.kind==='kendoz'?[z.st]:[]));});
+    INFO_Z.forEach(z=>{const d=ZT[z.kind];pre='';add(zPreview(fake({kind:z.kind,uni:z.uni||z.kind,r:d.r})),z.name,(z.map?'<b>Только: '+z.map+'.</b> ':'')+z.d,['HP '+d.hp,'скорость '+d.spd,(z.st&&z.kind!=='kendoz'?z.st:'укус '+d.dmg+'/с'),'опыт '+d.xp,z.when].concat(z.kind==='kendoz'?[z.st]:[]),null,['z',z.kind,(z.map?'Водится только: '+z.map+'. ':'')+(z.when?'Появляется '+z.when+'.':'')]);});
     note('Боссы школы: за ночь приходят 5 случайных, примерно раз в 2–3 минуты. Сначала — школьники и персонал, потом учителя, последними — руководство. Чем позже босс, тем он крепче.');
-    BOSSES.slice().sort((a,b)=>BTIER[a.name]-BTIER[b.name]).forEach(B=>add(zPreview(fake({kind:'boss',uni:'boss',B,name:B.name,r:30})),'Босс: '+B.name,'<b>Школа · '+['школьники и персонал','учителя','руководство'][BTIER[B.name]]+'.</b> '+B.info,['скорость '+B.spd].concat(B.trio?['трое сразу']:[])));
+    BOSSES.slice().sort((a,b)=>BTIER[a.name]-BTIER[b.name]).forEach(B=>add(zPreview(fake({kind:'boss',uni:'boss',B,name:B.name,r:30})),'Босс: '+B.name,'<b>Школа · '+['школьники и персонал','учителя','руководство'][BTIER[B.name]]+'.</b> '+B.info,['скорость '+B.spd].concat(B.trio?['трое сразу']:[]),null,['z','b:'+B.name,'Босс школы.']));
     note('Боссы других карт приходят трижды за ночь — в '+fmt(300)+', '+fmt(600)+' и '+fmt(840)+', каждый раз крепче.');
-    add(zPreview(fake({kind:'boss',uni:'boss',B:OCTO,name:OCTO.name,r:58})),'Босс: '+OCTO.name,'<b>Любая карта.</b> '+OCTO.info,['HP '+OCTO.hp,'шанс появиться ~45% за ночь']);
-    add(zPreview(fake({kind:'boss',uni:'boss',B:CRABB,name:CRABB.name,r:46})),'Босс: '+CRABB.name,'<b>Любая карта.</b> '+CRABB.info,['HP '+CRABB.hp,'шанс появиться ~40% за ночь']);
-    MAPS.filter(M=>M.id!=='school').forEach(M=>{const B=MAPBOSS[M.id]&&MAPBOSS[M.id][0];if(!B)return;add(zPreview(fake({kind:'boss',uni:'boss',B,name:B.name,r:30})),'Босс: '+B.name,'<b>'+M.name+'.</b> '+B.info,['HP '+B.hp,'скорость '+B.spd,'укус '+B.dmg+'/с']);});
+    add(zPreview(fake({kind:'boss',uni:'boss',B:OCTO,name:OCTO.name,r:58})),'Босс: '+OCTO.name,'<b>Любая карта.</b> '+OCTO.info,['HP '+OCTO.hp,'шанс появиться ~45% за ночь'],null,['z','b:'+OCTO.name,'Редкий босс: может появиться на любой карте.']);
+    add(zPreview(fake({kind:'boss',uni:'boss',B:CRABB,name:CRABB.name,r:46})),'Босс: '+CRABB.name,'<b>Любая карта.</b> '+CRABB.info,['HP '+CRABB.hp,'шанс появиться ~40% за ночь'],null,['z','b:'+CRABB.name,'Редкий босс: может появиться на любой карте.']);
+    MAPS.filter(M=>M.id!=='school').forEach(M=>{const B=MAPBOSS[M.id]&&MAPBOSS[M.id][0];if(!B)return;add(zPreview(fake({kind:'boss',uni:'boss',B,name:B.name,r:30})),'Босс: '+B.name,'<b>'+M.name+'.</b> '+B.info,['HP '+B.hp,'скорость '+B.spd,'укус '+B.dmg+'/с'],null,['z','b:'+B.name,'Босс карты: '+M.name+'.']);});
   }else if(infoSec==='w'){
     note('Оружие бьёт само. Всего '+Object.keys(WDEF).length+' видов. Лимита нет: когда у тебя уже 4 оружия, новые продолжают выпадать, просто реже. Уровень без потолка.');
     for(const id in WDEF){const D=WDEF[id],st=[];
       if(D.dmg)st.push('урон '+D.dmg[0]+' → '+D.dmg[4]);if(D.dps)st.push('урон/с '+D.dps[0]+' → '+D.dps[4]);
       if(D.cd)st.push('перезарядка '+fmtN(D.cd[0],'cd')+' → '+fmtN(D.cd[4],'cd')+' с');if(D.n)st.push((WN[id]||'штук')+' '+D.n[0]+' → '+D.n[4]);if(D.b)st.push('отскоков '+D.b[0]+' → '+D.b[4]);
-      add(IC[D.icon],D.name,D.ds[0]+' После 5-го уровня: '+DSX[id],st,'w-'+id);}
+      add(IC[D.icon],D.name,D.ds[0]+' После 5-го уровня: '+DSX[id],st,'w-'+id,['w',id,'Выпадает в карточках улучшений, а у некоторых персонажей есть с самого начала.']);}
   }else if(infoSec==='p'){
     note('Пассивные предметы, всего '+Object.keys(PDEF).length+'. Лимита нет: после 6 предметов новые продолжают выпадать, просто реже. Уровень без потолка. Эффект указан за один уровень.');
-    for(const id in PDEF){const D=PDEF[id];add(IC[D.icon],D.name,D.ds,[],'p-'+id);}
+    for(const id in PDEF){const D=PDEF[id];add(IC[D.icon],D.name,D.ds,[],'p-'+id,['p',id,'Выпадает в карточках улучшений.']);}
     note('Находки — выпадают из зомби, подбираются сразу:');
     [['onigiri','Онигири','+30 к здоровью.'],['plaster','Пластырь','+15 к здоровью. Самая частая находка.'],['tea','Зелёный чай','Лечит 3 HP в секунду 8 секунд.'],['bar','Энергетический батончик','+20 к здоровью и +25% к скорости на 8 секунд.'],['medkit','Аптечка','Восстанавливает половину здоровья. Редкая.']]
-      .forEach(([ic,n,t])=>add(IC[ic]||IC.onigiri,n,t,[]));
+      .forEach(([ic,n,t])=>add(IC[ic]||IC.onigiri,n,t,[],null,['f',ic,'Выпадает из зомби.']));
   }else if(infoSec==='c'){
     note('Выпадают с 3-го уровня вместо одной из карточек. Не занимают слотов. Можно брать повторно — плюс и минус складываются. Ластик и капсульный автомат срабатывают сразу один раз.');
-    for(const id in CDEF){const D=CDEF[id];add(IC[D.icon],D.name,'<span class="pro">+ '+D.pro+'</span><br><span class="con">− '+D.con+'</span>',[],'c-'+id);}
+    for(const id in CDEF){const D=CDEF[id];add(IC[D.icon],D.name,'<span class="pro">+ '+D.pro+'</span><br><span class="con">− '+D.con+'</span>',[],'c-'+id,['c',id,'Рискованная карточка: выпадает с 3-го уровня.']);}
   }else{
     note('При каждом запуске выпадают 1–2 изменения школы и 1–2 правила дня. Их показывают в начале забега и в паузе.');
     INFO_DAYS.forEach(([n,t])=>add(null,n,t,[]));
   }
   notes.forEach(t=>{const p=document.createElement('p');p.className='info-note';p.textContent=t;body.appendChild(p);});
+  if(cxTot){const pg=document.createElement('div');pg.className='cxprog'+(cxGot>=cxTot?' full':'');pg.innerHTML='<b>'+(cxGot>=cxTot?'★ ':'')+'Собрано: '+cxGot+' / '+cxTot+'</b><span class="bar"><i style="width:'+Math.round(cxGot/cxTot*100)+'%"></i></span>';body.appendChild(pg);}
   const host=document.createElement('div');body.appendChild(host);
   const cur=items.some(it=>it.key===infoPick)?infoPick:items[0]&&items[0].key;infoPick=null;
   const clone=pic=>pic&&typeof pic!=='string'&&pic.tagName==='CANVAS'?(()=>{const c=document.createElement('canvas');c.width=pic.width;c.height=pic.height;c.getContext('2d').drawImage(pic,0,0);return c;})():pic;
-  const show=it=>{desc.innerHTML='';desc.appendChild(descHTML(clone(it.pic),it.nm,it.txt,it.st));};
+  const show=it=>{desc.innerHTML='';const dd=descHTML(clone(it.pic),it.nm,it.txt,it.st);if(it.unk){const dp=dd.querySelector('.dpic');if(dp)dp.style.filter='brightness(0) opacity(.5)';}desc.appendChild(dd);};
   const desc=mkPager(host,items,cur,it=>show(it));
   const ci=items.find(it=>it.key===cur);if(ci)show(ci);
 }
@@ -4437,6 +4585,12 @@ function render(){
     else if(g.type==='gold'){const pu=1+.15*Math.sin(time*6);ctx.fillStyle='rgba(255,210,90,.22)';ctx.beginPath();ctx.arc(g.x,g.y+by,22*pu,0,7);ctx.fill();
       ctx.fillStyle='#ffd34a';ctx.strokeStyle='#8a5a10';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(g.x,g.y-13+by);ctx.lineTo(g.x+10,g.y+by);ctx.lineTo(g.x,g.y+13+by);ctx.lineTo(g.x-10,g.y+by);ctx.closePath();ctx.fill();ctx.stroke();
       ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillRect(g.x-2,g.y-7+by,3,4);}
+    else if(g.type==='chest'){const pu=1+.12*Math.sin(time*5);ctx.fillStyle='rgba(255,210,90,.22)';ctx.beginPath();ctx.arc(g.x,g.y+by,30*pu,0,7);ctx.fill();
+      ctx.save();ctx.translate(g.x,g.y+by*1.5);ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(0,13,17,5,0,0,7);ctx.fill();
+      ctx.strokeStyle='#3a1e08';ctx.lineWidth=2;ctx.fillStyle='#8a4f22';ctx.fillRect(-16,-2,32,15);ctx.strokeRect(-16,-2,32,15);
+      ctx.fillStyle='#a0602a';ctx.beginPath();ctx.moveTo(-16,-1);ctx.lineTo(-16,-8);ctx.quadraticCurveTo(0,-19,16,-8);ctx.lineTo(16,-1);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle='#e3b341';ctx.fillRect(-11,-12,4,25);ctx.fillRect(7,-12,4,25);ctx.fillStyle='#ffd36b';ctx.fillRect(-4,-5,8,9);ctx.fillStyle='#3a1e08';ctx.fillRect(-1,-2,2,4);
+      const tw=(Math.sin(time*3+g.bob)+1)/2;ctx.fillStyle=`rgba(255,250,220,${tw})`;ctx.fillRect(10,-15,3,3);ctx.fillRect(-13,-10+tw*3,2,2);ctx.restore();}
     else if(g.type==='plaster'){ctx.save();ctx.translate(g.x,g.y+by);ctx.rotate(.5);ctx.fillStyle='#e8c8a0';ctx.fillRect(-10,-4,20,8);ctx.fillStyle='#f4f1e8';ctx.fillRect(-4,-4,8,8);ctx.fillStyle='rgba(0,0,0,.2)';ctx.fillRect(-9,-1,3,2);ctx.fillRect(6,-1,3,2);ctx.restore();}
     else if(g.type==='medkit'){ctx.fillStyle='rgba(255,255,255,.18)';ctx.beginPath();ctx.arc(g.x,g.y+by,15,0,7);ctx.fill();ctx.fillStyle='#f4f4f4';ctx.fillRect(g.x-10,g.y-8+by,20,16);ctx.fillStyle='#d63b4a';ctx.fillRect(g.x-2.5,g.y-6+by,5,12);ctx.fillRect(g.x-6,g.y-2.5+by,12,5);ctx.fillStyle='#9aa0a8';ctx.fillRect(g.x-4,g.y-11+by,8,3);}
     else if(g.type==='tea'){ctx.fillStyle='#e8e8e8';ctx.fillRect(g.x-7,g.y-6+by,14,13);ctx.fillStyle='#5aa35d';ctx.fillRect(g.x-5,g.y-4+by,10,5);ctx.strokeStyle='#e8e8e8';ctx.lineWidth=2;ctx.beginPath();ctx.arc(g.x+8,g.y+by,3.5,-1.4,1.4);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(g.x-2,g.y-9+by);ctx.quadraticCurveTo(g.x+1,g.y-12+by,g.x-1,g.y-15+by);ctx.stroke();}
@@ -4601,8 +4755,8 @@ function render(){
   if(RUN.ids.has('sakura')){for(let i=0;i<26;i++){const sp=22+(i%5)*7,ex=((i*137.5+time*sp*.6)%(vw+60))-30,ey=((i*71.3+time*sp)%(vh+60))-30;ctx.save();ctx.translate(ex,ey);ctx.rotate(time*(1+i%3)+i);ctx.fillStyle=i%3?'rgba(255,183,207,.85)':'rgba(255,224,236,.85)';ctx.beginPath();ctx.ellipse(0,0,4.5,2.6,0,0,7);ctx.fill();ctx.restore();}}
   if(TUT&&TUTS[TUT.step]&&TUTS[TUT.step].arrow){const F2=floors[P.floor];let best=null,bd=1e9;for(const i of F2.stairIdx){const x=(i%MW+.5)*T,y=(((i/MW)|0)+.5)*T,d=Math.hypot(x-P.x,y-P.y);if(d<bd){bd=d;best=[x,y];}}
     if(best&&bd>60){const a=Math.atan2(best[1]-P.y,best[0]-P.x),ex=px+Math.cos(a)*70,ey=py+Math.sin(a)*70;ctx.save();ctx.translate(ex,ey);ctx.rotate(a);ctx.fillStyle='#ffd34a';ctx.strokeStyle='#5a3a08';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(16,0);ctx.lineTo(-8,-11);ctx.lineTo(-3,0);ctx.lineTo(-8,11);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}}
-  for(const g of gems){if(g.type!=='gold'||g.f!==P.floor)continue;const gx=(g.x-camX)*zoom,gy=(g.y-camY)*zoom;if(gx>30&&gy>30&&gx<vw-30&&gy<vh-30)continue;
-    const a=Math.atan2(gy-py,gx-px),ex=vw/2+Math.cos(a)*(vw/2-30),ey=vh/2+Math.sin(a)*(vh/2-70);ctx.save();ctx.translate(ex,ey);ctx.rotate(a);ctx.fillStyle='#ffd34a';ctx.strokeStyle='#5a3a08';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(-8,-10);ctx.lineTo(-4,0);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}
+  for(const g of gems){if((g.type!=='gold'&&g.type!=='chest')||g.f!==P.floor)continue;const gx=(g.x-camX)*zoom,gy=(g.y-camY)*zoom;if(gx>30&&gy>30&&gx<vw-30&&gy<vh-30)continue;
+    const a=Math.atan2(gy-py,gx-px),ex=vw/2+Math.cos(a)*(vw/2-30),ey=vh/2+Math.sin(a)*(vh/2-70);ctx.save();ctx.translate(ex,ey);ctx.rotate(a);ctx.fillStyle=g.type==='chest'?'#ff9a3c':'#ffd34a';ctx.strokeStyle='#5a3a08';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(-8,-10);ctx.lineTo(-4,0);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}
   const low=P.hp/P.maxHp<.3?(.12+.1*Math.sin(time*6)):0;
   if(hurtT>0||low>0){ctx.fillStyle=`rgba(220,30,50,${Math.min(.45,hurtT*.4+low)})`;ctx.fillRect(0,0,vw,vh);}
   if(flashT>0){ctx.fillStyle=`rgba(235,242,255,${Math.min(.7,flashT*2)})`;ctx.fillRect(0,0,vw,vh);}
@@ -4852,6 +5006,7 @@ mView('Home');
 addEventListener('keydown',e=>{
   if(bindWait){e.preventDefault();e.stopPropagation();if(e.code==='Escape'&&bindWait!=='pause'){bindWait=null;renderKB();return;}const a=bindWait;bindWait=null;setBind(a,e.code);return;}
   keys[e.code]=true;const K=keyMap();
+  if(state==='chest'&&!e.repeat&&(e.code==='Enter'||e.code==='NumpadEnter'||e.code==='Space'||e.code==='KeyE')){e.preventDefault();chestTake();return;}
   if(e.code===K.slow||e.code==='ShiftLeft'||e.code==='ShiftRight'){trySlow();e.preventDefault();}
   if(e.code===K.stUp||e.code==='PageUp')tryStairs(1);
   if(e.code===K.stDown||e.code==='PageDown')tryStairs(-1);
@@ -4911,7 +5066,7 @@ function frameInner(now){
     updatePlayer(dt);if(TUT)updateTut(dt);updateSpawns(dt);buildHash();updateEnemies(dt*zk);updateWeapons(dt);updateProjs(dt,zk);updateFx(dt);dmgSrc=null;updateGems(dt);pGuard();npcTick(dt);
     {const dh=(P.hpPrev===undefined?P.hp:P.hpPrev)-P.hp;if(dh>=10){shake(Math.min(10,2+dh/3),.25);if(dh>=22)hitStop(.06);}P.hpPrev=P.hp;}
     enemies=enemies.filter(e=>e.alive);
-    if((unlockT-=dt)<=0&&RUN.mode!=='train'){unlockT=1;checkUnlocks();}
+    if((unlockT-=dt)<=0&&RUN.mode!=='train'){unlockT=1;checkUnlocks();cxOwned();}
     if(RUN.mode==='train'&&TRN.god&&P.hp<P.maxHp*.25)P.hp=P.maxHp*.25;
     if(P.hp<=0&&P.revive>0){P.revive--;P.hp=P.maxHp*.5;P.inv=2.5;fxs.push({k:'ring',x:P.x,y:P.y,f:P.floor,R:260,dmg:200,t:0,dur:.6,hit:new Set()});fxs.push({k:'revive',x:P.x,y:P.y,f:P.floor,t:0,dur:1.4});reviveFx=1.2;
       const src=pl('omamori')&&!P.usedOmamori?(P.usedOmamori=true,'Омамори из храма'):P.skin==='cat'&&!P.usedNine?'Девять жизней кота':P.C&&P.C.revive?'Способность персонажа':'Второй шанс';
