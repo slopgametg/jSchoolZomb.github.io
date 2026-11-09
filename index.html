@@ -6455,7 +6455,7 @@ let prog=loadProg(), runBosses=new Set(), committed=true, notified=new Set(), ru
 function saveProg(){try{if(typeof prog.coins==='number'){if(typeof saveProg.lc==='number'&&prog.coins<saveProg.lc){const S=prog.st=prog.st||{};S.spent=(S.spent||0)+(saveProg.lc-prog.coins);}saveProg.lc=prog.coins;}}catch(e){}try{localStorage.setItem('szz-prog',JSON.stringify(prog));localStorage.setItem('szz-lastSave',String(Date.now()));}catch(e){}try{cloudSoon();}catch(e){}}
 
 /* ---------- 1.7: Telegram profile + share reward ---------- */
-const SHARE_URL='';
+const SHARE_URL='https://t.me/schoolWPzombie_bot/jSZ';
 const TGW=(()=>{try{const t=window.Telegram&&window.Telegram.WebApp;return t&&t.initData?t:null;}catch(e){return null;}})();
 const TGU=TGW&&TGW.initDataUnsafe&&TGW.initDataUnsafe.user||null;
 function tgProfile(){try{const ch=$('#tgUser'),ar=$('#acctRow');if(!TGU){if(ch)ch.hidden=true;if(ar)ar.hidden=true;return;}
@@ -6476,7 +6476,7 @@ async function shareGame(){const url=shareLink(),txt='Я выживаю в «Ш�
 try{$('#shareBtn').addEventListener('click',()=>{haptic('light');shareGame();});}catch(e){}
 try{tgProfile();shareLabel();}catch(e){}
 /* ---------- 1.6: Telegram Stars shop + weekly leaderboards ---------- */
-const API_BASE='';
+const API_BASE='https://szz-server.johnsmith005haruhi.workers.dev';
 const SPACKS=[{id:'c100',stars:50,coins:100,nm:'Горсть монет',ic:1},{id:'c1000',stars:90,coins:1000,nm:'Мешок монет',ic:2},{id:'c10000',stars:199,coins:10000,nm:'Сундук монет',ic:3}];
 const DS_WELCOME=12*3600e3,DS_FLASH=3600e3,DS_GAP=30*60e3;
 function apiOn(){return !!(API_BASE&&TGW&&TGW.initData);}
@@ -13283,7 +13283,7 @@ let prog=loadProg(), runBosses=new Set(), committed=true, notified=new Set(), ru
 function saveProg(){try{if(typeof prog.coins==='number'){if(typeof saveProg.lc==='number'&&prog.coins<saveProg.lc){const S=prog.st=prog.st||{};S.spent=(S.spent||0)+(saveProg.lc-prog.coins);}saveProg.lc=prog.coins;}}catch(e){}try{localStorage.setItem('szz-prog',JSON.stringify(prog));localStorage.setItem('szz-lastSave',String(Date.now()));}catch(e){}try{cloudSoon();}catch(e){}}
 
 /* ---------- 1.7: Telegram profile + share reward ---------- */
-const SHARE_URL='';
+const SHARE_URL='https://t.me/schoolWPzombie_bot/jSZ';
 const TGW=(()=>{try{const t=window.Telegram&&window.Telegram.WebApp;return t&&t.initData?t:null;}catch(e){return null;}})();
 const TGU=TGW&&TGW.initDataUnsafe&&TGW.initDataUnsafe.user||null;
 function tgProfile(){try{const ch=$('#tgUser'),ar=$('#acctRow');if(!TGU){if(ch)ch.hidden=true;if(ar)ar.hidden=true;return;}
@@ -13304,7 +13304,7 @@ async function shareGame(){const url=shareLink(),txt='I\'m surviving in Zombie-P
 try{$('#shareBtn').addEventListener('click',()=>{haptic('light');shareGame();});}catch(e){}
 try{tgProfile();shareLabel();}catch(e){}
 /* ---------- 1.6: Telegram Stars shop + weekly leaderboards ---------- */
-const API_BASE='';
+const API_BASE='https://szz-server.johnsmith005haruhi.workers.dev';
 const SPACKS=[{id:'c100',stars:50,coins:100,nm:'Handful of Coins',ic:1},{id:'c1000',stars:90,coins:1000,nm:'Bag of Coins',ic:2},{id:'c10000',stars:199,coins:10000,nm:'Chest of Coins',ic:3}];
 const DS_WELCOME=12*3600e3,DS_FLASH=3600e3,DS_GAP=30*60e3;
 function apiOn(){return !!(API_BASE&&TGW&&TGW.initData);}
