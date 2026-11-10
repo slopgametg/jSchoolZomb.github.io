@@ -483,7 +483,7 @@ h2{font:clamp(22px,6vw,30px)/1.1 var(--display);margin:4px 0 4px;color:var(--cha
 .coinpill .cn{width:15px;height:15px;flex-basis:15px}
 .coinpill{position:relative;transition:transform .15s}
 .btn.lack{opacity:.72;filter:saturate(.6)}
-.coinPlus{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;width:26px;height:26px;padding:0;border-radius:50%;border:2px solid #0a0c12;background:linear-gradient(180deg,#ffe08a,#f2b632);color:#3a2408;font:800 12px/1 var(--body);cursor:pointer;box-shadow:0 2px 0 #0a0c12;vertical-align:middle}.coinPlus:active{transform:translateY(2px);box-shadow:none}.coinPlus b{font:900 18px/1 var(--body);margin-top:-1px}
+.coinpill.hasPlus{padding-left:4px;cursor:default}.coinPlus{display:inline-flex;align-items:center;justify-content:center;flex:none;width:16px;height:16px;margin:0 1px 0 1px;padding:0;border-radius:50%;border:1.2px solid #0a0c12;background:linear-gradient(180deg,#ffe08a,#f2b632);color:#3a2408;cursor:pointer;box-shadow:0 1px 0 #0a0c12}.coinPlus:active{transform:translateY(1px);box-shadow:none}.coinPlus b{font:900 13px/1 var(--body);margin-top:-1px}
 .ov.bg-neoncity,.lkPrev.bg-neoncity{background:linear-gradient(0deg,rgba(255,60,180,.22),transparent 30%),repeating-linear-gradient(90deg,transparent 0 46px,rgba(80,240,255,.12) 46px 48px,transparent 48px 70px,rgba(255,80,200,.12) 70px 72px),linear-gradient(180deg,#0a0618,#1a0a30 55%,#2a0a3a 75%,#08040e 75.5%,#120820)}
 .ov.bg-rain,.lkPrev.bg-rain{background:repeating-linear-gradient(105deg,transparent 0 22px,rgba(180,210,255,.14) 22px 23px),radial-gradient(ellipse 60% 30% at 50% 110%,rgba(255,200,120,.25),transparent 70%),linear-gradient(180deg,#1a2230,#253246 60%,#1a2230)}
 .bg-rain::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(105deg,transparent 0 40px,rgba(200,225,255,.18) 40px 41px);animation:lkRain .7s linear infinite}.ov.bg-rain::before{position:fixed}@keyframes lkRain{to{background-position:-40px 120px}}
@@ -6636,7 +6636,7 @@ const SKBON=[{t:'+2% к шансу выпадения монет',k:'coin',v:.02
 function skBonusOf(i){return i>0?SKBON[(i-1)%SKBON.length]:null;}
 function skb(k){return P&&P.skB&&P.skB.k===k?P.skB.v:0;}
 function heroLook(id){const i=(prog.skinSel&&prog.skinSel[id])|0;return skinOwned(id,i)?skinLookAt(id,i):skinOf(id);}
-(function(){try{document.querySelectorAll('.coinpill').forEach(p=>{if(p.closest('#mvShop')||p.nextElementSibling&&p.nextElementSibling.classList.contains('coinPlus'))return;const b=document.createElement('button');b.type='button';b.className='coinPlus';b.title='Купить монеты';b.innerHTML='<b>+</b>';b.addEventListener('click',e=>{e.stopPropagation();haptic('light');sfx('pick');mView('Shop');});p.after(b);});}catch(e){}})();
+(function(){try{document.querySelectorAll('.coinpill').forEach(p=>{if(p.closest('#mvShop')||p.querySelector('.coinPlus'))return;p.classList.add('hasPlus');const b=document.createElement('button');b.type='button';b.className='coinPlus';b.title='Купить монеты';b.innerHTML='<b>+</b>';b.addEventListener('click',e=>{e.stopPropagation();haptic('light');sfx('pick');mView('Shop');});p.prepend(b);});}catch(e){}})();
 function coinUI(){if(typeof ACH!=='undefined'&&state==='menu')setTimeout(achMeta,0);const v=prog.coins||0,old=coinUI.v;coinUI.v=v;
   if(old===v&&coinUI.busy&&state==='menu')return;
   if(old===undefined||old===v||state!=='menu'||document.hidden){coinUI.busy=0;if(coinUI.raf){cancelAnimationFrame(coinUI.raf);coinUI.raf=0;}document.querySelectorAll('.coinN').forEach(e=>{e.textContent=String(v);});return;}
@@ -13768,7 +13768,7 @@ const SKBON=[{t:'+2% coin drop chance',k:'coin',v:.02},{t:'+1 HP every 5 seconds
 function skBonusOf(i){return i>0?SKBON[(i-1)%SKBON.length]:null;}
 function skb(k){return P&&P.skB&&P.skB.k===k?P.skB.v:0;}
 function heroLook(id){const i=(prog.skinSel&&prog.skinSel[id])|0;return skinOwned(id,i)?skinLookAt(id,i):skinOf(id);}
-(function(){try{document.querySelectorAll('.coinpill').forEach(p=>{if(p.closest('#mvShop')||p.nextElementSibling&&p.nextElementSibling.classList.contains('coinPlus'))return;const b=document.createElement('button');b.type='button';b.className='coinPlus';b.title='Buy coins';b.innerHTML='<b>+</b>';b.addEventListener('click',e=>{e.stopPropagation();haptic('light');sfx('pick');mView('Shop');});p.after(b);});}catch(e){}})();
+(function(){try{document.querySelectorAll('.coinpill').forEach(p=>{if(p.closest('#mvShop')||p.querySelector('.coinPlus'))return;p.classList.add('hasPlus');const b=document.createElement('button');b.type='button';b.className='coinPlus';b.title='Buy coins';b.innerHTML='<b>+</b>';b.addEventListener('click',e=>{e.stopPropagation();haptic('light');sfx('pick');mView('Shop');});p.prepend(b);});}catch(e){}})();
 function coinUI(){if(typeof ACH!=='undefined'&&state==='menu')setTimeout(achMeta,0);const v=prog.coins||0,old=coinUI.v;coinUI.v=v;
   if(old===v&&coinUI.busy&&state==='menu')return;
   if(old===undefined||old===v||state!=='menu'||document.hidden){coinUI.busy=0;if(coinUI.raf){cancelAnimationFrame(coinUI.raf);coinUI.raf=0;}document.querySelectorAll('.coinN').forEach(e=>{e.textContent=String(v);});return;}
