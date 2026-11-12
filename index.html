@@ -10752,7 +10752,9 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='p
 
 const joyEl=$('#joy'),knob=$('#knob');
 cv.addEventListener('pointerdown',e=>{
-  if(state!=='play'||joy.id!==null)return;
+  if(state!=='play')return;
+  // a new first finger means the old one is gone even if its "up" never arrived — take over instead of staying stuck
+  if(joy.id!==null&&(e.pointerId===joy.id||!e.isPrimary))return;
   joy.id=e.pointerId;joy.ox=e.clientX;joy.oy=e.clientY;joy.dx=joy.dy=0;joy.mouse=e.pointerType==='mouse';if(SET.joyFix&&!joy.mouse){joy.ox=SET.joyX*innerWidth;joy.oy=SET.joyY*innerHeight;}
   joyEl.style.left=joy.ox+'px';joyEl.style.top=joy.oy+'px';joyEl.hidden=joy.mouse||!SET.joy;knob.style.transform='translate(0,0)';
   try{cv.setPointerCapture(e.pointerId);}catch(_){}
@@ -10766,7 +10768,10 @@ cv.addEventListener('pointermove',e=>{
   knob.style.transform=`translate(${dx}px,${dy}px)`;
 });
 const joyEnd=e=>{if(e.pointerId!==joy.id)return;joy.id=null;joy.dx=joy.dy=0;joyEl.hidden=true;};
-cv.addEventListener('pointerup',joyEnd);cv.addEventListener('pointercancel',joyEnd);
+cv.addEventListener('pointerup',joyEnd);cv.addEventListener('pointercancel',joyEnd);cv.addEventListener('lostpointercapture',joyEnd);
+addEventListener('pointerup',joyEnd,true);addEventListener('pointercancel',joyEnd,true);
+const joyReset=()=>{joy.id=null;joy.dx=joy.dy=0;joyEl.hidden=true;};
+addEventListener('blur',joyReset);document.addEventListener('visibilitychange',()=>{if(document.hidden)joyReset();});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ---------- LOOP ---------- */
@@ -20015,7 +20020,9 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='p
 
 const joyEl=$('#joy'),knob=$('#knob');
 cv.addEventListener('pointerdown',e=>{
-  if(state!=='play'||joy.id!==null)return;
+  if(state!=='play')return;
+  // a new first finger means the old one is gone even if its "up" never arrived — take over instead of staying stuck
+  if(joy.id!==null&&(e.pointerId===joy.id||!e.isPrimary))return;
   joy.id=e.pointerId;joy.ox=e.clientX;joy.oy=e.clientY;joy.dx=joy.dy=0;joy.mouse=e.pointerType==='mouse';if(SET.joyFix&&!joy.mouse){joy.ox=SET.joyX*innerWidth;joy.oy=SET.joyY*innerHeight;}
   joyEl.style.left=joy.ox+'px';joyEl.style.top=joy.oy+'px';joyEl.hidden=joy.mouse||!SET.joy;knob.style.transform='translate(0,0)';
   try{cv.setPointerCapture(e.pointerId);}catch(_){}
@@ -20029,7 +20036,10 @@ cv.addEventListener('pointermove',e=>{
   knob.style.transform=`translate(${dx}px,${dy}px)`;
 });
 const joyEnd=e=>{if(e.pointerId!==joy.id)return;joy.id=null;joy.dx=joy.dy=0;joyEl.hidden=true;};
-cv.addEventListener('pointerup',joyEnd);cv.addEventListener('pointercancel',joyEnd);
+cv.addEventListener('pointerup',joyEnd);cv.addEventListener('pointercancel',joyEnd);cv.addEventListener('lostpointercapture',joyEnd);
+addEventListener('pointerup',joyEnd,true);addEventListener('pointercancel',joyEnd,true);
+const joyReset=()=>{joy.id=null;joy.dx=joy.dy=0;joyEl.hidden=true;};
+addEventListener('blur',joyReset);document.addEventListener('visibilitychange',()=>{if(document.hidden)joyReset();});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ---------- LOOP ---------- */
