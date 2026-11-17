@@ -1281,6 +1281,7 @@ body.calm #menu *,body.calm #menu *::before,body.calm #menu *::after{animation-p
 @media (max-width:380px){.hsb span{font-size:9px;letter-spacing:-.03em}}
 @keyframes swL{from{transform:translateX(42px);opacity:.3}to{transform:none;opacity:1}}@keyframes swR{from{transform:translateX(-42px);opacity:.3}to{transform:none;opacity:1}}.mview.swL{animation:swL .24s ease-out both!important}.mview.swR{animation:swR .24s ease-out both!important}
 .coopKind{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 10px;border-radius:14px;background:rgba(0,0,0,.3);border:2px solid #8d5a2b}.coopKind button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 4px;border:0;border-radius:10px;background:none;color:var(--muted);cursor:pointer;font:inherit}.coopKind b{font-size:13.5px}.coopKind small{font-size:10.5px;font-weight:700;opacity:.85}.coopKind button.on{background:#ecefe6;color:#1d2a26}.coopRoom .coopKind{margin:0}.coopRoom .coopKind button{width:auto}
+.mCard:not(.lock){cursor:pointer;transition:transform .1s}.mCard:not(.lock):active{transform:scale(.985)}
 </style>
 </head>
 <body>
@@ -11129,7 +11130,7 @@ function renderModes(sel){try{const a=$('#trBanN'),b=$('#modeTrN');if(a&&b)b.tex
     card.innerHTML='<div class="mTxt"><b class="mT">'+(own?'':'🔒 ')+M.name+'</b><p class="mD">'+M.d+'</p>'+(tags?'<div class="mTags">'+tags+'</div>':'')+'<div class="mBtns"></div></div><div class="mArt">'+(MODEIC[k]||'')+'</div>';
     const bx=card.querySelector('.mBtns'),btn=(t,cl,f)=>{const b=document.createElement('button');b.type='button';b.className=cl;b.innerHTML=t;b.addEventListener('click',e=>{e.stopPropagation();sfx('pick');f();});bx.appendChild(b);return b;};
     const dEl=card.querySelector('.mD');const rb=btn('?','mB2 mQ',()=>{dEl.classList.toggle('full');});rb.setAttribute('aria-label','Правила');rb.title='Правила';
-    if(own){if(k!==MODE)btn('Выбрать','mB2',()=>{MODE=k;try{localStorage.setItem('szz-mode',k);}catch(e){}renderModes();});btn('▶ Играть','mB1',()=>modePlay(k));}
+    if(own){btn('▶ Играть','mB1',()=>modePlay(k));card.addEventListener('click',()=>{if(MODE===k)return;sfx('pick');haptic('light');MODE=k;try{localStorage.setItem('szz-mode',k);}catch(e){}renderModes();});card.setAttribute('role','button');card.tabIndex=0;card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();card.click();}});}
     else{const pr_=MODEPRICE[k]||0,cn=prog.coins||0;if(cn>=pr_)btn('Открыть <i class="cn"></i> '+pr_,'mB3',()=>{if((prog.coins||0)<pr_||modeOwned(k))return;prog.coins-=pr_;prog.modes=prog.modes||{};prog.modes[k]=1;MODE=k;try{localStorage.setItem('szz-mode',k);}catch(e){}saveProg();sfx('buy');haptic('success');coinUI();renderModes(k);});
       else btn('<i class="cn"></i> '+pr_+' · не хватает '+(pr_-cn),'mB3 lack',()=>needCoins(pr_-(prog.coins||0)));}
     host.appendChild(card);});
@@ -20954,7 +20955,7 @@ function renderModes(sel){try{const a=$('#trBanN'),b=$('#modeTrN');if(a&&b)b.tex
     card.innerHTML='<div class="mTxt"><b class="mT">'+(own?'':'🔒 ')+M.name+'</b><p class="mD">'+M.d+'</p>'+(tags?'<div class="mTags">'+tags+'</div>':'')+'<div class="mBtns"></div></div><div class="mArt">'+(MODEIC[k]||'')+'</div>';
     const bx=card.querySelector('.mBtns'),btn=(t,cl,f)=>{const b=document.createElement('button');b.type='button';b.className=cl;b.innerHTML=t;b.addEventListener('click',e=>{e.stopPropagation();sfx('pick');f();});bx.appendChild(b);return b;};
     const dEl=card.querySelector('.mD');const rb=btn('?','mB2 mQ',()=>{dEl.classList.toggle('full');});rb.setAttribute('aria-label','Rules');rb.title='Rules';
-    if(own){if(k!==MODE)btn('Select','mB2',()=>{MODE=k;try{localStorage.setItem('szz-mode',k);}catch(e){}renderModes();});btn('▶ Play','mB1',()=>modePlay(k));}
+    if(own){btn('▶ Play','mB1',()=>modePlay(k));card.addEventListener('click',()=>{if(MODE===k)return;sfx('pick');haptic('light');MODE=k;try{localStorage.setItem('szz-mode',k);}catch(e){}renderModes();});card.setAttribute('role','button');card.tabIndex=0;card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();card.click();}});}
     else{const pr_=MODEPRICE[k]||0,cn=prog.coins||0;if(cn>=pr_)btn('Unlock <i class="cn"></i> '+pr_,'mB3',()=>{if((prog.coins||0)<pr_||modeOwned(k))return;prog.coins-=pr_;prog.modes=prog.modes||{};prog.modes[k]=1;MODE=k;try{localStorage.setItem('szz-mode',k);}catch(e){}saveProg();sfx('buy');haptic('success');coinUI();renderModes(k);});
       else btn('<i class="cn"></i> '+pr_+' · short by '+(pr_-cn),'mB3 lack',()=>needCoins(pr_-(prog.coins||0)));}
     host.appendChild(card);});
