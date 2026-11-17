@@ -5498,11 +5498,11 @@ function updateEnemies(dt){
       if(tg){const vx=tg.x-e.x,vy=tg.y-e.y,d=Math.hypot(vx,vy)||1;dx=vx/d;dy=vy/d;if(d<e.cr+tg.cr+6)damage(tg,(e.dmg*1.5+6)*dt,0,0,0,true);}else{dx=0;dy=0;}}}
     if(retreat||e.charmT>0){}
     else if(e.tgSV){const vx=SV.x-e.x,vy=SV.y-e.y,dist=Math.hypot(vx,vy)||1;
-      if(dist<64||e.ghost){dx=vx/dist;dy=vy/dist;}else{const fd=flow(e.floor,svField,e.x,e.y);if(fd){dx=fd[0];dy=fd[1];}else{dx=vx/dist;dy=vy/dist;}}
+      if(dist<64){dx=vx/dist;dy=vy/dist;}else{const fd=flow(e.floor,svField,e.x,e.y);if(fd){dx=fd[0];dy=fd[1];}else{dx=vx/dist;dy=vy/dist;}}
       e.climb=0;}
     else if(e.floor===P.floor){
       const vx=P.x-e.x,vy=P.y-e.y,dist=Math.hypot(vx,vy)||1;
-      if(dist<64||e.ghost){dx=vx/dist;dy=vy/dist;}
+      if(dist<64){dx=vx/dist;dy=vy/dist;}
       else{const fl=e.flank>=0&&dist>150&&e.kind!=='boss'&&flankF[e.flank]?flankF[e.flank]:playerField;let fd=flow(e.floor,fl,e.x,e.y);if(!fd&&fl!==playerField)fd=flow(e.floor,playerField,e.x,e.y);if(fd){dx=fd[0];dy=fd[1];}else{dx=vx/dist;dy=vy/dist;}}
       e.climb=0;
     }else{
@@ -5638,7 +5638,8 @@ function updateEnemies(dt){
     const surf=e.kind!=='boss'&&floors[e.floor].g[Math.max(0,Math.min(MW*MH-1,Math.floor(e.y/T)*MW+Math.floor(e.x/T)))]===SURF;
     const sp=e.spd*slow*zSpd*(e.boss?bSpdZ:1)*blind*(wet?.6:1)*(surf?.5:1)*(floors[e.floor].snow&&floors[e.floor].snow[Math.max(0,Math.min(MW*MH-1,Math.floor(e.y/T)*MW+Math.floor(e.x/T)))]?.5:1)*spMul,k=e.ms==='dash'?1:Math.min(1,dt*(slipZ?2:6));
     e.vx+=(dx*sp-e.vx)*k;e.vy+=(dy*sp-e.vy)*k;
-    e.x+=(e.vx+e.kbx)*dt;e.y+=(e.vy+e.kby)*dt;
+    {const mx=(e.vx+e.kbx)*dt,my=(e.vy+e.kby)*dt,ml=Math.abs(mx)+Math.abs(my),lim=Math.max(6,Math.min(e.cr||10,T*.35));
+     if(ml<=lim){e.x+=mx;e.y+=my;}else{const n=Math.min(12,Math.ceil(ml/lim));for(let q=0;q<n;q++){e.x+=mx/n;e.y+=my/n;e.cr=e.cr||e.r;collideCircle(e,e.floor);}}}
     if(windZ&&e.floor===roofI()){e.x+=wZx*dt;e.y+=wZy*dt;}
     const dec=Math.exp(-dt*8);e.kbx*=dec;e.kby*=dec;
     e.hitT-=dt;e.scT-=dt;if(e.enter>0)e.enter-=dt;
@@ -5657,7 +5658,8 @@ function updateEnemies(dt){
   let took=0,topBite=0,topBiter=null,svTook=0,svTop=0,svBiter=null;
   for(const e of enemies){
     if(!e.alive)continue;
-    if(!e.ghost){collideCircle(e,e.floor);if(boxes.length)pushOutBoxes(e,e.floor,false);}
+    collideCircle(e,e.floor);if(boxes.length)pushOutBoxes(e,e.floor,false);
+    {const tx=Math.floor(e.x/T),ty=Math.floor(e.y/T);if(!solidT(e.floor,tx,ty)){e.sx=e.x;e.sy=e.y;e.sf=e.floor;}else if(e.sf===e.floor&&e.sx!==undefined){e.x=e.sx;e.y=e.sy;e.vx*=-.2;e.vy*=-.2;e.kbx=0;e.kby=0;}else if(!(e.enter>0)){zFree(e,tx,ty);}}
     if(SVon&&e.floor===SV.floor&&!retreat){const sx=e.x-SV.x,sy=e.y-SV.y,sd=Math.hypot(sx,sy)||1,sm=e.cr+SV.r;
       if(sd<sm){e.x+=sx/sd*(sm-sd);e.y+=sy/sd*(sm-sd);}
       if(sd<sm+3&&!(e.enter>0)&&!(e.stunT>0)&&!(e.charmT>0)){const bt=e.dmg*dt*.45;svTook+=bt;if(bt>svTop){svTop=bt;svBiter=e;}}}
@@ -11288,6 +11290,8 @@ function renderCoop(){const box=$('#coopBox');if(!box)return;box.innerHTML='';
     sfx('pick');haptic('light');mView(order[j]);const v=document.getElementById('mv'+order[j]);if(v){v.classList.remove('swL','swR');void v.offsetWidth;v.classList.add(dx<0?'swL':'swR');setTimeout(()=>v.classList.remove('swL','swR'),300);}},{passive:true});
   menu.addEventListener('touchcancel',()=>{s=null;},{passive:true});}catch(e){}})();
 function coopKindUI(cur,on){const w=clanEl('div','coopKind');[[0,'⏱ До рассвета','6 минут'],[1,'♾ Бесконечная','до последнего']].forEach(([v,t,s])=>{const b=clanEl('button',v===cur?'on':'');b.type='button';b.appendChild(clanEl('b','',t));b.appendChild(clanEl('small','',s));b.addEventListener('click',()=>{if(v!==cur){sfx('pick');on(v);}});w.appendChild(b);});return w;}
+// 1.9: a zombie that somehow ended inside a wall with no known free spot is moved to the nearest free tile
+function zFree(e,tx,ty){for(let r=1;r<=5;r++)for(let oy=-r;oy<=r;oy++)for(let ox=-r;ox<=r;ox++){if(Math.max(Math.abs(ox),Math.abs(oy))!==r)continue;const nx=tx+ox,ny=ty+oy;if(nx<1||ny<1||nx>MW-2||ny>MH-2||solidT(e.floor,nx,ny))continue;e.x=(nx+.5)*T;e.y=(ny+.5)*T;e.sx=e.x;e.sy=e.y;e.sf=e.floor;e.kbx=e.kby=0;return;}}
 function startGame(){for(let a=0;a<3;a++){try{startGame0();return;}catch(e){try{console.error(e);localStorage.setItem('szz-lasterr','startGame '+MAPSEL+': '+String(e&&e.stack||e).slice(0,500));}catch(_){}if(a===1)MAPSEL='school';}}try{state='menu';showOv('menu');}catch(e){}}
 function startGame0(){
   if(!RESUME)rsvClear();if(MODE==='trial'&&!TRIAL)MODE='normal';if(!isUnlocked(skinId)&&MODE!=='trial')return;if(!modeOwned(MODE))MODE='normal';if(MODE!=='trial'&&!mapOpen(MAPSEL))MAPSEL='school';
@@ -15323,11 +15327,11 @@ function updateEnemies(dt){
       if(tg){const vx=tg.x-e.x,vy=tg.y-e.y,d=Math.hypot(vx,vy)||1;dx=vx/d;dy=vy/d;if(d<e.cr+tg.cr+6)damage(tg,(e.dmg*1.5+6)*dt,0,0,0,true);}else{dx=0;dy=0;}}}
     if(retreat||e.charmT>0){}
     else if(e.tgSV){const vx=SV.x-e.x,vy=SV.y-e.y,dist=Math.hypot(vx,vy)||1;
-      if(dist<64||e.ghost){dx=vx/dist;dy=vy/dist;}else{const fd=flow(e.floor,svField,e.x,e.y);if(fd){dx=fd[0];dy=fd[1];}else{dx=vx/dist;dy=vy/dist;}}
+      if(dist<64){dx=vx/dist;dy=vy/dist;}else{const fd=flow(e.floor,svField,e.x,e.y);if(fd){dx=fd[0];dy=fd[1];}else{dx=vx/dist;dy=vy/dist;}}
       e.climb=0;}
     else if(e.floor===P.floor){
       const vx=P.x-e.x,vy=P.y-e.y,dist=Math.hypot(vx,vy)||1;
-      if(dist<64||e.ghost){dx=vx/dist;dy=vy/dist;}
+      if(dist<64){dx=vx/dist;dy=vy/dist;}
       else{const fl=e.flank>=0&&dist>150&&e.kind!=='boss'&&flankF[e.flank]?flankF[e.flank]:playerField;let fd=flow(e.floor,fl,e.x,e.y);if(!fd&&fl!==playerField)fd=flow(e.floor,playerField,e.x,e.y);if(fd){dx=fd[0];dy=fd[1];}else{dx=vx/dist;dy=vy/dist;}}
       e.climb=0;
     }else{
@@ -15463,7 +15467,8 @@ function updateEnemies(dt){
     const surf=e.kind!=='boss'&&floors[e.floor].g[Math.max(0,Math.min(MW*MH-1,Math.floor(e.y/T)*MW+Math.floor(e.x/T)))]===SURF;
     const sp=e.spd*slow*zSpd*(e.boss?bSpdZ:1)*blind*(wet?.6:1)*(surf?.5:1)*(floors[e.floor].snow&&floors[e.floor].snow[Math.max(0,Math.min(MW*MH-1,Math.floor(e.y/T)*MW+Math.floor(e.x/T)))]?.5:1)*spMul,k=e.ms==='dash'?1:Math.min(1,dt*(slipZ?2:6));
     e.vx+=(dx*sp-e.vx)*k;e.vy+=(dy*sp-e.vy)*k;
-    e.x+=(e.vx+e.kbx)*dt;e.y+=(e.vy+e.kby)*dt;
+    {const mx=(e.vx+e.kbx)*dt,my=(e.vy+e.kby)*dt,ml=Math.abs(mx)+Math.abs(my),lim=Math.max(6,Math.min(e.cr||10,T*.35));
+     if(ml<=lim){e.x+=mx;e.y+=my;}else{const n=Math.min(12,Math.ceil(ml/lim));for(let q=0;q<n;q++){e.x+=mx/n;e.y+=my/n;e.cr=e.cr||e.r;collideCircle(e,e.floor);}}}
     if(windZ&&e.floor===roofI()){e.x+=wZx*dt;e.y+=wZy*dt;}
     const dec=Math.exp(-dt*8);e.kbx*=dec;e.kby*=dec;
     e.hitT-=dt;e.scT-=dt;if(e.enter>0)e.enter-=dt;
@@ -15482,7 +15487,8 @@ function updateEnemies(dt){
   let took=0,topBite=0,topBiter=null,svTook=0,svTop=0,svBiter=null;
   for(const e of enemies){
     if(!e.alive)continue;
-    if(!e.ghost){collideCircle(e,e.floor);if(boxes.length)pushOutBoxes(e,e.floor,false);}
+    collideCircle(e,e.floor);if(boxes.length)pushOutBoxes(e,e.floor,false);
+    {const tx=Math.floor(e.x/T),ty=Math.floor(e.y/T);if(!solidT(e.floor,tx,ty)){e.sx=e.x;e.sy=e.y;e.sf=e.floor;}else if(e.sf===e.floor&&e.sx!==undefined){e.x=e.sx;e.y=e.sy;e.vx*=-.2;e.vy*=-.2;e.kbx=0;e.kby=0;}else if(!(e.enter>0)){zFree(e,tx,ty);}}
     if(SVon&&e.floor===SV.floor&&!retreat){const sx=e.x-SV.x,sy=e.y-SV.y,sd=Math.hypot(sx,sy)||1,sm=e.cr+SV.r;
       if(sd<sm){e.x+=sx/sd*(sm-sd);e.y+=sy/sd*(sm-sd);}
       if(sd<sm+3&&!(e.enter>0)&&!(e.stunT>0)&&!(e.charmT>0)){const bt=e.dmg*dt*.45;svTook+=bt;if(bt>svTop){svTop=bt;svBiter=e;}}}
@@ -21113,6 +21119,8 @@ function renderCoop(){const box=$('#coopBox');if(!box)return;box.innerHTML='';
     sfx('pick');haptic('light');mView(order[j]);const v=document.getElementById('mv'+order[j]);if(v){v.classList.remove('swL','swR');void v.offsetWidth;v.classList.add(dx<0?'swL':'swR');setTimeout(()=>v.classList.remove('swL','swR'),300);}},{passive:true});
   menu.addEventListener('touchcancel',()=>{s=null;},{passive:true});}catch(e){}})();
 function coopKindUI(cur,on){const w=clanEl('div','coopKind');[[0,'⏱ Until dawn','6 minutes'],[1,'♾ Endless','to the last']].forEach(([v,t,s])=>{const b=clanEl('button',v===cur?'on':'');b.type='button';b.appendChild(clanEl('b','',t));b.appendChild(clanEl('small','',s));b.addEventListener('click',()=>{if(v!==cur){sfx('pick');on(v);}});w.appendChild(b);});return w;}
+// 1.9: a zombie that somehow ended inside a wall with no known free spot is moved to the nearest free tile
+function zFree(e,tx,ty){for(let r=1;r<=5;r++)for(let oy=-r;oy<=r;oy++)for(let ox=-r;ox<=r;ox++){if(Math.max(Math.abs(ox),Math.abs(oy))!==r)continue;const nx=tx+ox,ny=ty+oy;if(nx<1||ny<1||nx>MW-2||ny>MH-2||solidT(e.floor,nx,ny))continue;e.x=(nx+.5)*T;e.y=(ny+.5)*T;e.sx=e.x;e.sy=e.y;e.sf=e.floor;e.kbx=e.kby=0;return;}}
 function startGame(){for(let a=0;a<3;a++){try{startGame0();return;}catch(e){try{console.error(e);localStorage.setItem('szz-lasterr','startGame '+MAPSEL+': '+String(e&&e.stack||e).slice(0,500));}catch(_){}if(a===1)MAPSEL='school';}}try{state='menu';showOv('menu');}catch(e){}}
 function startGame0(){
   if(!RESUME)rsvClear();if(MODE==='trial'&&!TRIAL)MODE='normal';if(!isUnlocked(skinId)&&MODE!=='trial')return;if(!modeOwned(MODE))MODE='normal';if(MODE!=='trial'&&!mapOpen(MAPSEL))MAPSEL='school';
