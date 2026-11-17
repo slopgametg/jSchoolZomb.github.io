@@ -5810,7 +5810,7 @@ function zKill(z){z.dead=true;for(let q=0;q<5;q++)parts.push({x:z.x,y:z.y,vx:rr(
 function deflectArea(x,y,R,a,half){for(const z of zprojs){if(z.dead||z.f!==P.floor)continue;const dx=z.x-x,dy=z.y-y,d=Math.hypot(dx,dy);if(d>R+10)continue;if(half!==undefined&&angDiff(Math.atan2(dy,dx),a)>half)continue;
   z.dead=true;const sp=Math.hypot(z.vx,z.vy)*1.2+160,aa=Math.atan2(dy,dx);projs.push({k:'refl',x:z.x,y:z.y,vx:Math.cos(aa)*sp,vy:Math.sin(aa)*sp,f:z.f,dmg:Math.max(15,z.dmg*2)*(curS?curS.dm:1),pierce:2,life:1.2,hit:new Set(),a:aa});
   for(let q=0;q<4;q++)parts.push({x:z.x,y:z.y,vx:rr(-90,90),vy:rr(-90,90),life:.3,max:.3,col:'#fff6d0',s:3,f:z.f});tone(900,.05,'square',.02,1.6);}}
-function aimDir(range){const n=nearestList(P.x,P.y,range,1)[0];if(n){const dx=n.x-P.x,dy=n.y-P.y,l=Math.hypot(dx,dy)||1;return [dx/l,dy/l];}return P.face;}
+function aimDir(range){const n=nearestList(P.x,P.y,range,1)[0];if(n){const dx=n.x-P.x,dy=n.y-P.y,l=Math.hypot(dx,dy)||1;return [dx/l,dy/l];}return Array.isArray(P.face)&&isFinite(P.face[0])?P.face:[1,0];}
 function angDiff(a,b){let d=a-b;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return Math.abs(d);}
 /* ---------- 1.6: NEW WEAPONS (unique mechanics) ---------- */
 let nwp=[];
@@ -6168,7 +6168,7 @@ function updateWeapons(dt){
     if(w.id==='ext'&&P.C&&P.C.extInf&&!(w.spray>0)){w.spray=1;w.dir=aimDir(ws(D,'r',L)*AREA()*1.3);}
     if(w.id==='ext'&&w.spray>0){
       if(P.C&&P.C.extInf)w.spray=Math.max(w.spray,1);
-      w.spray-=dt;w.hissT=(w.hissT||0)-dt;if(w.spray<=0)sfx('extEnd');else if(w.hissT<=0){w.hissT=.15;nz(.22,.024,2400+rand()*600,.7,'bandpass',0,.05);}const dir=aimDir(ws(D,'r',L)*AREA()*1.3);w.dir=[w.dir[0]+(dir[0]-w.dir[0])*Math.min(1,dt*8),w.dir[1]+(dir[1]-w.dir[1])*Math.min(1,dt*8)];
+      w.spray-=dt;w.hissT=(w.hissT||0)-dt;if(w.spray<=0)sfx('extEnd');else if(w.hissT<=0){w.hissT=.15;nz(.22,.024,2400+rand()*600,.7,'bandpass',0,.05);}const dir=aimDir(ws(D,'r',L)*AREA()*1.3),od=Array.isArray(w.dir)&&isFinite(w.dir[0])&&isFinite(w.dir[1])?w.dir:dir;w.dir=[od[0]+(dir[0]-od[0])*Math.min(1,dt*8),od[1]+(dir[1]-od[1])*Math.min(1,dt*8)];
       const a=Math.atan2(w.dir[1],w.dir[0]),R=ws(D,'r',L)*AREA();
       forNear(P.floor,P.x,P.y,R+20,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy);if(d<R+e.cr&&angDiff(Math.atan2(dy,dx),a)<.45&&sees(e)){damage(e,ws(D,'dps',L)*WM*dt,dx/(d||1),dy/(d||1),60*dt*10,true);e.slowT=1;}});
       for(let i=0;i<3;i++){const aa=a+rr(-.4,.4),sp=rr(R*1.6,R*2.4);if(parts.length<320)parts.push({x:P.x+Math.cos(a)*14,y:P.y+Math.sin(a)*14,vx:Math.cos(aa)*sp,vy:Math.sin(aa)*sp,life:.4,max:.4,col:'#eef6ff',s:rr(3,6),f:P.floor,foam:true});}
@@ -16106,7 +16106,7 @@ function zKill(z){z.dead=true;for(let q=0;q<5;q++)parts.push({x:z.x,y:z.y,vx:rr(
 function deflectArea(x,y,R,a,half){for(const z of zprojs){if(z.dead||z.f!==P.floor)continue;const dx=z.x-x,dy=z.y-y,d=Math.hypot(dx,dy);if(d>R+10)continue;if(half!==undefined&&angDiff(Math.atan2(dy,dx),a)>half)continue;
   z.dead=true;const sp=Math.hypot(z.vx,z.vy)*1.2+160,aa=Math.atan2(dy,dx);projs.push({k:'refl',x:z.x,y:z.y,vx:Math.cos(aa)*sp,vy:Math.sin(aa)*sp,f:z.f,dmg:Math.max(15,z.dmg*2)*(curS?curS.dm:1),pierce:2,life:1.2,hit:new Set(),a:aa});
   for(let q=0;q<4;q++)parts.push({x:z.x,y:z.y,vx:rr(-90,90),vy:rr(-90,90),life:.3,max:.3,col:'#fff6d0',s:3,f:z.f});tone(900,.05,'square',.02,1.6);}}
-function aimDir(range){const n=nearestList(P.x,P.y,range,1)[0];if(n){const dx=n.x-P.x,dy=n.y-P.y,l=Math.hypot(dx,dy)||1;return [dx/l,dy/l];}return P.face;}
+function aimDir(range){const n=nearestList(P.x,P.y,range,1)[0];if(n){const dx=n.x-P.x,dy=n.y-P.y,l=Math.hypot(dx,dy)||1;return [dx/l,dy/l];}return Array.isArray(P.face)&&isFinite(P.face[0])?P.face:[1,0];}
 function angDiff(a,b){let d=a-b;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return Math.abs(d);}
 /* ---------- 1.6: NEW WEAPONS (unique mechanics) ---------- */
 let nwp=[];
@@ -16464,7 +16464,7 @@ function updateWeapons(dt){
     if(w.id==='ext'&&P.C&&P.C.extInf&&!(w.spray>0)){w.spray=1;w.dir=aimDir(ws(D,'r',L)*AREA()*1.3);}
     if(w.id==='ext'&&w.spray>0){
       if(P.C&&P.C.extInf)w.spray=Math.max(w.spray,1);
-      w.spray-=dt;w.hissT=(w.hissT||0)-dt;if(w.spray<=0)sfx('extEnd');else if(w.hissT<=0){w.hissT=.15;nz(.22,.024,2400+rand()*600,.7,'bandpass',0,.05);}const dir=aimDir(ws(D,'r',L)*AREA()*1.3);w.dir=[w.dir[0]+(dir[0]-w.dir[0])*Math.min(1,dt*8),w.dir[1]+(dir[1]-w.dir[1])*Math.min(1,dt*8)];
+      w.spray-=dt;w.hissT=(w.hissT||0)-dt;if(w.spray<=0)sfx('extEnd');else if(w.hissT<=0){w.hissT=.15;nz(.22,.024,2400+rand()*600,.7,'bandpass',0,.05);}const dir=aimDir(ws(D,'r',L)*AREA()*1.3),od=Array.isArray(w.dir)&&isFinite(w.dir[0])&&isFinite(w.dir[1])?w.dir:dir;w.dir=[od[0]+(dir[0]-od[0])*Math.min(1,dt*8),od[1]+(dir[1]-od[1])*Math.min(1,dt*8)];
       const a=Math.atan2(w.dir[1],w.dir[0]),R=ws(D,'r',L)*AREA();
       forNear(P.floor,P.x,P.y,R+20,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy);if(d<R+e.cr&&angDiff(Math.atan2(dy,dx),a)<.45&&sees(e)){damage(e,ws(D,'dps',L)*WM*dt,dx/(d||1),dy/(d||1),60*dt*10,true);e.slowT=1;}});
       for(let i=0;i<3;i++){const aa=a+rr(-.4,.4),sp=rr(R*1.6,R*2.4);if(parts.length<320)parts.push({x:P.x+Math.cos(a)*14,y:P.y+Math.sin(a)*14,vx:Math.cos(aa)*sp,vy:Math.sin(aa)*sp,life:.4,max:.4,col:'#eef6ff',s:rr(3,6),f:P.floor,foam:true});}
