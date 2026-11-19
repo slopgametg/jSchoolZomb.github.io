@@ -7885,7 +7885,7 @@ const ADSGRAM_BLOCKS={x2:'60690',revive:'60693',reroll:'60694',start:'int-60695'
   s.onload=()=>{try{for(const k in ADSGRAM_BLOCKS){try{AC[k]=window.Adsgram.init({blockId:ADSGRAM_BLOCKS[k]});}catch(e){}}}catch(e){}
     setTimeout(()=>{try{if(state==='menu'&&window.YA)YA.interstitial('start');}catch(e){}},800);};document.head.appendChild(s);
   window.YA={rewardOk:k=>!!AC[k||'x2'],
-    rewarded:(k,cb)=>{const c=AC[k||'x2'];if(!c){cb(false);return;}try{c.show().then(r=>cb(!!(r&&r.done))).catch(()=>cb(false));}catch(e){cb(false);}},
+    rewarded:(k,cb)=>{const c=AC[k||'x2'];if(!c){cb(false);return;}try{c.show().then(r=>cb(!!(r&&r.done))).catch(e=>{try{banner('📺 Ad',String((e&&(e.description||e.message))||'no ad / error').slice(0,90),false);}catch(_){}cb(false);});}catch(e){cb(false);}},
     interstitial:(k,cb)=>{const c=AC[k||'start'];if(!c){if(cb)cb(false);return;}try{c.show().then(()=>{if(cb)cb(true);}).catch(()=>{if(cb)cb(false);});}catch(e){if(cb)cb(false);}}};}catch(e){}})();
 
 /* ---------- 1.7: pass + pets menus ---------- */
@@ -18185,7 +18185,7 @@ const ADSGRAM_BLOCKS={x2:'60690',revive:'60693',reroll:'60694',start:'int-60695'
   s.onload=()=>{try{for(const k in ADSGRAM_BLOCKS){try{AC[k]=window.Adsgram.init({blockId:ADSGRAM_BLOCKS[k]});}catch(e){}}}catch(e){}
     setTimeout(()=>{try{if(state==='menu'&&window.YA)YA.interstitial('start');}catch(e){}},800);};document.head.appendChild(s);
   window.YA={rewardOk:k=>!!AC[k||'x2'],
-    rewarded:(k,cb)=>{const c=AC[k||'x2'];if(!c){cb(false);return;}try{c.show().then(r=>cb(!!(r&&r.done))).catch(()=>cb(false));}catch(e){cb(false);}},
+    rewarded:(k,cb)=>{const c=AC[k||'x2'];if(!c){cb(false);return;}try{c.show().then(r=>cb(!!(r&&r.done))).catch(e=>{try{banner('📺 Ad',String((e&&(e.description||e.message))||'no ad / error').slice(0,90),false);}catch(_){}cb(false);});}catch(e){cb(false);}},
     interstitial:(k,cb)=>{const c=AC[k||'start'];if(!c){if(cb)cb(false);return;}try{c.show().then(()=>{if(cb)cb(true);}).catch(()=>{if(cb)cb(false);});}catch(e){if(cb)cb(false);}}};}catch(e){}})();
 
 /* ---------- 1.7: pass + pets menus ---------- */
