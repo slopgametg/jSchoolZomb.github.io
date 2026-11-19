@@ -5359,6 +5359,7 @@ function updateSpawns(dt){
       banner('Золотой кристалл!',floorName(f)+(rid>=0?' · '+F2.rooms[rid].name:F2.roof?'':' · коридор')+' — даёт целый уровень',f===P.floor);sfx('bell');}}
   let bm=1+cc('blacknote'),rate=1.03*(RUN.mode==='tutorial'?(TUT&&TUT.step<1?0:.3):1)*(RUN.mode==='train'&&!TRN.spawn?0:1)*Math.min(9,.9+time/42)*Math.min(bm,4)*(RUN.ids.has('ruin')?1.3:1)*Math.min(2.5,1+.35*cc('candle')+.25*cc('biology'))*(RUN.ids.has('swarm')?1.5:1)*(RUN.trSp||1)*(RUN.ids.has('blackfriday')?1.5:1)*(RUN.ids.has('dug')?1.4:1)*(RUN.ids.has('rush')?1.2:1)*(RUN.ids.has('lastday')?2.2:1), cap=Math.min(RUN.ids.has('lastday')?520:(bm>1?450:(RUN.ids.has('swarm')?380:280)),(36+time*.55)*bm*(RUN.ids.has('swarm')?1.4:1)*(RUN.ids.has('lastday')?2:1));
   if(RUN.mode==='endless'&&time>900){const k=(time-900)/60;rate*=Math.min(3,1+k*.07);cap=Math.min(420,Math.round(cap*Math.min(1.45,1+k*.04)));}
+  if(RUN.mode==='endless'){rate*=5;cap=Math.round(cap*5);}
   let wmul=1;if(RUN.waves&&time>20&&!retreat){const ph=(time-20)%32,n=Math.floor((time-20)/32)+1;
     if(ph<24){wmul=1.45;if(RUN.wvN!==n){RUN.wvN=n;if(n>1)stAdd('waves');if(n>1)banner('Волна '+n,'Зомби идут!',true);}}else{wmul=.06;if(RUN.wvB!==n){RUN.wvB=n;banner('Передышка','8 секунд до новой волны',false);}}}
   if(RUN.mode==='bosshunt')wmul=0;
@@ -10401,8 +10402,8 @@ const rwRender18=rwRender;
 rwRender=function(){if(rwCtx&&rwCtx[1]&&(rwCtx[1].fp||rwCtx[1].fpd))return rwRenderFP(rwCtx[0],rwCtx[1].fp||0);return rwRender18();};
 
 /* ---------- 1.8 update 2: stronger zombies every 5.5 min, coach tips, promo codes, polls, pass swipe, calm menus ---------- */
-// zombies get a threat level every 5.5 minutes: more health and damage, including those already on the map
-const ZT_STEP=330;
+// zombies get a threat level every 3.5 minutes: more health and damage, including those already on the map
+const ZT_STEP=210;
 function zTierNow(){return RUN&&RUN.mode!=='tutorial'&&RUN.mode!=='train'?Math.floor(time/ZT_STEP):0;}
 const zHpT=t=>1+.2*t,zDmT=t=>1+.1*t;
 const makeZombie18d=makeZombie;
@@ -10422,7 +10423,7 @@ const COACH={
  chest:['🎁','Сундук с босса: в нём улучшения сразу для нескольких оружий или предметов.'],
  stairs:['🪜','Лестницы ведут на другие этажи и на крышу — туда можно убежать от толпы. Встань на ступени и жми ▲ ▼.'],
  evo:['✨','Прокачай оружие до 15-го уровня и возьми нужный предмет — будет эволюция! Рецепт — в карточке оружия.'],
- tier:['☠','Каждые 5,5 минуты зомби становятся сильнее — успевай прокачиваться.']};
+ tier:['☠','Каждые 3,5 минуты зомби становятся сильнее — успевай прокачиваться.']};
 let coachT=0,coachHideT=0;
 function coachOn(){return RUN&&!['tutorial','train'].includes(RUN.mode)&&(prog.runs||0)<8;}
 function coachShow(id,hi){if(!coachOn())return false;prog.coach=prog.coach||{};if(prog.coach[id]||performance.now()<coachT)return false;const C=COACH[id];if(!C)return false;
@@ -15655,6 +15656,7 @@ function updateSpawns(dt){
       banner('Golden crystal!',floorName(f)+(rid>=0?' · '+F2.rooms[rid].name:F2.roof?'':' · hallway')+' — grants a whole level',f===P.floor);sfx('bell');}}
   let bm=1+cc('blacknote'),rate=1.03*(RUN.mode==='tutorial'?(TUT&&TUT.step<1?0:.3):1)*(RUN.mode==='train'&&!TRN.spawn?0:1)*Math.min(9,.9+time/42)*Math.min(bm,4)*(RUN.ids.has('ruin')?1.3:1)*Math.min(2.5,1+.35*cc('candle')+.25*cc('biology'))*(RUN.ids.has('swarm')?1.5:1)*(RUN.trSp||1)*(RUN.ids.has('blackfriday')?1.5:1)*(RUN.ids.has('dug')?1.4:1)*(RUN.ids.has('rush')?1.2:1)*(RUN.ids.has('lastday')?2.2:1), cap=Math.min(RUN.ids.has('lastday')?520:(bm>1?450:(RUN.ids.has('swarm')?380:280)),(36+time*.55)*bm*(RUN.ids.has('swarm')?1.4:1)*(RUN.ids.has('lastday')?2:1));
   if(RUN.mode==='endless'&&time>900){const k=(time-900)/60;rate*=Math.min(3,1+k*.07);cap=Math.min(420,Math.round(cap*Math.min(1.45,1+k*.04)));}
+  if(RUN.mode==='endless'){rate*=5;cap=Math.round(cap*5);}
   let wmul=1;if(RUN.waves&&time>20&&!retreat){const ph=(time-20)%32,n=Math.floor((time-20)/32)+1;
     if(ph<24){wmul=1.45;if(RUN.wvN!==n){RUN.wvN=n;if(n>1)stAdd('waves');if(n>1)banner('Wave '+n,'Zombies are coming!',true);}}else{wmul=.06;if(RUN.wvB!==n){RUN.wvB=n;banner('Breather','8 seconds until the next wave',false);}}}
   if(RUN.mode==='bosshunt')wmul=0;
@@ -20697,8 +20699,8 @@ const rwRender18=rwRender;
 rwRender=function(){if(rwCtx&&rwCtx[1]&&(rwCtx[1].fp||rwCtx[1].fpd))return rwRenderFP(rwCtx[0],rwCtx[1].fp||0);return rwRender18();};
 
 /* ---------- 1.8 update 2: stronger zombies every 5.5 min, coach tips, promo codes, polls, pass swipe, calm menus ---------- */
-// zombies get a threat level every 5.5 minutes: more health and damage, including those already on the map
-const ZT_STEP=330;
+// zombies get a threat level every 3.5 minutes: more health and damage, including those already on the map
+const ZT_STEP=210;
 function zTierNow(){return RUN&&RUN.mode!=='tutorial'&&RUN.mode!=='train'?Math.floor(time/ZT_STEP):0;}
 const zHpT=t=>1+.2*t,zDmT=t=>1+.1*t;
 const makeZombie18d=makeZombie;
@@ -20718,7 +20720,7 @@ const COACH={
  chest:['🎁','A boss chest: it holds upgrades for several weapons or items at once.'],
  stairs:['🪜','Stairs lead to other floors and to the roof — you can escape the crowd there. Stand on the steps and press ▲ ▼.'],
  evo:['✨','Level a weapon up to 15 and take the right item — it will evolve! The recipe is on the weapon card.'],
- tier:['☠','Every 5.5 minutes the zombies get stronger — keep leveling up.']};
+ tier:['☠','Every 3.5 minutes the zombies get stronger — keep leveling up.']};
 let coachT=0,coachHideT=0;
 function coachOn(){return RUN&&!['tutorial','train'].includes(RUN.mode)&&(prog.runs||0)<8;}
 function coachShow(id,hi){if(!coachOn())return false;prog.coach=prog.coach||{};if(prog.coach[id]||performance.now()<coachT)return false;const C=COACH[id];if(!C)return false;
