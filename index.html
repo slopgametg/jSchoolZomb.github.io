@@ -1611,7 +1611,7 @@ body.calm #menu *,body.calm #menu *::before,body.calm #menu *::after{animation-p
 <!-- REVIVE -->
 <div class="ov" id="revOv" hidden><div class="boardbox"><div class="kicker">Ты упал</div><h2>Воскреснуть?</h2>
   <p style="margin:6px 0 6px;color:#cfe0d6">Встань с половиной здоровья и взрывом отбрось зомби. За забег можно воскреснуть только 3 раза: за 5, 20 и 50 монет.</p><p class="best" id="revLeft" style="margin:0 0 12px"></p>
-  <div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap"><button class="btn" id="revBuy" type="button">Воскреснуть · <i class="cn"></i> <span id="revPrice">5</span></button><button class="btn ghost" id="revQuit" type="button">Сдаться</button></div>
+  <div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap"><button class="btn adbtn" id="revAd" type="button" hidden>📺 Воскреснуть бесплатно (реклама)</button><button class="btn" id="revBuy" type="button">Воскреснуть · <i class="cn"></i> <span id="revPrice">5</span></button><button class="btn ghost" id="revQuit" type="button">Сдаться</button></div>
   <p class="best" style="margin-top:10px">У тебя: <i class="cn"></i> <span id="revHave">0</span></p></div></div>
 <!-- CONFIRM -->
 <div class="ov" id="waveOv" hidden><div class="boardbox" style="max-width:420px"><div class="kicker" id="waveKick">Экспериментальный режим</div><h2 id="waveH">Волны зомби</h2><p id="waveP" style="margin:6px 0 16px;color:#cfe0d6">Зомби идут волнами по 24 секунды, между ними — 8 секунд передышки.</p>
@@ -1937,7 +1937,7 @@ body.calm #menu *,body.calm #menu *::before,body.calm #menu *::after{animation-p
 <!-- REVIVE -->
 <div class="ov" id="revOv" hidden><div class="boardbox"><div class="kicker">You fell</div><h2>Revive?</h2>
   <p style="margin:6px 0 6px;color:#cfe0d6">Get back up with half your health and blast the zombies away. You can revive only 3 times per run: for 5, 20 and 50 coins.</p><p class="best" id="revLeft" style="margin:0 0 12px"></p>
-  <div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap"><button class="btn" id="revBuy" type="button">Revive · <i class="cn"></i> <span id="revPrice">5</span></button><button class="btn ghost" id="revQuit" type="button">Give up</button></div>
+  <div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap"><button class="btn adbtn" id="revAd" type="button" hidden>📺 Revive free (ad)</button><button class="btn" id="revBuy" type="button">Revive · <i class="cn"></i> <span id="revPrice">5</span></button><button class="btn ghost" id="revQuit" type="button">Give up</button></div>
   <p class="best" style="margin-top:10px">You have: <i class="cn"></i> <span id="revHave">0</span></p></div></div>
 <!-- CONFIRM -->
 <div class="ov" id="waveOv" hidden><div class="boardbox" style="max-width:420px"><div class="kicker" id="waveKick">Experimental mode</div><h2 id="waveH">Zombie waves</h2><p id="waveP" style="margin:6px 0 16px;color:#cfe0d6">Zombies come in 24-second waves with an 8-second break between them.</p>
@@ -7052,7 +7052,7 @@ function openLevelUp(){try{pstatFill();}catch(e){}try{$('#skipLvN').textContent=
     box.appendChild(b);
   });
   {const rb=$('#rerollBtn');rb.hidden=!(P.rerolls>0)||!!choices.any;rb.textContent='🍀 Перекрутить ('+(P.rerolls||0)+')';}
-  {const ab=$('#adRerollBtn');ab.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk())||!!choices.any;ab.disabled=false;}
+  {const ab=$('#adRerollBtn');ab.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk('reroll'))||!!choices.any;ab.disabled=false;}
   showOv('lvup');
   setTimeout(()=>{const c=$('#card0');if(c)c.focus({preventScroll:true});},50);
 }
@@ -7098,7 +7098,7 @@ function applyOnce(id){
 }
 function safeChoose(i){try{choose(i);}catch(err){try{console.error(err);localStorage.setItem('szz-lasterr',String(err&&err.stack||err).slice(0,600));}catch(e){}pendingLv=0;hideOv('lvup');state='play';}}
 function adReroll(){if(state!=='levelup'||suitPick||!(window.YA&&YA.rewarded))return;const ab=$('#adRerollBtn');ab.disabled=true;
-  YA.rewarded(null,got=>{ab.disabled=false;if(got&&state==='levelup'&&!suitPick){openLevelUp();tone(900,.08,'triangle',.03,1.4);sfx('level');}});}
+  YA.rewarded('reroll',got=>{ab.disabled=false;if(got&&state==='levelup'&&!suitPick){openLevelUp();tone(900,.08,'triangle',.03,1.4);sfx('level');}});}
 function doReroll(){if(state!=='levelup'||suitPick||!(P.rerolls>0))return;P.rerolls--;openLevelUp();tone(900,.08,'triangle',.03,1.4);sfx('roll');}
 function lastPickName(){const q=P.lastPick;if(!q)return '';return q.t==='w'?WDEF[q.id].name:q.t==='p'?PDEF[q.id].name:CDEF[q.id].name;}
 function choose(i){
@@ -7208,7 +7208,7 @@ function chestClose(apply){
   const gotAxe=CH.axe;CH=null;runChests++;renderInv();hideOv('chestOv');state='play';if(apply)sfx('pickPL');if(gotAxe)axeGive();
   if(pendingLv>0)openLevelUp();}
 $('#chTake').addEventListener('click',chestTake);
-$('#coinX2').addEventListener('click',()=>{const b=$('#coinX2'),v=+b.dataset.v||0;if(!v||!window.YA||!YA.rewarded)return;b.disabled=true;YA.rewarded(null,got=>{if(got){prog.coins=(prog.coins||0)+v;saveProg();b.dataset.v=0;b.hidden=true;const ec=$('#endCoins');ec.innerHTML='<i class="cn"></i>+'+(2*v)+' '+coinWord(2*v)+' <small>(удвоено) · всего '+(prog.coins||0)+'</small>';sfx('buy');}else b.disabled=false;});});$('#chSkip').addEventListener('click',chestDecline);
+$('#coinX2').addEventListener('click',()=>{const b=$('#coinX2'),v=+b.dataset.v||0;if(!v||!window.YA||!YA.rewarded)return;b.disabled=true;YA.rewarded('x2',got=>{if(got){prog.coins=(prog.coins||0)+v;saveProg();b.dataset.v=0;b.hidden=true;const ec=$('#endCoins');ec.innerHTML='<i class="cn"></i>+'+(2*v)+' '+coinWord(2*v)+' <small>(удвоено) · всего '+(prog.coins||0)+'</small>';sfx('buy');}else b.disabled=false;});});$('#chSkip').addEventListener('click',chestDecline);
 
 /* ---------- STAIRS ---------- */
 // each staircase has an up flight (top or left half, leads to floor+1) and a down flight (bottom or right half, floor-1)
@@ -7880,10 +7880,13 @@ function slotDraw(){const s=RUN&&RUN.slot;if(!s||s.f!==P.floor)return;const near
 function slotUI(){const b=$('#slotBtn');if(!b)return;const on=slotNear();if(b.hidden===on)b.hidden=!on;if(on){const p=SLOTP[RUN.slot.uses],k=String(p);if(b.dataset.p!==k){b.dataset.p=k;b.innerHTML='🎰 Автомат · <i class="cn"></i> '+p;}}}
 
 /* ---------- 1.7: rewarded ads (Adsgram) ---------- */
-const ADSGRAM_BLOCK='';
-(function(){try{if(window.YA||!ADSGRAM_BLOCK||!(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initData))return;let AC=null;const s=document.createElement('script');s.src='https://sad.adsgram.ai/js/sad.min.js';s.async=true;
-  s.onload=()=>{try{AC=window.Adsgram.init({blockId:ADSGRAM_BLOCK});}catch(e){AC=null;}};document.head.appendChild(s);
-  window.YA={rewardOk:()=>!!AC,rewarded:(_,cb)=>{if(!AC){cb(false);return;}try{AC.show().then(r=>cb(!!(r&&r.done))).catch(()=>cb(false));}catch(e){cb(false);}}};}catch(e){}})();
+const ADSGRAM_BLOCKS={x2:'60690',revive:'60693',reroll:'60694',start:'int-60695'};
+(function(){try{if(window.YA||!(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initData))return;const AC={};const s=document.createElement('script');s.src='https://sad.adsgram.ai/js/sad.min.js';s.async=true;
+  s.onload=()=>{try{for(const k in ADSGRAM_BLOCKS){try{AC[k]=window.Adsgram.init({blockId:ADSGRAM_BLOCKS[k]});}catch(e){}}}catch(e){}
+    setTimeout(()=>{try{if(state==='menu'&&window.YA)YA.interstitial('start');}catch(e){}},800);};document.head.appendChild(s);
+  window.YA={rewardOk:k=>!!AC[k||'x2'],
+    rewarded:(k,cb)=>{const c=AC[k||'x2'];if(!c){cb(false);return;}try{c.show().then(r=>cb(!!(r&&r.done))).catch(()=>cb(false));}catch(e){cb(false);}},
+    interstitial:(k,cb)=>{const c=AC[k||'start'];if(!c){if(cb)cb(false);return;}try{c.show().then(()=>{if(cb)cb(true);}).catch(()=>{if(cb)cb(false);});}catch(e){if(cb)cb(false);}}};}catch(e){}})();
 
 /* ---------- 1.7: pass + pets menus ---------- */
 const HCV=new Map();
@@ -8482,11 +8485,11 @@ const REVP=[5,20,50];
 function revPrice(){return REVP[Math.min(REVP.length-1,RUN.revBuy||0)];}
 function revCanOffer(){return RUN.mode!=='train'&&RUN.mode!=='tutorial'&&RUN.mode!=='trial'&&!retreat&&(RUN.revBuy||0)<REVP.length&&!(RUN.ids&&RUN.ids.has('cnorev'));}
 function revOpen(){state='revive';for(const k in keys)keys[k]=false;joy.id=null;$('#joy').hidden=true;const p=revPrice(),c=prog.coins||0;
-  $('#revPrice').textContent=p;$('#revHave').textContent=c;{const n=REVP.length-(RUN.revBuy||0),e=$('#revLeft');if(e)e.textContent=n===1?'Это последнее воскрешение в этом забеге.':'Осталось воскрешений в этом забеге: '+n+'.';}const b=$('#revBuy');b.disabled=c<p;$('#revQuit').textContent=c<p?'Не хватает монет — завершить':'Сдаться';showOv('revOv');sfx('hurt');}
-function revDo(){const p=revPrice();if((prog.coins||0)<p)return;prog.coins-=p;RUN.revs=(RUN.revs||0)+1;stAdd('revs');RUN.revBuy=(RUN.revBuy||0)+1;try{saveProg();coinUI();}catch(e){}
+  $('#revPrice').textContent=p;$('#revHave').textContent=c;{const n=REVP.length-(RUN.revBuy||0),e=$('#revLeft');if(e)e.textContent=n===1?'Это последнее воскрешение в этом забеге.':'Осталось воскрешений в этом забеге: '+n+'.';}const b=$('#revBuy');b.disabled=c<p;$('#revQuit').textContent=c<p?'Не хватает монет — завершить':'Сдаться';{const ab=$('#revAd');if(ab){ab.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk('revive'))||!!RUN.adRev;ab.disabled=false;}}showOv('revOv');sfx('hurt');}
+function revDo(free){free=free===true;const p=revPrice();if(!free){if((prog.coins||0)<p)return;prog.coins-=p;RUN.revBuy=(RUN.revBuy||0)+1;}RUN.revs=(RUN.revs||0)+1;stAdd('revs');if(!free){try{saveProg();coinUI();}catch(e){}}
   hideOv('revOv');P.hp=P.maxHp*.5;P.inv=3;fxs.push({k:'ring',x:P.x,y:P.y,f:P.floor,R:260,dmg:200,t:0,dur:.6,hit:new Set()});fxs.push({k:'revive',x:P.x,y:P.y,f:P.floor,t:0,dur:1.4});reviveFx=1.2;
   for(let q=0;q<30;q++)parts.push({x:P.x,y:P.y,vx:rr(-200,200),vy:rr(-260,60),life:.9,max:.9,col:q%2?'#ffd36b':'#fff6d0',s:3.5,f:P.floor});
-  banner('Воскрешение за монетки',(RUN.revBuy||0)>=REVP.length?'Это было последнее воскрешение в этом забеге':'Следующее будет стоить '+revPrice(),false);sfx('level');haptic('heavy');state='play';}
+  banner(free?'Воскрешение за рекламу':'Воскрешение за монетки',free?'Бесплатно: один раз за забег':(RUN.revBuy||0)>=REVP.length?'Это было последнее воскрешение в этом забеге':'Следующее будет стоить '+revPrice(),false);sfx('level');haptic('heavy');state='play';}
 function revGiveUp(){try{if((prog.coins||0)>=revPrice())stAdd('proud');}catch(e){}hideOv('revOv');state='play';endGame(false);}
 /* ---------- SKIP LEVEL-UP FOR COINS ---------- */
 function skipLvCoins(){return 5*Math.max(1,P?P.level:1);}
@@ -11963,7 +11966,7 @@ function endGame0(win){
   $('#sTime').textContent=fmt(time);$('#sLvl').textContent=P.level;$('#sKills').textContent=kills;
   if(runDq.length)$('#endText').textContent+=' Задание выполнено: '+dqText(runDq[0])+(runDq.length>1?' и ещё '+(runDq.length-1):'')+' — забери награду в меню «Задания».';
   if(win&&window.YA&&YA.review)setTimeout(()=>{try{YA.review();}catch(_){}},1800);
-  {const x2=$('#coinX2'),tt=runCoins+runCoinBonus;x2.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk()&&coinRun()&&tt>0);x2.disabled=false;x2.innerHTML='📺 Удвоить за рекламу: +'+tt+' <i class="cn"></i>';x2.dataset.v=tt;}
+  {const x2=$('#coinX2'),tt=runCoins+runCoinBonus;x2.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk('x2')&&coinRun()&&tt>0);x2.disabled=false;x2.innerHTML='📺 Удвоить за рекламу: +'+tt+' <i class="cn"></i>';x2.dataset.v=tt;}
   {const ec=$('#endCoins');if(coinRun()){const tot=runCoins+runCoinBonus+(RUN.curseB||0);ec.innerHTML='<i class="cn"></i>+'+tot+' '+coinWord(tot)+(RUN.curseB?' <small>(☠ проклятия '+fmtMul(RUN.curse.m)+': +'+RUN.curseB+')</small>':'')+(runCoinBonus?' <small>('+(RUN.mode==='trial'?'за испытание':'за рассвет')+' +'+runCoinBonus+')</small>':'')+' <small>· всего '+(prog.coins||0)+'</small>';ec.hidden=false;}else ec.hidden=true;}
   $('#best2').textContent=bestText();
   $('#stairs').hidden=true;$('#slowBtn').hidden=true;$('#dropBtn').hidden=true;$('#joy').hidden=true;joy.id=null;
@@ -12086,7 +12089,7 @@ $('#setJoyPlace').addEventListener('click',()=>joyPlaceStart());
 function joyPlaceStart(){const jp=$('#joyPlace');jp.hidden=false;const h=e=>{e.preventDefault();e.stopPropagation();SET.joyX=Math.max(.06,Math.min(.94,e.clientX/innerWidth));SET.joyY=Math.max(.2,Math.min(.94,e.clientY/innerHeight));SET.joyFix=true;SET.joyPlaced=true;saveSet();renderSet();jp.hidden=true;jp.removeEventListener('pointerdown',h);toastMsg('Джойстик закреплён');};jp.addEventListener('pointerdown',h);}
 function uiApply(){try{document.documentElement.style.setProperty('--ui',String((SET.ui||100)/100));}catch(e){}}uiApply();
 $('#uiSl').addEventListener('input',()=>{SET.ui=+$('#uiSl').value;$('#uiVal').textContent=SET.ui+'%';uiApply();saveSet();});
-$('#revBuy').addEventListener('click',revDo);$('#revQuit').addEventListener('click',revGiveUp);
+$('#revBuy').addEventListener('click',()=>revDo());$('#revAd').addEventListener('click',()=>{const b=$('#revAd');if(!window.YA||!YA.rewarded||state!=='revive'||RUN.adRev)return;b.disabled=true;YA.rewarded('revive',got=>{b.disabled=false;if(got&&state==='revive'){RUN.adRev=1;revDo(true);}});});$('#revQuit').addEventListener('click',revGiveUp);
 $('#skipLvBtn').addEventListener('click',skipLevel);
 $('#cfmNo').addEventListener('click',()=>{cfmFn=null;hideOv('cfmOv');});$('#cfmOk').addEventListener('click',()=>{const f=cfmFn;cfmFn=null;hideOv('cfmOv');if(f)f();});
 $('#setShake').addEventListener('click',()=>{SET.shake=SET.shake===false;saveSet();renderSet();if(SET.shake)shake(8,.3);});
@@ -17349,7 +17352,7 @@ function openLevelUp(){try{pstatFill();}catch(e){}try{$('#skipLvN').textContent=
     box.appendChild(b);
   });
   {const rb=$('#rerollBtn');rb.hidden=!(P.rerolls>0)||!!choices.any;rb.textContent='🍀 Reroll ('+(P.rerolls||0)+')';}
-  {const ab=$('#adRerollBtn');ab.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk())||!!choices.any;ab.disabled=false;}
+  {const ab=$('#adRerollBtn');ab.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk('reroll'))||!!choices.any;ab.disabled=false;}
   showOv('lvup');
   setTimeout(()=>{const c=$('#card0');if(c)c.focus({preventScroll:true});},50);
 }
@@ -17395,7 +17398,7 @@ function applyOnce(id){
 }
 function safeChoose(i){try{choose(i);}catch(err){try{console.error(err);localStorage.setItem('szz-lasterr',String(err&&err.stack||err).slice(0,600));}catch(e){}pendingLv=0;hideOv('lvup');state='play';}}
 function adReroll(){if(state!=='levelup'||suitPick||!(window.YA&&YA.rewarded))return;const ab=$('#adRerollBtn');ab.disabled=true;
-  YA.rewarded(null,got=>{ab.disabled=false;if(got&&state==='levelup'&&!suitPick){openLevelUp();tone(900,.08,'triangle',.03,1.4);sfx('level');}});}
+  YA.rewarded('reroll',got=>{ab.disabled=false;if(got&&state==='levelup'&&!suitPick){openLevelUp();tone(900,.08,'triangle',.03,1.4);sfx('level');}});}
 function doReroll(){if(state!=='levelup'||suitPick||!(P.rerolls>0))return;P.rerolls--;openLevelUp();tone(900,.08,'triangle',.03,1.4);sfx('roll');}
 function lastPickName(){const q=P.lastPick;if(!q)return '';return q.t==='w'?WDEF[q.id].name:q.t==='p'?PDEF[q.id].name:CDEF[q.id].name;}
 function choose(i){
@@ -17505,7 +17508,7 @@ function chestClose(apply){
   const gotAxe=CH.axe;CH=null;runChests++;renderInv();hideOv('chestOv');state='play';if(apply)sfx('pickPL');if(gotAxe)axeGive();
   if(pendingLv>0)openLevelUp();}
 $('#chTake').addEventListener('click',chestTake);
-$('#coinX2').addEventListener('click',()=>{const b=$('#coinX2'),v=+b.dataset.v||0;if(!v||!window.YA||!YA.rewarded)return;b.disabled=true;YA.rewarded(null,got=>{if(got){prog.coins=(prog.coins||0)+v;saveProg();b.dataset.v=0;b.hidden=true;const ec=$('#endCoins');ec.innerHTML='<i class="cn"></i>+'+(2*v)+' '+coinWord(2*v)+' <small>(doubled) · total '+(prog.coins||0)+'</small>';sfx('buy');}else b.disabled=false;});});$('#chSkip').addEventListener('click',chestDecline);
+$('#coinX2').addEventListener('click',()=>{const b=$('#coinX2'),v=+b.dataset.v||0;if(!v||!window.YA||!YA.rewarded)return;b.disabled=true;YA.rewarded('x2',got=>{if(got){prog.coins=(prog.coins||0)+v;saveProg();b.dataset.v=0;b.hidden=true;const ec=$('#endCoins');ec.innerHTML='<i class="cn"></i>+'+(2*v)+' '+coinWord(2*v)+' <small>(doubled) · total '+(prog.coins||0)+'</small>';sfx('buy');}else b.disabled=false;});});$('#chSkip').addEventListener('click',chestDecline);
 
 /* ---------- STAIRS ---------- */
 // each staircase has an up flight (top or left half, leads to floor+1) and a down flight (bottom or right half, floor-1)
@@ -18177,10 +18180,13 @@ function slotDraw(){const s=RUN&&RUN.slot;if(!s||s.f!==P.floor)return;const near
 function slotUI(){const b=$('#slotBtn');if(!b)return;const on=slotNear();if(b.hidden===on)b.hidden=!on;if(on){const p=SLOTP[RUN.slot.uses],k=String(p);if(b.dataset.p!==k){b.dataset.p=k;b.innerHTML='🎰 Slot machine · <i class="cn"></i> '+p;}}}
 
 /* ---------- 1.7: rewarded ads (Adsgram) ---------- */
-const ADSGRAM_BLOCK='';
-(function(){try{if(window.YA||!ADSGRAM_BLOCK||!(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initData))return;let AC=null;const s=document.createElement('script');s.src='https://sad.adsgram.ai/js/sad.min.js';s.async=true;
-  s.onload=()=>{try{AC=window.Adsgram.init({blockId:ADSGRAM_BLOCK});}catch(e){AC=null;}};document.head.appendChild(s);
-  window.YA={rewardOk:()=>!!AC,rewarded:(_,cb)=>{if(!AC){cb(false);return;}try{AC.show().then(r=>cb(!!(r&&r.done))).catch(()=>cb(false));}catch(e){cb(false);}}};}catch(e){}})();
+const ADSGRAM_BLOCKS={x2:'60690',revive:'60693',reroll:'60694',start:'int-60695'};
+(function(){try{if(window.YA||!(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.initData))return;const AC={};const s=document.createElement('script');s.src='https://sad.adsgram.ai/js/sad.min.js';s.async=true;
+  s.onload=()=>{try{for(const k in ADSGRAM_BLOCKS){try{AC[k]=window.Adsgram.init({blockId:ADSGRAM_BLOCKS[k]});}catch(e){}}}catch(e){}
+    setTimeout(()=>{try{if(state==='menu'&&window.YA)YA.interstitial('start');}catch(e){}},800);};document.head.appendChild(s);
+  window.YA={rewardOk:k=>!!AC[k||'x2'],
+    rewarded:(k,cb)=>{const c=AC[k||'x2'];if(!c){cb(false);return;}try{c.show().then(r=>cb(!!(r&&r.done))).catch(()=>cb(false));}catch(e){cb(false);}},
+    interstitial:(k,cb)=>{const c=AC[k||'start'];if(!c){if(cb)cb(false);return;}try{c.show().then(()=>{if(cb)cb(true);}).catch(()=>{if(cb)cb(false);});}catch(e){if(cb)cb(false);}}};}catch(e){}})();
 
 /* ---------- 1.7: pass + pets menus ---------- */
 const HCV=new Map();
@@ -18779,11 +18785,11 @@ const REVP=[5,20,50];
 function revPrice(){return REVP[Math.min(REVP.length-1,RUN.revBuy||0)];}
 function revCanOffer(){return RUN.mode!=='train'&&RUN.mode!=='tutorial'&&RUN.mode!=='trial'&&!retreat&&(RUN.revBuy||0)<REVP.length&&!(RUN.ids&&RUN.ids.has('cnorev'));}
 function revOpen(){state='revive';for(const k in keys)keys[k]=false;joy.id=null;$('#joy').hidden=true;const p=revPrice(),c=prog.coins||0;
-  $('#revPrice').textContent=p;$('#revHave').textContent=c;{const n=REVP.length-(RUN.revBuy||0),e=$('#revLeft');if(e)e.textContent=n===1?'This is your last revive this run.':'Revives left this run: '+n+'.';}const b=$('#revBuy');b.disabled=c<p;$('#revQuit').textContent=c<p?'Not enough coins: end the run':'Give up';showOv('revOv');sfx('hurt');}
-function revDo(){const p=revPrice();if((prog.coins||0)<p)return;prog.coins-=p;RUN.revs=(RUN.revs||0)+1;stAdd('revs');RUN.revBuy=(RUN.revBuy||0)+1;try{saveProg();coinUI();}catch(e){}
+  $('#revPrice').textContent=p;$('#revHave').textContent=c;{const n=REVP.length-(RUN.revBuy||0),e=$('#revLeft');if(e)e.textContent=n===1?'This is your last revive this run.':'Revives left this run: '+n+'.';}const b=$('#revBuy');b.disabled=c<p;$('#revQuit').textContent=c<p?'Not enough coins: end the run':'Give up';{const ab=$('#revAd');if(ab){ab.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk('revive'))||!!RUN.adRev;ab.disabled=false;}}showOv('revOv');sfx('hurt');}
+function revDo(free){free=free===true;const p=revPrice();if(!free){if((prog.coins||0)<p)return;prog.coins-=p;RUN.revBuy=(RUN.revBuy||0)+1;}RUN.revs=(RUN.revs||0)+1;stAdd('revs');if(!free){try{saveProg();coinUI();}catch(e){}}
   hideOv('revOv');P.hp=P.maxHp*.5;P.inv=3;fxs.push({k:'ring',x:P.x,y:P.y,f:P.floor,R:260,dmg:200,t:0,dur:.6,hit:new Set()});fxs.push({k:'revive',x:P.x,y:P.y,f:P.floor,t:0,dur:1.4});reviveFx=1.2;
   for(let q=0;q<30;q++)parts.push({x:P.x,y:P.y,vx:rr(-200,200),vy:rr(-260,60),life:.9,max:.9,col:q%2?'#ffd36b':'#fff6d0',s:3.5,f:P.floor});
-  banner('Revived for coins',(RUN.revBuy||0)>=REVP.length?'That was your last revive this run':'The next one will cost '+revPrice(),false);sfx('level');haptic('heavy');state='play';}
+  banner(free?'Revived for an ad':'Revived for coins',free?'Free: once per run':(RUN.revBuy||0)>=REVP.length?'That was your last revive this run':'The next one will cost '+revPrice(),false);sfx('level');haptic('heavy');state='play';}
 function revGiveUp(){try{if((prog.coins||0)>=revPrice())stAdd('proud');}catch(e){}hideOv('revOv');state='play';endGame(false);}
 /* ---------- SKIP LEVEL-UP FOR COINS ---------- */
 function skipLvCoins(){return 5*Math.max(1,P?P.level:1);}
@@ -22260,7 +22266,7 @@ function endGame0(win){
   $('#sTime').textContent=fmt(time);$('#sLvl').textContent=P.level;$('#sKills').textContent=kills;
   if(runDq.length)$('#endText').textContent+=' Quest completed: '+dqText(runDq[0])+(runDq.length>1?' and '+(runDq.length-1):'')+' — claim your reward in the Quests menu.';
   if(win&&window.YA&&YA.review)setTimeout(()=>{try{YA.review();}catch(_){}},1800);
-  {const x2=$('#coinX2'),tt=runCoins+runCoinBonus;x2.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk()&&coinRun()&&tt>0);x2.disabled=false;x2.innerHTML='📺 Double for an ad: +'+tt+' <i class="cn"></i>';x2.dataset.v=tt;}
+  {const x2=$('#coinX2'),tt=runCoins+runCoinBonus;x2.hidden=!(window.YA&&YA.rewardOk&&YA.rewardOk('x2')&&coinRun()&&tt>0);x2.disabled=false;x2.innerHTML='📺 Double for an ad: +'+tt+' <i class="cn"></i>';x2.dataset.v=tt;}
   {const ec=$('#endCoins');if(coinRun()){const tot=runCoins+runCoinBonus+(RUN.curseB||0);ec.innerHTML='<i class="cn"></i>+'+tot+' '+coinWord(tot)+(RUN.curseB?' <small>(☠ curses '+fmtMul(RUN.curse.m)+': +'+RUN.curseB+')</small>':'')+(runCoinBonus?' <small>('+(RUN.mode==='trial'?'for the trial':'for dawn')+' +'+runCoinBonus+')</small>':'')+' <small>· total '+(prog.coins||0)+'</small>';ec.hidden=false;}else ec.hidden=true;}
   $('#best2').textContent=bestText();
   $('#stairs').hidden=true;$('#slowBtn').hidden=true;$('#dropBtn').hidden=true;$('#joy').hidden=true;joy.id=null;
@@ -22383,7 +22389,7 @@ $('#setJoyPlace').addEventListener('click',()=>joyPlaceStart());
 function joyPlaceStart(){const jp=$('#joyPlace');jp.hidden=false;const h=e=>{e.preventDefault();e.stopPropagation();SET.joyX=Math.max(.06,Math.min(.94,e.clientX/innerWidth));SET.joyY=Math.max(.2,Math.min(.94,e.clientY/innerHeight));SET.joyFix=true;SET.joyPlaced=true;saveSet();renderSet();jp.hidden=true;jp.removeEventListener('pointerdown',h);toastMsg('Joystick fixed');};jp.addEventListener('pointerdown',h);}
 function uiApply(){try{document.documentElement.style.setProperty('--ui',String((SET.ui||100)/100));}catch(e){}}uiApply();
 $('#uiSl').addEventListener('input',()=>{SET.ui=+$('#uiSl').value;$('#uiVal').textContent=SET.ui+'%';uiApply();saveSet();});
-$('#revBuy').addEventListener('click',revDo);$('#revQuit').addEventListener('click',revGiveUp);
+$('#revBuy').addEventListener('click',()=>revDo());$('#revAd').addEventListener('click',()=>{const b=$('#revAd');if(!window.YA||!YA.rewarded||state!=='revive'||RUN.adRev)return;b.disabled=true;YA.rewarded('revive',got=>{b.disabled=false;if(got&&state==='revive'){RUN.adRev=1;revDo(true);}});});$('#revQuit').addEventListener('click',revGiveUp);
 $('#skipLvBtn').addEventListener('click',skipLevel);
 $('#cfmNo').addEventListener('click',()=>{cfmFn=null;hideOv('cfmOv');});$('#cfmOk').addEventListener('click',()=>{const f=cfmFn;cfmFn=null;hideOv('cfmOv');if(f)f();});
 $('#setShake').addEventListener('click',()=>{SET.shake=SET.shake===false;saveSet();renderSet();if(SET.shake)shake(8,.3);});
