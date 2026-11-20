@@ -3707,6 +3707,14 @@ function refreshFloor(f){
   F.windows.forEach((w,i)=>{if(keys.has(w.x+','+w.y)||RUN.ids.has('ruin'))F.broken.add(i);});
   stairField[f]=buildField(f,F.stairIdx);pfKey=-1;flowVer++;fcDrop(f);if(f===cacheFloor){cache=null;cacheFloor=-1;}
 }
+let ENDBP=null;
+function endBossPool(){if(ENDBP)return ENDBP;const out=[],seen=new Set(),add=B=>{if(!B||!B.name||!B.hp||seen.has(B.name))return;seen.add(B.name);out.push(B);};
+  try{BOSSES.forEach(add);}catch(e){}try{Object.keys(MAPBOSS).forEach(k=>(MAPBOSS[k]||[]).forEach(add));}catch(e){}try{Object.keys(NBOSS).forEach(k=>add(NBOSS[k]));}catch(e){}
+  return ENDBP=out;}
+function endBoss(slot,idx){const key=(RUN.cycle||0)*100+idx;if(RUN.nxtB&&RUN.nxtK===key)return RUN.nxtB;
+  const pool=endBossPool(),rec=RUN.recB||(RUN.recB=[]);let c=pool.filter(b=>!rec.includes(b.name));if(!c.length){rec.length=0;c=pool;}
+  const B=pick(c),a=(slot&&slot.again)||0;rec.push(B.name);if(rec.length>Math.min(8,pool.length-1))rec.shift();
+  RUN.nxtB=Object.assign({},B,{t:slot&&slot.t!==undefined?slot.t:B.t,again:a,hp:Math.round(B.hp*(a===2?2.4:a===1?1.6:1))});RUN.nxtK=key;return RUN.nxtB;}
 function bossT(B){const t=(B.t*(isEnd()||(RUN.tr&&RUN.tr.g==='inf')?1:GOAL/900)+(RUN.cycle||0)*900)*(RUN.ids.has('parents')?.8:1);return RUN.hex==='boss2'?Math.max(120,t*.45):t;}
 function buildWorld(){
   QUAR=null;RUN_OFFICE=false;MAPCUR=mapOf(MAPSEL);floors=MAPCUR.build();
@@ -5405,10 +5413,11 @@ function updateSpawns(dt){
   else if(RUN.mode==='bosshunt'){huntTick(dt);}
   if(isEnd()&&RUN.mode!=='crabs'&&RUN.mode!=='bosshunt'&&time>900&&BL.length){if(RUN.exB===undefined)RUN.exB=time+45;
     if(time>=RUN.exB){const k=(time-900)/60;RUN.exB=time+Math.max(35,120-k*4);let nb=0;for(const o of enemies)if(o.alive&&o.kind==='boss')nb++;
-      const pool=BL.filter(b=>b&&b.hp&&!b.trio&&b.name!=='Директор');if(nb<3+Math.min(3,k/10|0)&&pool.length)bossSpawnNow(Object.assign({},pick(pool),{again:0}),Math.min(1.2,.45+k*.03));}}
+      const pool=endBossPool();if(nb<3+Math.min(3,k/10|0)&&pool.length)bossSpawnNow(Object.assign({},pick(pool),{again:0}),Math.min(1.2,.45+k*.03));}}
   if(RUN.mode==='crabs'||RUN.mode==='bosshunt'){}
   else if(bossIdx<BL.length&&time>=bossT(BL[bossIdx])){
     const bi=bossIdx;let B=BL[bossIdx++];if(RUN.altB&&bi===altSlot(BL)&&NBOSS[RUN.altB]&&B.nb!==RUN.altB)B=Object.assign({},NBOSS[RUN.altB],{t:B.t,hp:B.hp});
+    if(isEnd()&&RUN.mode!=='crabs'&&RUN.mode!=='bosshunt'){B=endBoss(B,bi);RUN.nxtB=null;}
     bossSpawnNow(B);
   }
 }
@@ -11522,7 +11531,7 @@ function pzCondKind(n){for(const k in RULEMODS)if(RULEMODS[k]===n)return PZ_GOOD
 function pzSign(k){return k==='p'?'+':k==='m'?'−':k==='o'?'±':'!';}
 function pzEsc(t){return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function dqPeek(o){if(o.c||o.p>=o.n)return o.n;let p=o.p;if(o.t==='kills')p+=kills;else if(o.t==='wkill')p+=(runKW[o.a]||0);else if(o.t==='chests')p+=runChests;else if(o.t==='bosses')p+=runBossKills;else if(o.t==='surv')p=Math.max(p,Math.floor(time/60));else if(o.t==='coins')p+=runCoins;else if(o.t==='level')p=Math.max(p,P.level);else if(o.t==='map'){if((RUN.map||'school')===o.a)p=1;}return Math.min(o.n,p);}
-function pzNextBoss(){try{const INFT=RUN.mode==='trial'&&RUN.tr&&RUN.tr.g==='inf';if(['tutorial','train','crabs','bosshunt'].includes(RUN.mode)||(RUN.mode==='trial'&&!INFT))return null;const BL=MAPCUR.bosses()||[];if(bossIdx>=BL.length)return null;let B=BL[bossIdx];if(RUN.altB&&bossIdx===altSlot(BL)&&NBOSS[RUN.altB])B=NBOSS[RUN.altB];return {n:B.name||'Босс',t:Math.max(0,bossT(BL[bossIdx])-time)};}catch(e){return null;}}
+function pzNextBoss(){try{const INFT=RUN.mode==='trial'&&RUN.tr&&RUN.tr.g==='inf';if(['tutorial','train','crabs','bosshunt'].includes(RUN.mode)||(RUN.mode==='trial'&&!INFT))return null;const BL=MAPCUR.bosses()||[];if(bossIdx>=BL.length)return null;if(isEnd()){const eb=endBoss(BL[bossIdx],bossIdx);return {n:eb.name||'Босс',t:Math.max(0,bossT(BL[bossIdx])-time)};}let B=BL[bossIdx];if(RUN.altB&&bossIdx===altSlot(BL)&&NBOSS[RUN.altB])B=NBOSS[RUN.altB];return {n:B.name||'Босс',t:Math.max(0,bossT(BL[bossIdx])-time)};}catch(e){return null;}}
 function pzFill(){if(!P||!RUN)return;const M=MODES[RUN.mode],fin=isFinite(GOAL)&&GOAL<1e8&&!isEnd();
   $('#pzKick').textContent='Пауза · '+(MAPCUR&&MAPCUR.name||'')+(RUN.tr?' · '+(RUN.tr.nm||'Испытание'):M?' · '+M.name:'');
   $('#pzTime').textContent=fmt(time);$('#pzSub').textContent=fin?'до рассвета '+fmt(GOAL-time):'рекорд '+fmt(prog.best||0);
@@ -14037,6 +14046,14 @@ function refreshFloor(f){
   F.windows.forEach((w,i)=>{if(keys.has(w.x+','+w.y)||RUN.ids.has('ruin'))F.broken.add(i);});
   stairField[f]=buildField(f,F.stairIdx);pfKey=-1;flowVer++;fcDrop(f);if(f===cacheFloor){cache=null;cacheFloor=-1;}
 }
+let ENDBP=null;
+function endBossPool(){if(ENDBP)return ENDBP;const out=[],seen=new Set(),add=B=>{if(!B||!B.name||!B.hp||seen.has(B.name))return;seen.add(B.name);out.push(B);};
+  try{BOSSES.forEach(add);}catch(e){}try{Object.keys(MAPBOSS).forEach(k=>(MAPBOSS[k]||[]).forEach(add));}catch(e){}try{Object.keys(NBOSS).forEach(k=>add(NBOSS[k]));}catch(e){}
+  return ENDBP=out;}
+function endBoss(slot,idx){const key=(RUN.cycle||0)*100+idx;if(RUN.nxtB&&RUN.nxtK===key)return RUN.nxtB;
+  const pool=endBossPool(),rec=RUN.recB||(RUN.recB=[]);let c=pool.filter(b=>!rec.includes(b.name));if(!c.length){rec.length=0;c=pool;}
+  const B=pick(c),a=(slot&&slot.again)||0;rec.push(B.name);if(rec.length>Math.min(8,pool.length-1))rec.shift();
+  RUN.nxtB=Object.assign({},B,{t:slot&&slot.t!==undefined?slot.t:B.t,again:a,hp:Math.round(B.hp*(a===2?2.4:a===1?1.6:1))});RUN.nxtK=key;return RUN.nxtB;}
 function bossT(B){const t=(B.t*(isEnd()||(RUN.tr&&RUN.tr.g==='inf')?1:GOAL/900)+(RUN.cycle||0)*900)*(RUN.ids.has('parents')?.8:1);return RUN.hex==='boss2'?Math.max(120,t*.45):t;}
 function buildWorld(){
   QUAR=null;RUN_OFFICE=false;MAPCUR=mapOf(MAPSEL);floors=MAPCUR.build();
@@ -15735,10 +15752,11 @@ function updateSpawns(dt){
   else if(RUN.mode==='bosshunt'){huntTick(dt);}
   if(isEnd()&&RUN.mode!=='crabs'&&RUN.mode!=='bosshunt'&&time>900&&BL.length){if(RUN.exB===undefined)RUN.exB=time+45;
     if(time>=RUN.exB){const k=(time-900)/60;RUN.exB=time+Math.max(35,120-k*4);let nb=0;for(const o of enemies)if(o.alive&&o.kind==='boss')nb++;
-      const pool=BL.filter(b=>b&&b.hp&&!b.trio&&b.name!=='Principal');if(nb<3+Math.min(3,k/10|0)&&pool.length)bossSpawnNow(Object.assign({},pick(pool),{again:0}),Math.min(1.2,.45+k*.03));}}
+      const pool=endBossPool();if(nb<3+Math.min(3,k/10|0)&&pool.length)bossSpawnNow(Object.assign({},pick(pool),{again:0}),Math.min(1.2,.45+k*.03));}}
   if(RUN.mode==='crabs'||RUN.mode==='bosshunt'){}
   else if(bossIdx<BL.length&&time>=bossT(BL[bossIdx])){
     const bi=bossIdx;let B=BL[bossIdx++];if(RUN.altB&&bi===altSlot(BL)&&NBOSS[RUN.altB]&&B.nb!==RUN.altB)B=Object.assign({},NBOSS[RUN.altB],{t:B.t,hp:B.hp});
+    if(isEnd()&&RUN.mode!=='crabs'&&RUN.mode!=='bosshunt'){B=endBoss(B,bi);RUN.nxtB=null;}
     bossSpawnNow(B);
   }
 }
@@ -21852,7 +21870,7 @@ function pzCondKind(n){for(const k in RULEMODS)if(RULEMODS[k]===n)return PZ_GOOD
 function pzSign(k){return k==='p'?'+':k==='m'?'−':k==='o'?'±':'!';}
 function pzEsc(t){return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function dqPeek(o){if(o.c||o.p>=o.n)return o.n;let p=o.p;if(o.t==='kills')p+=kills;else if(o.t==='wkill')p+=(runKW[o.a]||0);else if(o.t==='chests')p+=runChests;else if(o.t==='bosses')p+=runBossKills;else if(o.t==='surv')p=Math.max(p,Math.floor(time/60));else if(o.t==='coins')p+=runCoins;else if(o.t==='level')p=Math.max(p,P.level);else if(o.t==='map'){if((RUN.map||'school')===o.a)p=1;}return Math.min(o.n,p);}
-function pzNextBoss(){try{const INFT=RUN.mode==='trial'&&RUN.tr&&RUN.tr.g==='inf';if(['tutorial','train','crabs','bosshunt'].includes(RUN.mode)||(RUN.mode==='trial'&&!INFT))return null;const BL=MAPCUR.bosses()||[];if(bossIdx>=BL.length)return null;let B=BL[bossIdx];if(RUN.altB&&bossIdx===altSlot(BL)&&NBOSS[RUN.altB])B=NBOSS[RUN.altB];return {n:B.name||'Boss',t:Math.max(0,bossT(BL[bossIdx])-time)};}catch(e){return null;}}
+function pzNextBoss(){try{const INFT=RUN.mode==='trial'&&RUN.tr&&RUN.tr.g==='inf';if(['tutorial','train','crabs','bosshunt'].includes(RUN.mode)||(RUN.mode==='trial'&&!INFT))return null;const BL=MAPCUR.bosses()||[];if(bossIdx>=BL.length)return null;if(isEnd()){const eb=endBoss(BL[bossIdx],bossIdx);return {n:eb.name||'Босс',t:Math.max(0,bossT(BL[bossIdx])-time)};}let B=BL[bossIdx];if(RUN.altB&&bossIdx===altSlot(BL)&&NBOSS[RUN.altB])B=NBOSS[RUN.altB];return {n:B.name||'Boss',t:Math.max(0,bossT(BL[bossIdx])-time)};}catch(e){return null;}}
 function pzFill(){if(!P||!RUN)return;const M=MODES[RUN.mode],fin=isFinite(GOAL)&&GOAL<1e8&&!isEnd();
   $('#pzKick').textContent='Pause · '+(MAPCUR&&MAPCUR.name||'')+(RUN.tr?' · '+(RUN.tr.nm||'Trial'):M?' · '+M.name:'');
   $('#pzTime').textContent=fmt(time);$('#pzSub').textContent=fin?'dawn in '+fmt(GOAL-time):'record '+fmt(prog.best||0);
