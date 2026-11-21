@@ -8482,7 +8482,8 @@ function abilDraw2(){if(!(slowT>0)||!P)return;const id=abilId;ctx.save();
   else if(id==='fear'){ctx.strokeStyle='rgba(255,120,90,'+(.5+.3*Math.sin(time*12))+')';ctx.lineWidth=3;ctx.beginPath();ctx.arc(P.x,P.y,230*((time*2)%1),0,7);ctx.stroke();}
   else if(id==='study'){ctx.fillStyle='rgba(255,220,110,.85)';ctx.font='14px sans-serif';ctx.textAlign='center';for(let q=0;q<3;q++){const a=time*2+q*2.1;ctx.fillText('✦',P.x+Math.cos(a)*30,P.y+Math.sin(a)*30);}}
   ctx.restore();}
-function abilTick(dt){if(!(slowT>0))return;const A=ABIL.find(a=>a.id===abilId);if(!A)return;if(A.nw){abilTick2(dt);return;}const R=135*(curS?Math.min(1.6,curS.area):1)*(1+.15*amv('amp'));dt*=1+.25*amv('amp');
+const ABIL_RK=1.5; // ability aura radius is divided by this
+function abilTick(dt){if(!(slowT>0))return;const A=ABIL.find(a=>a.id===abilId);if(!A)return;if(A.nw){abilTick2(dt);return;}const R=135/ABIL_RK*(curS?Math.min(1.6,curS.area):1)*(1+.15*amv('amp'));dt*=1+.25*amv('amp');
   if(abilId==='freeze')forNear(P.floor,P.x,P.y,R+30,e=>{if(Math.hypot(e.x-P.x,e.y-P.y)<R+e.cr){if(e.kind!=='boss')e.stunT=Math.max(e.stunT||0,.15);e.slowT=Math.max(e.slowT||0,.3);damage(e,6*dt,0,0,0,true);}});
   else if(abilId==='push')forNear(P.floor,P.x,P.y,R+30,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1;if(d<R+e.cr){const f=(e.kind==='boss'?120:420)*dt*(1-d/(R+e.cr)+.3);e.x+=dx/d*f;e.y+=dy/d*f;collideCircle(e,e.floor);}});
   else if(abilId==='dmg'){P.inv=Math.max(P.inv,.1);forNear(P.floor,P.x,P.y,R+30,e=>{if(Math.hypot(e.x-P.x,e.y-P.y)<R+e.cr)damage(e,20*dt,0,0,0,true);});}
@@ -8490,7 +8491,7 @@ function abilTick(dt){if(!(slowT>0))return;const A=ABIL.find(a=>a.id===abilId);i
   else if(abilId==='regen'){if(!noHeal())P.hp=Math.min(P.maxHp,P.hp+5*dt);}
   else if(abilId==='vamp'){let got=0;forNear(P.floor,P.x,P.y,R+30,e=>{if(Math.hypot(e.x-P.x,e.y-P.y)<R+e.cr){damage(e,10*dt,0,0,0,true);got+=10*dt;}});if(!noHeal())P.hp=Math.min(P.maxHp,P.hp+Math.min(6*dt,got*.15));}
   else if(abilId==='xp'){if(P.hp<(RUN.xpHp||0)-.01){slowT=0;banner('Чистая работа сорвана','Тебя задели — попробуй ещё раз позже',false);return;}RUN.xpHp=P.hp;if(slowT-dt<=0){addXP(Math.max(1,P.next*.34));banner('Чистая работа!','+ треть уровня опыта',false);sfx('level');}}}
-function abilDraw(){if(!(slowT>0)||!P)return;const A=ABIL.find(a=>a.id===abilId);if(A&&A.nw){abilDraw2();return;}if(!A||['slow','stop','fast','rewind','xp'].includes(abilId))return;const R=abilId==='shield'||abilId==='regen'?P.r+14:135*(curS?Math.min(1.6,curS.area):1);
+function abilDraw(){if(!(slowT>0)||!P)return;const A=ABIL.find(a=>a.id===abilId);if(A&&A.nw){abilDraw2();return;}if(!A||['slow','stop','fast','rewind','xp'].includes(abilId))return;const R=abilId==='shield'||abilId==='regen'?P.r+14:135/ABIL_RK*(curS?Math.min(1.6,curS.area):1)*(1+.15*amv('amp'));
   ctx.save();ctx.fillStyle=`rgba(${A.c},.12)`;ctx.beginPath();ctx.arc(P.x,P.y,R,0,7);ctx.fill();ctx.strokeStyle=`rgba(${A.c},.7)`;ctx.lineWidth=abilId==='shield'?3:2;if(abilId!=='shield')ctx.setLineDash([8,6]);ctx.lineDashOffset=-time*(abilId==='push'?-60:40);ctx.beginPath();ctx.arc(P.x,P.y,R,0,7);ctx.stroke();ctx.setLineDash([]);ctx.restore();}
 function renderAbil(){const box=$('#abList');if(!box)return;box.innerHTML='';coinUI();const sel=curAbil().id;
   sortBar(box,UPSORT,v=>{UPSORT=v;renderAbil();},'Сортировка:',SORTL);
@@ -18868,7 +18869,8 @@ function abilDraw2(){if(!(slowT>0)||!P)return;const id=abilId;ctx.save();
   else if(id==='fear'){ctx.strokeStyle='rgba(255,120,90,'+(.5+.3*Math.sin(time*12))+')';ctx.lineWidth=3;ctx.beginPath();ctx.arc(P.x,P.y,230*((time*2)%1),0,7);ctx.stroke();}
   else if(id==='study'){ctx.fillStyle='rgba(255,220,110,.85)';ctx.font='14px sans-serif';ctx.textAlign='center';for(let q=0;q<3;q++){const a=time*2+q*2.1;ctx.fillText('✦',P.x+Math.cos(a)*30,P.y+Math.sin(a)*30);}}
   ctx.restore();}
-function abilTick(dt){if(!(slowT>0))return;const A=ABIL.find(a=>a.id===abilId);if(!A)return;if(A.nw){abilTick2(dt);return;}const R=135*(curS?Math.min(1.6,curS.area):1)*(1+.15*amv('amp'));dt*=1+.25*amv('amp');
+const ABIL_RK=1.5; // ability aura radius is divided by this
+function abilTick(dt){if(!(slowT>0))return;const A=ABIL.find(a=>a.id===abilId);if(!A)return;if(A.nw){abilTick2(dt);return;}const R=135/ABIL_RK*(curS?Math.min(1.6,curS.area):1)*(1+.15*amv('amp'));dt*=1+.25*amv('amp');
   if(abilId==='freeze')forNear(P.floor,P.x,P.y,R+30,e=>{if(Math.hypot(e.x-P.x,e.y-P.y)<R+e.cr){if(e.kind!=='boss')e.stunT=Math.max(e.stunT||0,.15);e.slowT=Math.max(e.slowT||0,.3);damage(e,6*dt,0,0,0,true);}});
   else if(abilId==='push')forNear(P.floor,P.x,P.y,R+30,e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy)||1;if(d<R+e.cr){const f=(e.kind==='boss'?120:420)*dt*(1-d/(R+e.cr)+.3);e.x+=dx/d*f;e.y+=dy/d*f;collideCircle(e,e.floor);}});
   else if(abilId==='dmg'){P.inv=Math.max(P.inv,.1);forNear(P.floor,P.x,P.y,R+30,e=>{if(Math.hypot(e.x-P.x,e.y-P.y)<R+e.cr)damage(e,20*dt,0,0,0,true);});}
@@ -18876,7 +18878,7 @@ function abilTick(dt){if(!(slowT>0))return;const A=ABIL.find(a=>a.id===abilId);i
   else if(abilId==='regen'){if(!noHeal())P.hp=Math.min(P.maxHp,P.hp+5*dt);}
   else if(abilId==='vamp'){let got=0;forNear(P.floor,P.x,P.y,R+30,e=>{if(Math.hypot(e.x-P.x,e.y-P.y)<R+e.cr){damage(e,10*dt,0,0,0,true);got+=10*dt;}});if(!noHeal())P.hp=Math.min(P.maxHp,P.hp+Math.min(6*dt,got*.15));}
   else if(abilId==='xp'){if(P.hp<(RUN.xpHp||0)-.01){slowT=0;banner('Clean Work failed','You got hit, try again later',false);return;}RUN.xpHp=P.hp;if(slowT-dt<=0){addXP(Math.max(1,P.next*.34));banner('Clean Work!','+ a third of a level in XP',false);sfx('level');}}}
-function abilDraw(){if(!(slowT>0)||!P)return;const A=ABIL.find(a=>a.id===abilId);if(A&&A.nw){abilDraw2();return;}if(!A||['slow','stop','fast','rewind','xp'].includes(abilId))return;const R=abilId==='shield'||abilId==='regen'?P.r+14:135*(curS?Math.min(1.6,curS.area):1);
+function abilDraw(){if(!(slowT>0)||!P)return;const A=ABIL.find(a=>a.id===abilId);if(A&&A.nw){abilDraw2();return;}if(!A||['slow','stop','fast','rewind','xp'].includes(abilId))return;const R=abilId==='shield'||abilId==='regen'?P.r+14:135/ABIL_RK*(curS?Math.min(1.6,curS.area):1)*(1+.15*amv('amp'));
   ctx.save();ctx.fillStyle=`rgba(${A.c},.12)`;ctx.beginPath();ctx.arc(P.x,P.y,R,0,7);ctx.fill();ctx.strokeStyle=`rgba(${A.c},.7)`;ctx.lineWidth=abilId==='shield'?3:2;if(abilId!=='shield')ctx.setLineDash([8,6]);ctx.lineDashOffset=-time*(abilId==='push'?-60:40);ctx.beginPath();ctx.arc(P.x,P.y,R,0,7);ctx.stroke();ctx.setLineDash([]);ctx.restore();}
 function renderAbil(){const box=$('#abList');if(!box)return;box.innerHTML='';coinUI();const sel=curAbil().id;
   sortBar(box,UPSORT,v=>{UPSORT=v;renderAbil();},'Sort:',SORTL);
