@@ -5428,7 +5428,7 @@ function updateSpawns(dt){
   if(isEnd()){rate*=5;cap=Math.round(cap*5);}
   let wmul=1;if(RUN.waves&&time>20&&!retreat){const ph=(time-20)%32,n=Math.floor((time-20)/32)+1;
     if(ph<24){wmul=1.45;if(RUN.wvN!==n){RUN.wvN=n;if(n>1)stAdd('waves');if(n>1)banner('Волна '+n,'Зомби идут!',true);}}else{wmul=.06;if(RUN.wvB!==n){RUN.wvB=n;banner('Передышка','8 секунд до новой волны',false);}}}
-  if(rmod('bosshunt')||(RUN.custom&&!RCFG.z))wmul=0;
+  if(rmod('bosshunt')||(RUN.custom&&!RCFG.z))wmul=0;if(RUN.mode==='tutorial')wmul*=1.5;
   if(RUN.ids.has('evrats'))wmul*=2.6;spawnAcc+=dt*rate*wmul;
   if(RUN.ids.has('supply')&&!retreat){RUN.supT=(RUN.supT===undefined?45:RUN.supT)-dt;if(RUN.supT<=0){RUN.supT=60;const F=floors[P.floor],ws2=F.windows.filter(w=>{const d=Math.hypot(w.ix-P.x,w.iy-P.y);return d>200&&d<700;});const w=ws2.length?pick(ws2):pick(F.windows);if(w){const k=rand()<.6?'heal':'mag';dropGem(P.floor,w.ix,w.iy,0,k);if(k==='heal')dropGem(P.floor,w.ix+14,w.iy+6,0,'heal');banner('Склад завхоза',k==='heal'?'На этаже появилась посылка с едой':'На этаже появился магнит',false);}}}
   if(!retreat&&!rmodAny(['tutorial','train','clear','keys','bosshunt'])&&!(RUN.waves&&wmul<1)&&!(RUN.custom&&!RCFG.z)){if(RUN.patT===undefined)RUN.patT=rr(50,75);RUN.patT-=dt;if(RUN.patT<=0){RUN.patT=rr(26,44);try{spawnPattern(cap);}catch(e){}}}
@@ -7949,13 +7949,15 @@ function slotDraw(){const s=RUN&&RUN.slot;if(!s||s.f!==P.floor)return;const near
 function slotUI(){const b=$('#slotBtn');if(!b)return;const on=slotNear();if(b.hidden===on)b.hidden=!on;if(on){const p=SLOTP[RUN.slot.uses],k=String(p);if(b.dataset.p!==k){b.dataset.p=k;b.innerHTML='🎰 Автомат · <i class="cn"></i> '+p;}}}
 
 /* ---------- 1.7: rewarded ads (Adsgram) ---------- */
+// debug console on the phone: open the game link with ?startapp=eruda
+(function(){try{const tg=window.Telegram&&window.Telegram.WebApp,sp=String((tg&&tg.initDataUnsafe&&tg.initDataUnsafe.start_param)||''),h=String(location.hash||'')+String(location.search||'');
+  if(/eruda/i.test(sp+h)){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda@3.0.1';s.onload=()=>{try{window.eruda.init();}catch(e){}};document.head.appendChild(s);}}catch(e){}})();
 const ADSGRAM_BLOCKS={x2:'60690',revive:'60693',reroll:'60694',start:'int-60695'};
 (function(){const DBG=[];let said=0;const say=()=>{if(said)return;said=1;try{console.warn('Ads:',DBG.join(' | '));}catch(e){}};
   try{if(window.YA)return;const tg=window.Telegram&&window.Telegram.WebApp;if(!tg||!tg.initData){DBG.push('no initData: open the game via the bot menu button or link');say();return;}
-  const AC={};const s=document.createElement('script');s.src='https://sad.adsgram.ai/js/sad.min.js';s.async=true;
-  s.onerror=()=>{DBG.push('sad.min.js failed to load');say();};
-  s.onload=()=>{try{if(!window.Adsgram){DBG.push('Adsgram object missing');say();return;}for(const k in ADSGRAM_BLOCKS){try{AC[k]=window.Adsgram.init({blockId:ADSGRAM_BLOCKS[k]});}catch(e){DBG.push(k+' init: '+((e&&e.message)||e));}}if(DBG.length)say();}catch(e){DBG.push('onload: '+((e&&e.message)||e));say();}
-    setTimeout(()=>{try{if(state==='menu'&&window.YA)YA.interstitial('start');}catch(e){}},800);};document.head.appendChild(s);
+  const AC={};const onl=()=>{try{if(!window.Adsgram){DBG.push('Adsgram object missing');say();return;}for(const k in ADSGRAM_BLOCKS){try{AC[k]=window.Adsgram.init({blockId:ADSGRAM_BLOCKS[k]});}catch(e){DBG.push(k+' init: '+((e&&e.message)||e));}}if(DBG.length)say();}catch(e){DBG.push('onload: '+((e&&e.message)||e));say();}
+    setTimeout(()=>{try{if(state==='menu'&&window.YA)YA.interstitial('start');}catch(e){}},800);};
+  const load=n=>{const s=document.createElement('script');s.src='https://sad.adsgram.ai/js/sad.min.js'+(n?'?r='+Date.now():'');s.async=true;s.onerror=()=>{try{s.remove();}catch(e){}if(n<2)setTimeout(()=>load(n+1),2500*(n+1));else{DBG.push('sad.min.js failed to load');say();}};s.onload=onl;document.head.appendChild(s);};load(0);
   window.YA={rewardOk:k=>!!AC[k||'x2'],
     rewarded:(k,cb)=>{const c=AC[k||'x2'];if(!c){cb(false);return;}try{c.show().then(r=>cb(!!(r&&r.done))).catch(e=>{cb(false);});}catch(e){cb(false);}},
     interstitial:(k,cb)=>{const c=AC[k||'start'];if(!c){if(cb)cb(false);return;}try{c.show().then(()=>{if(cb)cb(true);}).catch(()=>{if(cb)cb(false);});}catch(e){if(cb)cb(false);}}};}catch(e){DBG.push('wrapper: '+((e&&e.message)||e));say();}})();
@@ -10506,9 +10508,9 @@ const COACH={
  chest:['🎁','Сундук с босса: в нём улучшения сразу для нескольких оружий или предметов.'],
  stairs:['🪜','Лестницы ведут на другие этажи и на крышу — туда можно убежать от толпы. Встань на ступени и жми ▲ ▼.'],
  evo:['✨','Прокачай оружие до 15-го уровня и возьми нужный предмет — будет эволюция! Рецепт — в карточке оружия.'],
- tier:['☠','Каждые 2 минуты 20 секунд зомби становятся сильнее — успевай прокачиваться.']};
+ tier:['☠','С 2:00 зомби и боссы втрое крепче и бьют вдвое сильнее, а дальше каждые 2:20 становятся ещё сильнее — успевай прокачиваться.']};
 let coachT=0,coachHideT=0;
-function coachOn(){return RUN&&!['tutorial','train'].includes(RUN.mode)&&(prog.runs||0)<8;}
+function coachOn(){return RUN&&!['tutorial','train'].includes(RUN.mode)&&(prog.runs||0)<12;}
 function coachShow(id,hi){if(!coachOn())return false;prog.coach=prog.coach||{};if(prog.coach[id]||performance.now()<coachT)return false;const C=COACH[id];if(!C)return false;
   prog.coach[id]=1;saveProg();coachT=performance.now()+8000;try{let el=$('#coachTip');
   if(!el){el=document.createElement('div');el.id='coachTip';el.setAttribute('role','status');el.innerHTML='<span class="ci"></span><span class="ct"><small>Подсказка</small><span></span></span><button type="button" class="cx" aria-label="Закрыть">✕</button>';document.body.appendChild(el);el.querySelector('.cx').addEventListener('click',()=>{el.classList.remove('show');});}
@@ -10950,10 +10952,10 @@ function clanCreateUI(edit){let ov=document.getElementById('clanOv');if(!ov){ov=
     if(r&&r.ok){ov.hidden=true;sfx('buy');haptic('success');toastMsg(r.changed?'В названии было запрещённое слово — клан назван «'+r.name+'»':edit?'Клан обновлён':'🛡 Клан создан!');clanTab='my';renderClub();}else clanErr(r);});
   ov.hidden=false;}
 function clanD(c,kind){const cf=c.cfg||{},mino=!!c.mino,D={id:kind+c.id,nm:kind==='cch'?'Вызов клана «'+(c.from||'')+'»':'Клановое сражение',map:mino?'maze':(cf.map||'school'),ch:skinId,g:'surv',t:cf.t||180,r:(cf.rules||[]).slice(),sp:1.25,kinds:cf.kinds||[],mino,chained:!!(c.chain&&TGU&&+c.chain===+TGU.id),map0:cf.map||'school'};if(kind==='cch')D.cch=c.id;else D.cpve=1;{const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length){D.chs=hs.slice();D.ch=hs[0];}}return D;}
-function clanRules(cf){const L=[];if(cf.map)L.push('карта: '+((mapOf(cf.map)||{}).name||cf.map));(cf.rules||[]).forEach(k=>{const R=TRULE[k];if(R)L.push(R[0]+' '+R[1]);});if((cf.kinds||[]).length)L.push('зомби: '+cf.kinds.map(k=>zName(k)).join(', '));{const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length)L.push('герои: '+hs.map(id=>skinOf(id).name).join(', '));}return L.join(' · ')||'без особых правил';}
-function zName(k){try{const z=INFO_Z.find(q=>q.kind===k);return z?z.name:k;}catch(e){return k;}}
+function clanRules(cf){const L=[];if(cf.map)L.push('карта: '+((mapOf(cf.map)||{}).name||cf.map));(cf.rules||[]).forEach(k=>{const R=TRULE[k];if(R)L.push(R[0]+' '+R[1]);});if((cf.kinds||[]).length)L.push('зомби: '+cf.kinds.map(k=>zKindName(k)).join(', '));{const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length)L.push('герои: '+hs.map(id=>skinOf(id).name).join(', '));}return L.join(' · ')||'без особых правил';}
+function zKindName(k){try{const z=INFO_Z.find(q=>q.kind===k);return z?z.name:k;}catch(e){return k;}}
 function shDur(ms){const h=Math.max(0,Math.round(ms/3600e3)),d=Math.floor(h/24),q=h%24;return (d?d+' д ':'')+q+' ч';}
-function chvChips(cf){const L=[['⏱',fmt(cf.t||180)]];if(cf.map)L.push(['🗺',(mapOf(cf.map)||{}).name||cf.map]);(cf.rules||[]).forEach(k=>{const R=TRULE[k];if(R)L.push([R[0],R[1]]);});if((cf.kinds||[]).length)L.push(['🧟',cf.kinds.map(k=>zName(k)).join(', ')]);const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length)L.push(['🎭',hs.map(id=>skinOf(id).name).join(', ')]);
+function chvChips(cf){const L=[['⏱',fmt(cf.t||180)]];if(cf.map)L.push(['🗺',(mapOf(cf.map)||{}).name||cf.map]);(cf.rules||[]).forEach(k=>{const R=TRULE[k];if(R)L.push([R[0],R[1]]);});if((cf.kinds||[]).length)L.push(['🧟',cf.kinds.map(k=>zKindName(k)).join(', ')]);const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length)L.push(['🎭',hs.map(id=>skinOf(id).name).join(', ')]);
   const w=clanEl('div','chvChips');L.forEach(([a,b])=>{const c=clanEl('span','chvChip');c.appendChild(clanEl('i','',a));c.appendChild(document.createTextNode(b));w.appendChild(c);});return w;}
 function chvHead(ic,kick,name,pill,pc){const h=clanEl('div','chvHd');h.appendChild(clanEl('span','chvIc',ic||'🛡'));const t=clanEl('span','chvT');t.appendChild(clanEl('small','',kick));t.appendChild(clanEl('b','',/[«»]/.test(name)?name:'«'+name+'»'));h.appendChild(t);if(pill)h.appendChild(clanEl('span','chvPill'+(pc?' '+pc:''),pill));return h;}
 function chvTag(txt,cls){return clanEl('span','chvTag'+(cls?' '+cls:''),txt);}
@@ -11006,7 +11008,7 @@ function clanChForm(box,st,my){const f=clanEl('div','clanForm'),tg=st.list.filte
   f.appendChild(sel('Время',[120,180,240,300,360,420,480].map(t=>[t,fmt(t)+(t>180?' (+'+((t-180)/60*300)+')':'')]),CHF.t,v=>CHF.t=+v));
   const tog=(lab,list,arr,nm)=>{f.appendChild(clanEl('div','bpTh',lab));const w=clanEl('div','clanTogs');list.forEach(k=>{const on=arr.includes(k),b=clanEl('button',on?'on':'',nm(k));b.type='button';b.addEventListener('click',()=>{const i=arr.indexOf(k);if(i>=0)arr.splice(i,1);else if(arr.length<(arr===CHF.rules?4:6))arr.push(k);clanChRedraw();});w.appendChild(b);});f.appendChild(w);};
   tog('Помехи (+800 за каждую, до 4)',['tdark','tmelee','ttiny','tglass','tfast','thorde','tgiant','tnoheal','tnolv','tweak'],CHF.rules,k=>(TRULE[k]||['',k])[0]+' '+(TRULE[k]||['',k])[1]);
-  tog('Только эти зомби (+1000, до 6)',['runner','sumo','monitor','mutant','librarian','bomber','nurse','cheer','janitor','ninja','kendoz','archer','thief'],CHF.kinds,k=>zName(k));
+  tog('Только эти зомби (+1000, до 6)',['runner','sumo','monitor','mutant','librarian','bomber','nurse','cheer','janitor','ninja','kendoz','archer','thief'],CHF.kinds,k=>zKindName(k));
   f.appendChild(clanEl('div','bpTh','Только эти герои (+1000, до 5)'));{const w=clanEl('div','clanTogs');CHF.heroes=CHF.heroes.filter(clanHeroOk);CHF.heroes.forEach(id=>{const b=clanEl('button','on',skinOf(id).name+' · убрать');b.type='button';b.addEventListener('click',()=>{const i=CHF.heroes.indexOf(id);if(i>=0)CHF.heroes.splice(i,1);clanChRedraw();});w.appendChild(b);});
     if(CHF.heroes.length<5){const s=clanEl('select','clanHeroAdd');const o0=clanEl('option','',CHF.heroes.length?'+ ещё герой':'любые герои (выбрать…)');o0.value='';s.appendChild(o0);SKINS.filter(S=>clanHeroOk(S.id)&&!CHF.heroes.includes(S.id)).forEach(S=>{const o=clanEl('option','',S.name);o.value=S.id;s.appendChild(o);});s.addEventListener('change',()=>{if(s.value&&CHF.heroes.length<5){CHF.heroes.push(s.value);clanChRedraw();}});w.appendChild(s);}f.appendChild(w);}
   const cost=chCostC(CHF),go=clanBtn('⚔️ Бросить вызов · '+fmtTh(cost)+' монет',async()=>{if(!clanCan(cost))return;const r=await clanApi('chnew',{to:CHF.to,cfg:{map:CHF.map,t:CHF.t,rules:CHF.rules,kinds:CHF.kinds,heroes:CHF.heroes}});if(r&&r.ok){sfx('buy');haptic('success');toastMsg('⚔️ Вызов отправлен! Усиль его звёздами в списке «Твои вызовы»');CHF.rules=[];CHF.kinds=[];CHF.heroes=[];renderClub();}else clanErr(r);});
@@ -11917,7 +11919,7 @@ function cnGuest(){return !!(CR&&CR.me==='b'&&(CR.net||CR.netWait));}
 setInterval(()=>{try{const N=CN;
   if(CR&&CR.netWait&&!CR.net&&(Date.now()-CR.t0>12000||!N||N.fail)){CR.netWait=0;}
   if(!N||!N.open||!CR||CR.net!==N||CR.sent)return;N.tk++;
-  if(N.host){if(N.hit>0){const e=N.hitBy;cnSend({k:'hit',v:+N.hit.toFixed(2),n:e?(e.kind==='boss'?e.name:zName(e.kind)):''});N.hit=0;N.hitTop=0;N.hitBy=null;}if(N.tk%2===0)cnSnapOut(N);try{cnGhostOut(N);}catch(e){console.error(e);}}
+  if(N.host){if(N.hit>0){const e=N.hitBy;cnSend({k:'hit',v:+N.hit.toFixed(2),n:e?(e.kind==='boss'?e.name:zKindName(e.kind)):''});N.hit=0;N.hitTop=0;N.hitBy=null;}if(N.tk%2===0)cnSnapOut(N);try{cnGhostOut(N);}catch(e){console.error(e);}}
   else{if(N.dq.size){const a=[];for(const [id,q] of N.dq)a.push([id,+q[0].toFixed(2),Math.round(q[1]),Math.round(q[2])]);N.dq.clear();cnSend({k:'d',a});}
     try{cnGhostOut(N);}catch(e){console.error(e);}
     if(N.tk%2===0&&P){const S=curS;cnSend({k:'p',x:Math.round(P.x),y:Math.round(P.y),f:P.floor,a:cnFace(),mv:P.moving?1:0,hp:Math.round(Math.max(0,P.hp)),mhp:Math.round(P.maxHp),lv:P.level|0,dn:CR.dn?1:0,mag:Math.round(S&&S.mag||90),st:state==='play'?0:state==='levelup'?1:state==='pause'?2:3});}}}catch(e){console.error(e);}},50);
@@ -11992,16 +11994,18 @@ function startGame0(){
 let TUT=null;
 const TUTS=[
  {t:'Двигайся: веди пальцем по экрану. На компьютере — WASD или стрелки.',ok:()=>TUT.dist>260},
- {t:'Оружие стреляет само. Подойди к зомби и убей пятерых.',ok:()=>kills>=5,go:()=>{for(let k=0;k<6;k++){const a=k*1.05,x=P.x+Math.cos(a)*230,y=P.y+Math.sin(a)*200;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);z.hp=z.maxHp=12;enemies.push(z);}}}},
+ {t:'Оружие стреляет само. Подойди к зомби и убей пятерых.',ok:()=>kills>=5,go:()=>{for(let k=0;k<9;k++){const a=k*.7,x=P.x+Math.cos(a)*230,y=P.y+Math.sin(a)*200;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);z.hp=z.maxHp=12;enemies.push(z);}}}},
  {t:'Из зомби падают голубые кристаллы — собирай их. Набери уровень и выбери улучшение.',ok:()=>P.level>=2&&state==='play'},
  {t:'Собирай билд: прокачивай 1–2 любимых оружия и бери предметы, которые их усиливают (жёлтая стрелка на иконке). Подбери кристалл и выбери ещё улучшение.',ok:()=>P.level>=3&&state==='play',go:()=>{let x=P.x+60,y=P.y;if(solidT(P.floor,Math.floor(x/T),Math.floor(y/T)))x=P.x-60;dropGem(P.floor,x,y,Math.max(1,(P.next-P.xp)/((curS&&curS.xpm)||1)+1),'xp');}},
  {t:'Тебя покусали! Подбери онигири рядом — оно лечит.',ok:()=>runHealPicked,go:()=>{P.hp=Math.min(P.hp,Math.round(P.maxHp*.55));let x=P.x+70,y=P.y;if(solidT(P.floor,Math.floor(x/T),Math.floor(y/T)))x=P.x-70;dropGem(P.floor,x,y,0,'heal');}},
- {t:'Найди лестницу — к ней ведёт жёлтая стрелка. Встань на ступени и нажми ▲ (на компьютере — E).',ok:()=>P.floor!==0,arrow:true},
- {t:'Зомби напирают! Нажми ⏳ справа (на компьютере — пробел) — время для них замедлится. В меню «Способности» эту кнопку можно заменить на другую: заморозку, купол, ауры и т. д.',ok:()=>slowT>0,go:()=>{TUT.slowOk=true;for(let k=0;k<8;k++){const a=k*.785,x=P.x+Math.cos(a)*190,y=P.y+Math.sin(a)*170;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);enemies.push(z);}}}},
+ {t:'Найди лестницу — к ней ведёт жёлтая стрелка. Встань на ступени и нажми ▲ (на компьютере — E). В обычной игре после перехода лестница перезаряжается около 6 секунд.',ok:()=>P.floor!==0,arrow:true},
+ {t:'Зомби напирают! Нажми ⏳ справа (на компьютере — пробел) — время для них замедлится. В меню «Способности» эту кнопку можно заменить на другую: заморозку, купол, ауры и т. д.',ok:()=>slowT>0,go:()=>{TUT.slowOk=true;for(let k=0;k<12;k++){const a=k*.5236,x=P.x+Math.cos(a)*190,y=P.y+Math.sin(a)*170;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);enemies.push(z);}}}},
  {t:'Босс! У каждого босса своя атака — подробности в справочнике. Победи Завуча.',ok:()=>TUT.boss&&!TUT.boss.alive,go:()=>{const B=BOSSES.find(b=>b.name==='Завуч');let p=null;for(let k=0;k<12&&!p;k++){const a=rand()*6.28,x=P.x+Math.cos(a)*220,y=P.y+Math.sin(a)*220;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T)))p={x,y};}p=p||{x:P.x+40,y:P.y};
-   const z=makeZombie('student',P.floor,p.x,p.y);Object.assign(z,{kind:'boss',name:B.name,r:30,cr:18,hp:420,maxHp:420,spd:42,dmg:16,xp:0,uni:'boss',B});enemies.push(z);TUT.boss=z;banner('Босс: Завуч','Учебный босс — слабее обычного',true);}},
- {t:'Отлично! Последнее: продержись до рассвета — до 02:00 на часах. В комнатах с окнами зомби лезут прямо снаружи.',ok:()=>false}];
+   const z=makeZombie('student',P.floor,p.x,p.y);Object.assign(z,{kind:'boss',name:B.name,r:30,cr:18,hp:240,maxHp:240,spd:42,dmg:16,xp:0,uni:'boss',B});enemies.push(z);TUT.boss=z;banner('Босс: Завуч','Учебный босс — слабее обычного',true);}},
+ {get t(){return clubEn()?'Keep your distance: zombies only bite up close. Keep moving and last 8 seconds without taking damage.':'Держи дистанцию: зомби кусают только вблизи. Двигайся и продержись 8 секунд, не получая урона.';},ok:()=>TUT.noHit>=8||TUT.stT>=45,go:()=>{TUT.noHit=0;TUT.stT=0;for(let k=0;k<8;k++){const a=k*.785+rand()*.3,x=P.x+Math.cos(a)*260,y=P.y+Math.sin(a)*230;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);z.hp=z.maxHp=30;enemies.push(z);}}}},
+ {t:'Отлично! Последнее: продержись до рассвета — до 02:00 на часах. В комнатах с окнами зомби лезут прямо снаружи. Запомни: в обычной игре с 2:00 зомби и боссы становятся втрое крепче, а бьют вдвое сильнее — прокачивайся заранее.',ok:()=>false}];
 function updateTut(dt){if(!TUT)return;TUT.dist+=Math.hypot(P.x-TUT.lx,P.y-TUT.ly);TUT.lx=P.x;TUT.ly=P.y;
+  if(TUT.hp===undefined)TUT.hp=P.hp;if(P.hp<TUT.hp-.01)TUT.noHit=0;else TUT.noHit=(TUT.noHit||0)+dt;TUT.hp=P.hp;TUT.stT=(TUT.stT||0)+dt;
   const S0=TUTS[TUT.step];if(!S0)return;if(!TUT.started){TUT.started=true;if(S0.go)S0.go();}
   if(S0.ok()){TUT.step++;TUT.started=false;sfx('gem');const b=$('#tutBox');b.classList.add('done');setTimeout(()=>b.classList.remove('done'),500);}
   setTxt('#tutStep','Обучение · шаг '+Math.min(TUT.step+1,TUTS.length)+' из '+TUTS.length);setTxt('#tutText',(TUTS[TUT.step]||S0).t);}
@@ -15815,7 +15819,7 @@ function updateSpawns(dt){
   if(isEnd()){rate*=5;cap=Math.round(cap*5);}
   let wmul=1;if(RUN.waves&&time>20&&!retreat){const ph=(time-20)%32,n=Math.floor((time-20)/32)+1;
     if(ph<24){wmul=1.45;if(RUN.wvN!==n){RUN.wvN=n;if(n>1)stAdd('waves');if(n>1)banner('Wave '+n,'Zombies are coming!',true);}}else{wmul=.06;if(RUN.wvB!==n){RUN.wvB=n;banner('Breather','8 seconds until the next wave',false);}}}
-  if(rmod('bosshunt')||(RUN.custom&&!RCFG.z))wmul=0;
+  if(rmod('bosshunt')||(RUN.custom&&!RCFG.z))wmul=0;if(RUN.mode==='tutorial')wmul*=1.5;
   if(RUN.ids.has('evrats'))wmul*=2.6;spawnAcc+=dt*rate*wmul;
   if(RUN.ids.has('supply')&&!retreat){RUN.supT=(RUN.supT===undefined?45:RUN.supT)-dt;if(RUN.supT<=0){RUN.supT=60;const F=floors[P.floor],ws2=F.windows.filter(w=>{const d=Math.hypot(w.ix-P.x,w.iy-P.y);return d>200&&d<700;});const w=ws2.length?pick(ws2):pick(F.windows);if(w){const k=rand()<.6?'heal':'mag';dropGem(P.floor,w.ix,w.iy,0,k);if(k==='heal')dropGem(P.floor,w.ix+14,w.iy+6,0,'heal');banner('Caretaker\'s storeroom',k==='heal'?'A food parcel appeared on this floor':'A magnet appeared on this floor',false);}}}
   if(!retreat&&!rmodAny(['tutorial','train','clear','keys','bosshunt'])&&!(RUN.waves&&wmul<1)&&!(RUN.custom&&!RCFG.z)){if(RUN.patT===undefined)RUN.patT=rr(50,75);RUN.patT-=dt;if(RUN.patT<=0){RUN.patT=rr(26,44);try{spawnPattern(cap);}catch(e){}}}
@@ -18336,13 +18340,15 @@ function slotDraw(){const s=RUN&&RUN.slot;if(!s||s.f!==P.floor)return;const near
 function slotUI(){const b=$('#slotBtn');if(!b)return;const on=slotNear();if(b.hidden===on)b.hidden=!on;if(on){const p=SLOTP[RUN.slot.uses],k=String(p);if(b.dataset.p!==k){b.dataset.p=k;b.innerHTML='🎰 Slot machine · <i class="cn"></i> '+p;}}}
 
 /* ---------- 1.7: rewarded ads (Adsgram) ---------- */
+// debug console on the phone: open the game link with ?startapp=eruda
+(function(){try{const tg=window.Telegram&&window.Telegram.WebApp,sp=String((tg&&tg.initDataUnsafe&&tg.initDataUnsafe.start_param)||''),h=String(location.hash||'')+String(location.search||'');
+  if(/eruda/i.test(sp+h)){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/eruda@3.0.1';s.onload=()=>{try{window.eruda.init();}catch(e){}};document.head.appendChild(s);}}catch(e){}})();
 const ADSGRAM_BLOCKS={x2:'60690',revive:'60693',reroll:'60694',start:'int-60695'};
 (function(){const DBG=[];let said=0;const say=()=>{if(said)return;said=1;try{console.warn('Ads:',DBG.join(' | '));}catch(e){}};
   try{if(window.YA)return;const tg=window.Telegram&&window.Telegram.WebApp;if(!tg||!tg.initData){DBG.push('no initData: open the game via the bot menu button or link');say();return;}
-  const AC={};const s=document.createElement('script');s.src='https://sad.adsgram.ai/js/sad.min.js';s.async=true;
-  s.onerror=()=>{DBG.push('sad.min.js failed to load');say();};
-  s.onload=()=>{try{if(!window.Adsgram){DBG.push('Adsgram object missing');say();return;}for(const k in ADSGRAM_BLOCKS){try{AC[k]=window.Adsgram.init({blockId:ADSGRAM_BLOCKS[k]});}catch(e){DBG.push(k+' init: '+((e&&e.message)||e));}}if(DBG.length)say();}catch(e){DBG.push('onload: '+((e&&e.message)||e));say();}
-    setTimeout(()=>{try{if(state==='menu'&&window.YA)YA.interstitial('start');}catch(e){}},800);};document.head.appendChild(s);
+  const AC={};const onl=()=>{try{if(!window.Adsgram){DBG.push('Adsgram object missing');say();return;}for(const k in ADSGRAM_BLOCKS){try{AC[k]=window.Adsgram.init({blockId:ADSGRAM_BLOCKS[k]});}catch(e){DBG.push(k+' init: '+((e&&e.message)||e));}}if(DBG.length)say();}catch(e){DBG.push('onload: '+((e&&e.message)||e));say();}
+    setTimeout(()=>{try{if(state==='menu'&&window.YA)YA.interstitial('start');}catch(e){}},800);};
+  const load=n=>{const s=document.createElement('script');s.src='https://sad.adsgram.ai/js/sad.min.js'+(n?'?r='+Date.now():'');s.async=true;s.onerror=()=>{try{s.remove();}catch(e){}if(n<2)setTimeout(()=>load(n+1),2500*(n+1));else{DBG.push('sad.min.js failed to load');say();}};s.onload=onl;document.head.appendChild(s);};load(0);
   window.YA={rewardOk:k=>!!AC[k||'x2'],
     rewarded:(k,cb)=>{const c=AC[k||'x2'];if(!c){cb(false);return;}try{c.show().then(r=>cb(!!(r&&r.done))).catch(e=>{cb(false);});}catch(e){cb(false);}},
     interstitial:(k,cb)=>{const c=AC[k||'start'];if(!c){if(cb)cb(false);return;}try{c.show().then(()=>{if(cb)cb(true);}).catch(()=>{if(cb)cb(false);});}catch(e){if(cb)cb(false);}}};}catch(e){DBG.push('wrapper: '+((e&&e.message)||e));say();}})();
@@ -20893,9 +20899,9 @@ const COACH={
  chest:['🎁','A boss chest: it holds upgrades for several weapons or items at once.'],
  stairs:['🪜','Stairs lead to other floors and to the roof — you can escape the crowd there. Stand on the steps and press ▲ ▼.'],
  evo:['✨','Level a weapon up to 15 and take the right item — it will evolve! The recipe is on the weapon card.'],
- tier:['☠','Every 2 min 20 s the zombies get stronger — keep leveling up.']};
+ tier:['☠','From 2:00 zombies and bosses have 3x health and deal 2x damage, then get stronger every 2:20 — keep leveling up.']};
 let coachT=0,coachHideT=0;
-function coachOn(){return RUN&&!['tutorial','train'].includes(RUN.mode)&&(prog.runs||0)<8;}
+function coachOn(){return RUN&&!['tutorial','train'].includes(RUN.mode)&&(prog.runs||0)<12;}
 function coachShow(id,hi){if(!coachOn())return false;prog.coach=prog.coach||{};if(prog.coach[id]||performance.now()<coachT)return false;const C=COACH[id];if(!C)return false;
   prog.coach[id]=1;saveProg();coachT=performance.now()+8000;try{let el=$('#coachTip');
   if(!el){el=document.createElement('div');el.id='coachTip';el.setAttribute('role','status');el.innerHTML='<span class="ci"></span><span class="ct"><small>Tip</small><span></span></span><button type="button" class="cx" aria-label="Close">✕</button>';document.body.appendChild(el);el.querySelector('.cx').addEventListener('click',()=>{el.classList.remove('show');});}
@@ -21337,10 +21343,10 @@ function clanCreateUI(edit){let ov=document.getElementById('clanOv');if(!ov){ov=
     if(r&&r.ok){ov.hidden=true;sfx('buy');haptic('success');toastMsg(r.changed?'The name had a banned word — the clan is called “'+r.name+'»':edit?'Clan updated':'🛡 Clan founded!');clanTab='my';renderClub();}else clanErr(r);});
   ov.hidden=false;}
 function clanD(c,kind){const cf=c.cfg||{},mino=!!c.mino,D={id:kind+c.id,nm:kind==='cch'?'Challenge from “'+(c.from||'')+'»':'Clan battle',map:mino?'maze':(cf.map||'school'),ch:skinId,g:'surv',t:cf.t||180,r:(cf.rules||[]).slice(),sp:1.25,kinds:cf.kinds||[],mino,chained:!!(c.chain&&TGU&&+c.chain===+TGU.id),map0:cf.map||'school'};if(kind==='cch')D.cch=c.id;else D.cpve=1;{const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length){D.chs=hs.slice();D.ch=hs[0];}}return D;}
-function clanRules(cf){const L=[];if(cf.map)L.push('map: '+((mapOf(cf.map)||{}).name||cf.map));(cf.rules||[]).forEach(k=>{const R=TRULE[k];if(R)L.push(R[0]+' '+R[1]);});if((cf.kinds||[]).length)L.push('zombies: '+cf.kinds.map(k=>zName(k)).join(', '));{const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length)L.push('heroes: '+hs.map(id=>skinOf(id).name).join(', '));}return L.join(' · ')||'no special rules';}
-function zName(k){try{const z=INFO_Z.find(q=>q.kind===k);return z?z.name:k;}catch(e){return k;}}
+function clanRules(cf){const L=[];if(cf.map)L.push('map: '+((mapOf(cf.map)||{}).name||cf.map));(cf.rules||[]).forEach(k=>{const R=TRULE[k];if(R)L.push(R[0]+' '+R[1]);});if((cf.kinds||[]).length)L.push('zombies: '+cf.kinds.map(k=>zKindName(k)).join(', '));{const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length)L.push('heroes: '+hs.map(id=>skinOf(id).name).join(', '));}return L.join(' · ')||'no special rules';}
+function zKindName(k){try{const z=INFO_Z.find(q=>q.kind===k);return z?z.name:k;}catch(e){return k;}}
 function shDur(ms){const h=Math.max(0,Math.round(ms/3600e3)),d=Math.floor(h/24),q=h%24;return (d?d+' d ':'')+q+' h';}
-function chvChips(cf){const L=[['⏱',fmt(cf.t||180)]];if(cf.map)L.push(['🗺',(mapOf(cf.map)||{}).name||cf.map]);(cf.rules||[]).forEach(k=>{const R=TRULE[k];if(R)L.push([R[0],R[1]]);});if((cf.kinds||[]).length)L.push(['🧟',cf.kinds.map(k=>zName(k)).join(', ')]);const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length)L.push(['🎭',hs.map(id=>skinOf(id).name).join(', ')]);
+function chvChips(cf){const L=[['⏱',fmt(cf.t||180)]];if(cf.map)L.push(['🗺',(mapOf(cf.map)||{}).name||cf.map]);(cf.rules||[]).forEach(k=>{const R=TRULE[k];if(R)L.push([R[0],R[1]]);});if((cf.kinds||[]).length)L.push(['🧟',cf.kinds.map(k=>zKindName(k)).join(', ')]);const hs=(cf.heroes||[]).filter(clanHeroOk);if(hs.length)L.push(['🎭',hs.map(id=>skinOf(id).name).join(', ')]);
   const w=clanEl('div','chvChips');L.forEach(([a,b])=>{const c=clanEl('span','chvChip');c.appendChild(clanEl('i','',a));c.appendChild(document.createTextNode(b));w.appendChild(c);});return w;}
 function chvHead(ic,kick,name,pill,pc){const h=clanEl('div','chvHd');h.appendChild(clanEl('span','chvIc',ic||'🛡'));const t=clanEl('span','chvT');t.appendChild(clanEl('small','',kick));t.appendChild(clanEl('b','',/[«»]/.test(name)?name:'«'+name+'»'));h.appendChild(t);if(pill)h.appendChild(clanEl('span','chvPill'+(pc?' '+pc:''),pill));return h;}
 function chvTag(txt,cls){return clanEl('span','chvTag'+(cls?' '+cls:''),txt);}
@@ -21393,7 +21399,7 @@ function clanChForm(box,st,my){const f=clanEl('div','clanForm'),tg=st.list.filte
   f.appendChild(sel('Time',[120,180,240,300,360,420,480].map(t=>[t,fmt(t)+(t>180?' (+'+((t-180)/60*300)+')':'')]),CHF.t,v=>CHF.t=+v));
   const tog=(lab,list,arr,nm)=>{f.appendChild(clanEl('div','bpTh',lab));const w=clanEl('div','clanTogs');list.forEach(k=>{const on=arr.includes(k),b=clanEl('button',on?'on':'',nm(k));b.type='button';b.addEventListener('click',()=>{const i=arr.indexOf(k);if(i>=0)arr.splice(i,1);else if(arr.length<(arr===CHF.rules?4:6))arr.push(k);clanChRedraw();});w.appendChild(b);});f.appendChild(w);};
   tog('Handicaps (+800 each, up to 4)',['tdark','tmelee','ttiny','tglass','tfast','thorde','tgiant','tnoheal','tnolv','tweak'],CHF.rules,k=>(TRULE[k]||['',k])[0]+' '+(TRULE[k]||['',k])[1]);
-  tog('Only these zombies (+1000, up to 6)',['runner','sumo','monitor','mutant','librarian','bomber','nurse','cheer','janitor','ninja','kendoz','archer','thief'],CHF.kinds,k=>zName(k));
+  tog('Only these zombies (+1000, up to 6)',['runner','sumo','monitor','mutant','librarian','bomber','nurse','cheer','janitor','ninja','kendoz','archer','thief'],CHF.kinds,k=>zKindName(k));
   f.appendChild(clanEl('div','bpTh','Only these heroes (+1000, up to 5)'));{const w=clanEl('div','clanTogs');CHF.heroes=CHF.heroes.filter(clanHeroOk);CHF.heroes.forEach(id=>{const b=clanEl('button','on',skinOf(id).name+' · remove');b.type='button';b.addEventListener('click',()=>{const i=CHF.heroes.indexOf(id);if(i>=0)CHF.heroes.splice(i,1);clanChRedraw();});w.appendChild(b);});
     if(CHF.heroes.length<5){const s=clanEl('select','clanHeroAdd');const o0=clanEl('option','',CHF.heroes.length?'+ another hero':'any heroes (choose…)');o0.value='';s.appendChild(o0);SKINS.filter(S=>clanHeroOk(S.id)&&!CHF.heroes.includes(S.id)).forEach(S=>{const o=clanEl('option','',S.name);o.value=S.id;s.appendChild(o);});s.addEventListener('change',()=>{if(s.value&&CHF.heroes.length<5){CHF.heroes.push(s.value);clanChRedraw();}});w.appendChild(s);}f.appendChild(w);}
   const cost=chCostC(CHF),go=clanBtn('⚔️ Send the challenge · '+fmtTh(cost)+' coins',async()=>{if(!clanCan(cost))return;const r=await clanApi('chnew',{to:CHF.to,cfg:{map:CHF.map,t:CHF.t,rules:CHF.rules,kinds:CHF.kinds,heroes:CHF.heroes}});if(r&&r.ok){sfx('buy');haptic('success');toastMsg('⚔️ Challenge sent! Power it up with Stars in “Your challenges”');CHF.rules=[];CHF.kinds=[];CHF.heroes=[];renderClub();}else clanErr(r);});
@@ -22304,7 +22310,7 @@ function cnGuest(){return !!(CR&&CR.me==='b'&&(CR.net||CR.netWait));}
 setInterval(()=>{try{const N=CN;
   if(CR&&CR.netWait&&!CR.net&&(Date.now()-CR.t0>12000||!N||N.fail)){CR.netWait=0;}
   if(!N||!N.open||!CR||CR.net!==N||CR.sent)return;N.tk++;
-  if(N.host){if(N.hit>0){const e=N.hitBy;cnSend({k:'hit',v:+N.hit.toFixed(2),n:e?(e.kind==='boss'?e.name:zName(e.kind)):''});N.hit=0;N.hitTop=0;N.hitBy=null;}if(N.tk%2===0)cnSnapOut(N);try{cnGhostOut(N);}catch(e){console.error(e);}}
+  if(N.host){if(N.hit>0){const e=N.hitBy;cnSend({k:'hit',v:+N.hit.toFixed(2),n:e?(e.kind==='boss'?e.name:zKindName(e.kind)):''});N.hit=0;N.hitTop=0;N.hitBy=null;}if(N.tk%2===0)cnSnapOut(N);try{cnGhostOut(N);}catch(e){console.error(e);}}
   else{if(N.dq.size){const a=[];for(const [id,q] of N.dq)a.push([id,+q[0].toFixed(2),Math.round(q[1]),Math.round(q[2])]);N.dq.clear();cnSend({k:'d',a});}
     try{cnGhostOut(N);}catch(e){console.error(e);}
     if(N.tk%2===0&&P){const S=curS;cnSend({k:'p',x:Math.round(P.x),y:Math.round(P.y),f:P.floor,a:cnFace(),mv:P.moving?1:0,hp:Math.round(Math.max(0,P.hp)),mhp:Math.round(P.maxHp),lv:P.level|0,dn:CR.dn?1:0,mag:Math.round(S&&S.mag||90),st:state==='play'?0:state==='levelup'?1:state==='pause'?2:3});}}}catch(e){console.error(e);}},50);
@@ -22379,16 +22385,18 @@ function startGame0(){
 let TUT=null;
 const TUTS=[
  {t:'Move: drag your finger across the screen. On a computer — WASD or arrows.',ok:()=>TUT.dist>260},
- {t:'Weapons fire on their own. Walk up to the zombies and kill five.',ok:()=>kills>=5,go:()=>{for(let k=0;k<6;k++){const a=k*1.05,x=P.x+Math.cos(a)*230,y=P.y+Math.sin(a)*200;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);z.hp=z.maxHp=12;enemies.push(z);}}}},
+ {t:'Weapons fire on their own. Walk up to the zombies and kill five.',ok:()=>kills>=5,go:()=>{for(let k=0;k<9;k++){const a=k*.7,x=P.x+Math.cos(a)*230,y=P.y+Math.sin(a)*200;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);z.hp=z.maxHp=12;enemies.push(z);}}}},
  {t:'Zombies drop blue crystals — collect them. Level up and pick an upgrade.',ok:()=>P.level>=2&&state==='play'},
  {t:'Build smart: level up 1–2 favorite weapons and take items that boost them (yellow arrow on the icon). Grab the crystal and pick another upgrade.',ok:()=>P.level>=3&&state==='play',go:()=>{let x=P.x+60,y=P.y;if(solidT(P.floor,Math.floor(x/T),Math.floor(y/T)))x=P.x-60;dropGem(P.floor,x,y,Math.max(1,(P.next-P.xp)/((curS&&curS.xpm)||1)+1),'xp');}},
  {t:'You got bitten! Pick up the onigiri nearby — it heals.',ok:()=>runHealPicked,go:()=>{P.hp=Math.min(P.hp,Math.round(P.maxHp*.55));let x=P.x+70,y=P.y;if(solidT(P.floor,Math.floor(x/T),Math.floor(y/T)))x=P.x-70;dropGem(P.floor,x,y,0,'heal');}},
- {t:'Find the stairs — a yellow arrow points to them. Stand on the steps and press ▲ (on a computer — E).',ok:()=>P.floor!==0,arrow:true},
- {t:'Zombies are pressing in! Tap ⏳ on the right (Space on a computer) to slow time for them. In the Abilities menu you can swap this button for another one: freeze, dome, auras and more.',ok:()=>slowT>0,go:()=>{TUT.slowOk=true;for(let k=0;k<8;k++){const a=k*.785,x=P.x+Math.cos(a)*190,y=P.y+Math.sin(a)*170;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);enemies.push(z);}}}},
+ {t:'Find the stairs — a yellow arrow points to them. Stand on the steps and press ▲ (on a computer — E). In a real run the stairs recharge for about 6 seconds after a transfer.',ok:()=>P.floor!==0,arrow:true},
+ {t:'Zombies are pressing in! Tap ⏳ on the right (Space on a computer) to slow time for them. In the Abilities menu you can swap this button for another one: freeze, dome, auras and more.',ok:()=>slowT>0,go:()=>{TUT.slowOk=true;for(let k=0;k<12;k++){const a=k*.5236,x=P.x+Math.cos(a)*190,y=P.y+Math.sin(a)*170;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);enemies.push(z);}}}},
  {t:'Boss! Every boss has its own attack — details in the codex. Defeat the Vice Principal.',ok:()=>TUT.boss&&!TUT.boss.alive,go:()=>{const B=BOSSES.find(b=>b.name==='Vice Principal');let p=null;for(let k=0;k<12&&!p;k++){const a=rand()*6.28,x=P.x+Math.cos(a)*220,y=P.y+Math.sin(a)*220;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T)))p={x,y};}p=p||{x:P.x+40,y:P.y};
-   const z=makeZombie('student',P.floor,p.x,p.y);Object.assign(z,{kind:'boss',name:B.name,r:30,cr:18,hp:420,maxHp:420,spd:42,dmg:16,xp:0,uni:'boss',B});enemies.push(z);TUT.boss=z;banner('Boss: Vice Principal','Training boss — weaker than usual',true);}},
- {t:'Great! Last one: hold out until dawn, 02:00 on the clock. In rooms with windows, zombies climb straight in from outside.',ok:()=>false}];
+   const z=makeZombie('student',P.floor,p.x,p.y);Object.assign(z,{kind:'boss',name:B.name,r:30,cr:18,hp:240,maxHp:240,spd:42,dmg:16,xp:0,uni:'boss',B});enemies.push(z);TUT.boss=z;banner('Boss: Vice Principal','Training boss — weaker than usual',true);}},
+ {get t(){return clubEn()?'Keep your distance: zombies only bite up close. Keep moving and last 8 seconds without taking damage.':'Держи дистанцию: зомби кусают только вблизи. Двигайся и продержись 8 секунд, не получая урона.';},ok:()=>TUT.noHit>=8||TUT.stT>=45,go:()=>{TUT.noHit=0;TUT.stT=0;for(let k=0;k<8;k++){const a=k*.785+rand()*.3,x=P.x+Math.cos(a)*260,y=P.y+Math.sin(a)*230;if(!solidT(P.floor,Math.floor(x/T),Math.floor(y/T))){const z=makeZombie('student',P.floor,x,y);z.hp=z.maxHp=30;enemies.push(z);}}}},
+ {t:'Great! Last one: hold out until dawn, 02:00 on the clock. In rooms with windows, zombies climb straight in from outside. Remember: in a real run from 2:00 zombies and bosses get 3x the health and hit twice as hard — level up in advance.',ok:()=>false}];
 function updateTut(dt){if(!TUT)return;TUT.dist+=Math.hypot(P.x-TUT.lx,P.y-TUT.ly);TUT.lx=P.x;TUT.ly=P.y;
+  if(TUT.hp===undefined)TUT.hp=P.hp;if(P.hp<TUT.hp-.01)TUT.noHit=0;else TUT.noHit=(TUT.noHit||0)+dt;TUT.hp=P.hp;TUT.stT=(TUT.stT||0)+dt;
   const S0=TUTS[TUT.step];if(!S0)return;if(!TUT.started){TUT.started=true;if(S0.go)S0.go();}
   if(S0.ok()){TUT.step++;TUT.started=false;sfx('gem');const b=$('#tutBox');b.classList.add('done');setTimeout(()=>b.classList.remove('done'),500);}
   setTxt('#tutStep','Tutorial · step '+Math.min(TUT.step+1,TUTS.length)+' of '+TUTS.length);setTxt('#tutText',(TUTS[TUT.step]||S0).t);}
