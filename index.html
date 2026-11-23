@@ -1382,6 +1382,7 @@ body.calm #menu *,body.calm #menu *::before,body.calm #menu *::after{animation-p
 .pkSearch{display:block;width:100%;flex:0 0 auto;margin:0 0 8px;padding:10px 12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.18);background:rgba(0,0,0,.28);color:var(--chalk,#fff);font:600 16px/1.2 var(--body);outline:none;-webkit-appearance:none;appearance:none}.pkSearch:focus{border-color:var(--gold,#ffd36b)}.pkSearch::placeholder{color:rgba(238,242,230,.5)}.pkNone{text-align:center;color:rgba(238,242,230,.6);font:600 13px/1.3 var(--body);padding:14px 4px;grid-column:1/-1}.prPickBox .pkSearch{margin:0}
 .dgCards .dgIc{font-size:30px;line-height:1;display:flex;align-items:center;justify-content:center;min-width:44px}
 .dCause{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:rgba(255,70,70,.14);border:1px solid rgba(255,110,110,.35);color:#ffc9c9;font:700 13px/1.35 var(--body)}
+#dgOv .card[disabled]{opacity:.45;cursor:default}#dgOv .card .tag{position:absolute;top:-9px;right:10px;font:800 9px/1 var(--body);letter-spacing:.08em;padding:4px 7px;border-radius:6px}.dgFoot{display:flex;justify-content:center;margin-top:12px}.dgFoot:empty{display:none}#dgOv .card .ds b{color:#ffe39a}
 </style>
 </head>
 <body>
@@ -2862,7 +2863,7 @@ MODES.keys={name:'Спасательная операция',d:'7 минут. Ш
 MODES.masq={name:'Маскарад',d:'6 минут. Каждые 45 секунд ты становишься случайным персонажем. Улучшения остаются.'};
 MODES.notime={name:'Нет времени',d:'10 минут до рассвета. На выбор улучшения даётся 1:30 — не успел, и уровень сгорает.'};
 MODES.clear={name:'Зачистка',d:'Все зомби уже на карте, новых не будет. Найди и убей всех за 5 минут.'};
-MODES.dungeon={name:'Подземелье',d:'Спуск без конца: каждый этаж — новая карта и новые условия. Убей нужное число зомби, и откроется люк вниз. Между этажами выбирай 1 из 3 реликвий. Каждый 5-й этаж — босс. С каждым этажом зомби крепче. Рекорд — самый глубокий этаж.'};
+MODES.dungeon={name:'Подземелье',d:'Роуглайк-спуск без конца. Каждый этаж — новая карта и свои условия. Зачистил этаж — выбирай люк вниз: бой, логово элиты, сокровищница, привал, лавка или загадка. Реликвии бывают обычные, редкие и легендарные и остаются до конца забега. Каждый 5-й этаж — босс. Чем глубже, тем злее зомби. Рекорд — самый глубокий этаж.'};
 let MODE='normal';let prevMode=null,prevMap=null;try{const v=localStorage.getItem('szz-mode');if(v&&MODES[v])MODE=v;}catch(e){}
 const BASEMODES=['normal','quick','endless'],COMBOMODS=['hard','crabs','shuffle','zone','guard','keys','masq','notime','bosshunt'];let COMBO=null,COMBO2=null,COMBOBASE=null,MODE2=null;
 try{const v=localStorage.getItem('szz-combo');if(v&&COMBOMODS.includes(v))COMBO=v;const w=localStorage.getItem('szz-combo2');if(COMBO&&w&&COMBOMODS.includes(w)&&w!==COMBO)COMBO2=w;}catch(e){}
@@ -12284,79 +12285,150 @@ function pkSearchEl(box,sel){const i=document.createElement('input');i.type='sea
   i.addEventListener('input',()=>pkFilter(box,sel,i.value));return i;}
 function pkFilter(box,sel,q){q=pkNorm(q);let n=0;box.querySelectorAll(sel).forEach(b=>{const ok=!q||(b.dataset.q||pkNorm(b.textContent)).includes(q);b.hidden=!ok;b.style.display=ok?'':'none';if(ok)n++;});
   let no=box.querySelector('.pkNone');if(!n&&q){if(!no){no=document.createElement('div');no.className='pkNone';no.textContent='Ничего не найдено';box.appendChild(no);}no.hidden=false;}else if(no)no.hidden=true;}
-/* ---------- 2.0: dungeon mode — roguelike descent: floor after floor, relics between floors ---------- */
+/* ---------- 2.0: dungeon mode — roguelike descent: room choice, relic rarities, floor affixes, shop and events ---------- */
 MODEIC.dungeon='<svg viewBox="0 0 40 40" width="40" height="40"><rect x="4" y="6" width="32" height="28" rx="4" fill="#2a2140" stroke="#b88aff" stroke-width="2"/><path d="M9 12h8v5h6v5h6v6" fill="none" stroke="#f4f1e8" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><path d="M26 25l3 3 3-3" fill="none" stroke="#ffd36b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="27" r="3" fill="#b88aff"/></svg>';
 try{MODECOL.dungeon=['#4a3a72','#271e42'];}catch(e){}
+const DGRAR={c:{n:'Обычная',col:'#9fe0b4'},r:{n:'Редкая',col:'#7cc0ff'},l:{n:'Легендарная',col:'#ffbf5a'}};
 const DGREL=[
- {id:'dm',ic:'⚔️',n:'Боевой дух',d:'+15% к урону оружия',max:4},
- {id:'cd',ic:'⏰',n:'Будильник',d:'Оружие перезаряжается на 8% быстрее',max:4},
- {id:'spd',ic:'👟',n:'Лёгкие кеды',d:'+8% к скорости бега',max:3},
- {id:'arm',ic:'🛡️',n:'Наплечники',d:'Получаешь на 10% меньше урона',max:4},
- {id:'area',ic:'📣',n:'Мегафон',d:'+12% к радиусу атак',max:3},
- {id:'mag',ic:'🧲',n:'Подкова-магнит',d:'+40% к радиусу сбора кристаллов',max:3},
- {id:'xp',ic:'📜',n:'Шпаргалка',d:'+15% опыта',max:3},
- {id:'crit',ic:'🍀',n:'Четырёхлистник',d:'+6% к шансу крита',max:3},
- {id:'regen',ic:'🍵',n:'Термос',d:'+0,6 здоровья в секунду',max:3},
- {id:'boss',ic:'🗡️',n:'Охотничий нож',d:'+25% урона по боссам',max:3},
- {id:'hp',ic:'🍱',n:'Бэнто с добавкой',d:'+25 к максимуму здоровья',max:4},
- {id:'heal',ic:'🍙',n:'Перекус',d:'Полностью вылечивает',max:99,ok:()=>P.hp<P.maxHp*.8},
- {id:'lv',ic:'📚',n:'Стопка учебников',d:'Сразу +2 уровня',max:99},
- {id:'any',ic:'🔮',n:'Учебник квантовой физики',d:'Выбери любое оружие или предмет',max:99},
- {id:'rr',ic:'🎟️',n:'Счастливый билет',d:'+3 перекрутки улучшений',max:99},
- {id:'coin',ic:'🐷',n:'Копилка',d:'Монеты: 40 за каждый пройденный этаж',max:99},
- {id:'life',ic:'🪽',n:'Оберег',d:'Ещё одна жизнь в этом забеге',max:1}];
+ {id:'dm',r:'c',ic:'⚔️',n:'Боевой дух',d:'+15% к урону оружия',max:4},
+ {id:'cd',r:'c',ic:'⏰',n:'Будильник',d:'Оружие перезаряжается на 8% быстрее',max:4},
+ {id:'spd',r:'c',ic:'👟',n:'Лёгкие кеды',d:'+8% к скорости бега',max:3},
+ {id:'arm',r:'c',ic:'🛡️',n:'Наплечники',d:'Получаешь на 10% меньше урона',max:4},
+ {id:'area',r:'c',ic:'📣',n:'Мегафон',d:'+12% к радиусу атак',max:3},
+ {id:'mag',r:'c',ic:'🧲',n:'Подкова-магнит',d:'+40% к радиусу сбора кристаллов',max:3},
+ {id:'xp',r:'c',ic:'📜',n:'Шпаргалка',d:'+15% опыта',max:3},
+ {id:'crit',r:'c',ic:'🍀',n:'Четырёхлистник',d:'+6% к шансу крита',max:3},
+ {id:'regen',r:'c',ic:'🍵',n:'Термос',d:'+0,6 здоровья в секунду',max:3},
+ {id:'boss',r:'c',ic:'🗡️',n:'Охотничий нож',d:'+25% урона по боссам',max:3},
+ {id:'hp',r:'c',ic:'🍱',n:'Бэнто с добавкой',d:'+25 к максимуму здоровья',max:4},
+ {id:'heal',r:'c',ic:'🍙',n:'Перекус',d:'Полностью вылечивает',max:99,ok:()=>P.hp<P.maxHp*.8},
+ {id:'lv',r:'c',ic:'📚',n:'Стопка учебников',d:'Сразу +2 уровня',max:99},
+ {id:'rr',r:'c',ic:'🎟️',n:'Счастливый билет',d:'+3 перекрутки улучшений',max:99},
+ {id:'any',r:'r',ic:'🔮',n:'Учебник квантовой физики',d:'Выбери любое оружие или предмет',max:99},
+ {id:'vamp',r:'r',ic:'🩸',n:'Клыки вампира',d:'+1 здоровье за каждого убитого зомби',max:3},
+ {id:'thorn',r:'r',ic:'🌵',n:'Колючий жилет',d:'Зомби, которые тебя касаются, получают 30 урона в секунду',max:3},
+ {id:'critd',r:'r',ic:'💥',n:'Точный удар',d:'+4% к шансу крита и +50% к урону крита',max:3},
+ {id:'amount',r:'r',ic:'➕',n:'Запасной пенал',d:'+1 снаряд у оружия',max:2},
+ {id:'dur',r:'r',ic:'⌛',n:'Долгоиграйка',d:'Турели, лужи и ловушки живут на 25% дольше',max:3},
+ {id:'low',r:'r',ic:'😤',n:'Второе дыхание',d:'+50% урона, пока здоровья меньше половины',max:2},
+ {id:'life',r:'r',ic:'🪽',n:'Оберег',d:'Ещё одна жизнь в этом забеге',max:1},
+ {id:'glass',r:'l',ic:'🔮',n:'Стеклянная пушка',d:'Урон ×1,6, но максимум здоровья ×0,6',max:1},
+ {id:'berserk',r:'l',ic:'🪓',n:'Берсерк',d:'+40% урона и +15% скорости, но урон по тебе +20%',max:1},
+ {id:'clock',r:'l',ic:'🕰️',n:'Карманные часы',d:'Оружие перезаряжается на 20% быстрее',max:1},
+ {id:'phoenix',r:'l',ic:'🐦‍🔥',n:'Перо феникса',d:'Две дополнительные жизни',max:1},
+ {id:'hoard',r:'l',ic:'🎒',n:'Рюкзак отличника',d:'Сразу +5 уровней',max:1}];
+const DGROOM={
+ fight:{ic:'⚔️',n:'Бой',d:'Обычный этаж. Награда — реликвия'},
+ elite:{ic:'💀',n:'Логово элиты',d:'Много элитных зомби. Награда — редкая реликвия'},
+ treasure:{ic:'💰',n:'Сокровищница',d:'Мало зомби, сундуки и золото'},
+ rest:{ic:'🔥',n:'Привал',d:'Без зомби: полное лечение и +2 уровня'},
+ shop:{ic:'🛒',n:'Лавка',d:'Реликвии за монеты'},
+ event:{ic:'❓',n:'Загадка',d:'Странная сделка — повезёт или нет'},
+ boss:{ic:'👑',n:'Логово босса',d:'Победи босса. Награда — легендарная реликвия'}};
+const DGAFF={fast:{n:'⚡ Быстрые зомби',d:'зомби на 20% быстрее'},tank:{n:'🪨 Толстокожие',d:'у зомби на 35% больше здоровья'},horde:{n:'🧟 Орда',d:'зомби в полтора раза больше, но они слабее'},elite:{n:'👑 Элитный патруль',d:'каждый восьмой зомби — элитный'}};
 function dgOn(){return !!(RUN&&RUN.mode==='dungeon'&&RUN.dg);}
-function dgRel(id){return dgOn()?(RUN.dg.rel[id]||0):0;}
-function dgQuota(n){return Math.round(28+12*n+Math.max(0,n-10)*8);}
-function dgBossFl(n){return n%5===0;}
-function dgHud(){const D=RUN.dg;if(!D)return 'подземелье';const q=dgQuota(D.n);
-  if(D.hatch)return 'этаж '+D.n+' · найди люк вниз ⬇';if(D.boss)return 'этаж '+D.n+' · победи босса';return 'этаж '+D.n+' · убито '+Math.min(q,kills-D.k0)+'/'+q;}
+function dgQuota(n,t){const q=Math.round(24+9*n+Math.max(0,n-10)*6);return t==='elite'?Math.round(q*.7):t==='treasure'?Math.round(q*.35):q;}
+function dgR(){return RUN.dg.room;}
+function dgHud(){const D=RUN.dg;if(!D)return 'подземелье';const R=DGROOM[D.type]||DGROOM.fight,h='этаж '+D.n+' · '+R.ic+' ';
+  if(D.hatches&&D.hatches.length)return h+'выбери люк вниз ⬇';if(D.type==='boss')return h+'победи босса';if(['rest','shop','event'].includes(D.type))return h+R.n;
+  const q=dgQuota(D.n,D.type);return h+Math.min(q,kills-D.k0)+'/'+q;}
 function dgClearTimers(){if(!RUN)return;RUN.events=[];RUN.mimT=undefined;RUN.crabT=undefined;RUN.octoT=undefined;RUN.npcT=undefined;RUN.altB=undefined;bossIdx=1e9;}
-function dgInit(){RUN.dg={n:1,k0:kills,rel:{},hatch:null,boss:false,bz:[],bT:0,map0:MAPSEL,maps:[MAPCUR.id],picks:[]};dgClearTimers();dgFloorStart();}
-function dgFloorStart(){const D=RUN.dg;D.k0=kills;D.hatch=null;D.hfx=null;D.bz=[];D.boss=dgBossFl(D.n);D.bT=D.boss?3:0;D.bTry=0;
-  const rid=runId;setTimeout(()=>{if(rid!==runId||!dgOn())return;banner('Этаж '+D.n+' · '+MAPCUR.name,D.boss?'Этаж босса: победи его, чтобы открыть люк':'Убей '+dgQuota(D.n)+' зомби — и откроется люк вниз',D.boss);},D.n>1?600:2200);}
+function dgInit(){RUN.dg={n:1,type:'fight',aff:null,k0:kills,rel:{},hatches:null,bz:[],bT:0,map0:MAPSEL,maps:[MAPCUR.id],picks:[],done:false,lastT:''};dgClearTimers();dgFloorStart();}
+function dgNoSpawn(){const D=RUN.dg;return !!D&&!D.done&&['rest','shop','event'].includes(D.type);}
+function dgFloorStart(){const D=RUN.dg;D.k0=kills;D.hatches=null;D.hfx=[];D.bz=[];D.done=false;D.bT=D.type==='boss'?3:0;D.wait=0;
+  D.aff=null;if(D.n>1&&['fight','elite','treasure','boss'].includes(D.type)&&rand()<.75)D.aff=pick(Object.keys(DGAFF));
+  const R=DGROOM[D.type]||DGROOM.fight,rid=runId;
+  if(D.type==='rest'){D.wait=5;P.hp=P.maxHp;pendingLv+=2;bonusLv+=2;bonusSrc='Привал';}
+  if(D.type==='shop'||D.type==='event')D.wait=1.2;
+  if(D.type==='treasure')setTimeout(()=>{if(rid!==runId||!dgOn())return;for(let k=0;k<3;k++){const s=dgSpot(P.floor,3,9);dropGem(s.f,s.x,s.y,0,k<2?'chest':'gold');}},900);
+  setTimeout(()=>{if(rid!==runId||!dgOn())return;const sub=D.type==='boss'?'Победи босса, чтобы открыть люк':['rest','shop','event'].includes(D.type)?R.d:'Убей '+dgQuota(D.n,D.type)+' зомби — и откроются люки вниз';
+    banner('Этаж '+D.n+' · '+R.ic+' '+R.n,sub+(D.aff?' · '+DGAFF[D.aff].n:'')+' · '+MAPCUR.name,D.type==='boss'||D.type==='elite');},D.n>1?500:2200);
+  if(D.type==='rest'&&pendingLv>0)setTimeout(()=>{if(rid===runId&&state==='play'&&pendingLv>0)openLevelUp();},900);}
 function dgSpawnBoss(){const D=RUN.dg;let pool=[];try{pool=endBossPool().filter(B=>B&&B.name&&!B.trio);}catch(e){}
   const cnt=1+Math.floor(D.n/15),mul=.45+.11*D.n;
   for(let k=0;k<cnt&&pool.length;k++){const B=pick(pool);let zs=[];try{zs=bossSpawnNow(Object.assign({},B,{again:0}),mul,true)||[];}catch(e){console.error(e);}
     zs.forEach(z=>{if(z.dmg)z.dmg*=1+.05*D.n;z.dgB=1;});D.bz=D.bz.concat(zs);}
-  if(!D.bz.length){D.boss=false;toastMsg('Босс не пришёл — добивай зомби');}}
-function dgSpot(f){const si=Math.floor(P.y/T)*MW+Math.floor(P.x/T),F=floors[f];let d=null;try{d=buildField(f,[si]);}catch(e){}
-  const c=[];if(d){for(let i=0;i<MW*MH;i++){const v=d[i];if(v>=1e8||v<7||v>16)continue;const x=i%MW,y=(i/MW)|0,g=F.g[i];if(g===STAIR||g===ENTR)continue;
-      if(solidT(f,x-1,y)||solidT(f,x+1,y)||solidT(f,x,y-1)||solidT(f,x,y+1))continue;c.push(i);}
-    if(!c.length)for(let i=0;i<MW*MH;i++){const v=d[i];if(v<1e8&&v>=3)c.push(i);}}
+  if(!D.bz.length){D.type='fight';toastMsg('Босс не пришёл — добивай зомби');}}
+function dgSpot(f,dmin,dmax,avoid){const si=Math.floor(P.y/T)*MW+Math.floor(P.x/T),F=floors[f];let d=null;try{d=buildField(f,[si]);}catch(e){}
+  dmin=dmin||7;dmax=dmax||16;const far=i=>!avoid||avoid.every(a=>Math.hypot((i%MW+.5)*T-a.x,(((i/MW)|0)+.5)*T-a.y)>150);const c=[];
+  if(d){for(let i=0;i<MW*MH;i++){const v=d[i];if(v>=1e8||v<dmin||v>dmax)continue;const x=i%MW,y=(i/MW)|0,g=F.g[i];if(g===STAIR||g===ENTR)continue;
+      if(solidT(f,x-1,y)||solidT(f,x+1,y)||solidT(f,x,y-1)||solidT(f,x,y+1))continue;if(far(i))c.push(i);}
+    if(!c.length)for(let i=0;i<MW*MH;i++){const v=d[i];if(v<1e8&&v>=3&&!SOLID[F.g[i]]&&far(i))c.push(i);}
+    if(!c.length)for(let i=0;i<MW*MH;i++){const v=d[i];if(v<1e8&&v>=2&&!SOLID[F.g[i]])c.push(i);}}
   if(!c.length)return {x:P.x,y:P.y,f};const i=pick(c);return {x:(i%MW+.5)*T,y:(((i/MW)|0)+.5)*T,f};}
-function dgOpenHatch(){const D=RUN.dg;D.hatch=dgSpot(P.floor);D.hfx={k:'dghatch',nb:1,x:D.hatch.x,y:D.hatch.y,f:D.hatch.f,t:0,dur:1e9};fxs.push(D.hfx);
-  banner('Люк открыт!','Иди по стрелке и спускайся на этаж '+(D.n+1),false);sfx('level');haptic('success');}
+function dgNextTypes(){const D=RUN.dg,nx=D.n+1;if(nx%5===0)return ['boss'];
+  const W={fight:4,elite:2.2,treasure:1.1,rest:D.type==='rest'?0:1,shop:D.type==='shop'?0:1.2,event:D.type==='event'?0:1.2};const n=D.n>=3?3:2,out=[];
+  while(out.length<n){let s=0;for(const k in W)if(!out.includes(k))s+=W[k];let r=rand()*s,ch='fight';for(const k in W){if(out.includes(k))continue;r-=W[k];if(r<=0){ch=k;break;}}out.push(ch);}
+  if(!out.includes('fight')&&!out.includes('elite'))out[0]='fight';return out;}
+function dgOpenHatches(){const D=RUN.dg,types=dgNextTypes(),used=[];D.hatches=types.map(t=>{const s=dgSpot(P.floor,5,14,used);used.push(s);return Object.assign(s,{type:t});});
+  D.hfx=D.hatches.map(h=>{const f={k:'dghatch',nb:1,x:h.x,y:h.y,f:h.f,t:0,dur:1e9,type:h.type};fxs.push(f);return f;});
+  banner(types.length>1?'Люки открыты!':'Люк открыт!',types.length>1?'Выбери, куда спускаться: '+types.map(t=>DGROOM[t].ic+' '+DGROOM[t].n).join(' · '):'Внизу '+DGROOM[types[0]].n.toLowerCase(),false);sfx('level');haptic('success');}
+function dgFloorDone(){const D=RUN.dg;if(D.done)return;D.done=true;coinGain(4+2*D.n);
+  const rw=D.type==='boss'?'l':D.type==='elite'?'r':D.type==='fight'?'n':null;
+  if(rw)dgRelicOv(rw,'Этаж '+D.n+' пройден',()=>dgOpenHatches());else dgOpenHatches();}
 function dgTick(dt){if(!dgOn()||state!=='play')return;const D=RUN.dg;
-  if(D.boss&&D.bT>0){D.bT-=dt;if(D.bT<=0)dgSpawnBoss();return;}
-  if(!D.hatch){const done=D.boss?(D.bz.length>0&&D.bz.every(z=>!z.alive)):(kills-D.k0>=dgQuota(D.n));if(done)dgOpenHatch();return;}
-  const h=D.hatch;if(h.f!==P.floor){const s=dgSpot(P.floor);Object.assign(h,s);}
-  if(!D.hfx||!fxs.includes(D.hfx)){D.hfx={k:'dghatch',nb:1,x:h.x,y:h.y,f:h.f,t:0,dur:1e9};fxs.push(D.hfx);}
-  Object.assign(D.hfx,{x:h.x,y:h.y,f:h.f});
-  if(Math.hypot(P.x-h.x,P.y-h.y)<34)dgEnter();}
+  if(D.type==='boss'&&D.bT>0){D.bT-=dt;if(D.bT<=0)dgSpawnBoss();return;}
+  if(!D.done){if(D.wait>0){D.wait-=dt;if(D.wait<=0){if(D.type==='shop')dgShop();else if(D.type==='event')dgEvent();else dgFloorDone();}return;}
+    if(D.type==='boss'?(D.bz.length>0&&D.bz.every(z=>!z.alive)):(!['rest','shop','event'].includes(D.type)&&kills-D.k0>=dgQuota(D.n,D.type)))dgFloorDone();return;}
+  if(!D.hatches)return;
+  if(D.hatches.some(h=>h.f!==P.floor)){const used=[];D.hatches.forEach(h=>{const s=dgSpot(P.floor,5,14,used);used.push(s);Object.assign(h,s);});}
+  D.hatches.forEach((h,i)=>{let f=D.hfx[i];if(!f||!fxs.includes(f)){f={k:'dghatch',nb:1,t:0,dur:1e9};fxs.push(f);D.hfx[i]=f;}Object.assign(f,{x:h.x,y:h.y,f:h.f,type:h.type});});
+  for(const h of D.hatches)if(Math.hypot(P.x-h.x,P.y-h.y)<34){dgDescend(h.type);break;}}
+/* ---- overlays ---- */
 function dgOv(){let ov=$('#dgOv');if(ov)return ov;ov=document.createElement('div');ov.className='ov';ov.id='dgOv';ov.hidden=true;
-  ov.innerHTML='<div class="boardbox dgBox"><div class="kicker"></div><h2>Выбери реликвию</h2><p class="lead">Реликвия остаётся до конца забега. Внизу зомби крепче.</p><div class="cards dgCards"></div></div>';document.body.appendChild(ov);return ov;}
-function dgRoll(){const D=RUN.dg,ok=DGREL.filter(r=>(D.rel[r.id]||0)<r.max&&(!r.ok||r.ok())&&!(r.id==='life'&&rmod('hard')));const out=[];
-  while(out.length<3&&ok.length){const i=(rand()*ok.length)|0;out.push(ok.splice(i,1)[0]);}return out;}
-function dgEnter(){const D=RUN.dg;state='dgpick';for(const k in keys)keys[k]=false;try{joy.id=null;$('#joy').hidden=true;}catch(e){}
-  const ov=dgOv(),opts=dgRoll();ov.querySelector('.kicker').textContent='Спуск · этаж '+D.n+' → '+(D.n+1);const box=ov.querySelector('.dgCards');box.innerHTML='';
-  opts.forEach((r,i)=>{const b=document.createElement('button');b.type='button';b.className='card';const lv=D.rel[r.id]?'<span class="lv">×'+(D.rel[r.id]+1)+'</span>':'';
-    b.innerHTML='<span class="ic dgIc">'+r.ic+'</span><span class="tx"><span class="nm">'+r.n+lv+'</span><span class="ds" style="display:block">'+(r.id==='coin'?'+'+(40*D.n)+' монет':r.d)+'</span></span><span class="key">'+(i+1)+'</span>';
-    b.addEventListener('click',()=>dgPick(r));box.appendChild(b);});
-  if(!opts.length){dgPick(null);return;}
-  sfx('level');showOv('dgOv');setTimeout(()=>{const c=box.querySelector('button');if(c)c.focus({preventScroll:true});},60);}
-function dgPick(r){if(state!=='dgpick')return;const D=RUN.dg;hideOv('dgOv');sfx('pick');
-  if(r){D.rel[r.id]=(D.rel[r.id]||0)+1;D.picks.push(r.id);
-    if(r.id==='hp'){P.baseMaxBonus=(P.baseMaxBonus||0)+25;P.maxHp=calcMaxHp();P.hp=Math.min(P.maxHp,P.hp+25);}
-    if(r.id==='heal')P.hp=P.maxHp;
-    if(r.id==='lv'){pendingLv+=2;bonusLv+=2;bonusSrc='Стопка учебников';}
-    if(r.id==='any'){pendingLv++;bonusLv++;bonusSrc='Учебник квантовой физики';anyPick=true;}
-    if(r.id==='rr')P.rerolls=(P.rerolls||0)+3;
-    if(r.id==='coin')coinGain(40*D.n);
-    if(r.id==='life')P.revive=(P.revive||0)+1;}
-  state='play';try{dgNext();}catch(e){console.error(e);}
-  try{renderInv();}catch(e){}if(pendingLv>0&&state==='play')openLevelUp();}
-function dgNext(){const D=RUN.dg;D.n++;
+  ov.innerHTML='<div class="boardbox dgBox"><div class="kicker"></div><h2></h2><p class="lead"></p><div class="cards dgCards"></div><div class="dgFoot"></div></div>';document.body.appendChild(ov);return ov;}
+function dgPause(){state='dgpick';for(const k in keys)keys[k]=false;try{joy.id=null;$('#joy').hidden=true;}catch(e){}}
+function dgShow(kick,title,lead){const ov=dgOv();ov.querySelector('.kicker').textContent=kick;ov.querySelector('h2').textContent=title;ov.querySelector('.lead').textContent=lead||'';ov.querySelector('.lead').hidden=!lead;
+  const box=ov.querySelector('.dgCards'),ft=ov.querySelector('.dgFoot');box.innerHTML='';ft.innerHTML='';return {ov,box,ft};}
+function dgCard(box,ic,nm,ds,tag,tcol,i,fn,dis){const b=document.createElement('button');b.type='button';b.className='card';if(dis)b.disabled=true;
+  b.innerHTML='<span class="ic dgIc">'+ic+'</span><span class="tx"><span class="nm">'+nm+'</span><span class="ds" style="display:block">'+ds+'</span></span>'+(i>=0?'<span class="key">'+(i+1)+'</span>':'')+(tag?'<span class="tag" style="background:'+tcol+';color:#0c1022">'+tag+'</span>':'');
+  b.addEventListener('click',fn);box.appendChild(b);return b;}
+function dgOpen(box){sfx('level');showOv('dgOv');setTimeout(()=>{const c=box.querySelector('button:not([disabled])');if(c)c.focus({preventScroll:true});},60);}
+function dgClose(){hideOv('dgOv');sfx('pick');state='play';}
+function dgPool(mode){const D=RUN.dg;const ok=DGREL.filter(r=>(D.rel[r.id]||0)<r.max&&(!r.ok||r.ok())&&!((r.id==='life'||r.id==='phoenix')&&rmod('hard')));
+  const by=k=>ok.filter(r=>r.r===k),roll=()=>{const x=rand();const k=mode==='l'?'l':mode==='r'?(x<.25?'l':'r'):(x<.05?'l':x<.3?'r':'c');let a=by(k);if(!a.length)a=by('r');if(!a.length)a=by('c');return a;};
+  const out=[];for(let t=0;t<30&&out.length<3;t++){const a=roll().filter(r=>!out.includes(r));if(a.length)out.push(pick(a));}return out;}
+function dgRelicOv(mode,kick,after){const D=RUN.dg,opts=dgPool(mode);if(!opts.length){after&&after();return;}dgPause();
+  const {box}=dgShow(kick,mode==='l'?'Легендарная награда':mode==='r'?'Редкая награда':'Выбери реликвию','Реликвия остаётся до конца забега.');
+  opts.forEach((r,i)=>{const R=DGRAR[r.r],lv=D.rel[r.id]?' ×'+(D.rel[r.id]+1):'';dgCard(box,r.ic,r.n+lv,r.d,R.n.toUpperCase(),R.col,i,()=>{if(state!=='dgpick')return;dgClose();dgApply(r);after&&after();if(pendingLv>0&&state==='play')openLevelUp();});});
+  dgOpen(box);}
+function dgApply(r){const D=RUN.dg;D.rel[r.id]=(D.rel[r.id]||0)+1;D.picks.push(r.id);
+  if(r.id==='hp'){P.baseMaxBonus=(P.baseMaxBonus||0)+25;P.maxHp=calcMaxHp();P.hp=Math.min(P.maxHp,P.hp+25);}
+  if(r.id==='glass'){P.maxHp=calcMaxHp();P.hp=Math.min(P.hp,P.maxHp);}
+  if(r.id==='heal')P.hp=P.maxHp;
+  if(r.id==='lv'){pendingLv+=2;bonusLv+=2;bonusSrc=r.n;}
+  if(r.id==='hoard'){pendingLv+=5;bonusLv+=5;bonusSrc=r.n;}
+  if(r.id==='any'){pendingLv++;bonusLv++;bonusSrc=r.n;anyPick=true;}
+  if(r.id==='rr')P.rerolls=(P.rerolls||0)+3;
+  if(r.id==='life')P.revive=(P.revive||0)+1;
+  if(r.id==='phoenix')P.revive=(P.revive||0)+2;
+  try{renderInv();}catch(e){}}
+function dgPrice(r){const n=RUN.dg.n;return r.r==='l'?70+8*n:r.r==='r'?35+5*n:18+3*n;}
+function dgShop(){const D=RUN.dg;if(!D.stock){D.stock=dgPool('n').concat(dgPool('r').slice(0,1));D.stock=D.stock.filter((r,i)=>D.stock.indexOf(r)===i).slice(0,4);D.sold=[];D.healB=0;}
+  dgPause();const {box,ft}=dgShow('Этаж '+D.n+' · 🛒 Лавка','Лавка','У тебя монет: '+(prog.coins||0));
+  D.stock.forEach((r,i)=>{const pr=dgPrice(r),sold=D.sold.includes(r.id),R=DGRAR[r.r];
+    dgCard(box,r.ic,r.n,r.d+' · <b>'+(sold?'куплено':'🪙 '+pr)+'</b>',R.n.toUpperCase(),R.col,i,()=>{if(sold||(prog.coins||0)<pr)return;prog.coins-=pr;cxDirty=true;D.sold.push(r.id);sfx('buy');coinUI&&coinUI();dgApply(r);dgShop();},sold||(prog.coins||0)<pr);});
+  {const pr=10+2*D.n;dgCard(box,'🍙','Онигири с лотка','Полностью вылечивает · <b>'+(D.healB?'куплено':'🪙 '+pr)+'</b>','','',-1,()=>{if(D.healB||(prog.coins||0)<pr)return;prog.coins-=pr;cxDirty=true;D.healB=1;P.hp=P.maxHp;sfx('heal');dgShop();},D.healB||(prog.coins||0)<pr);}
+  const b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Уйти из лавки';b.addEventListener('click',()=>{dgClose();D.stock=null;dgFloorDone();if(pendingLv>0&&state==='play')openLevelUp();});ft.appendChild(b);
+  if($('#dgOv').hidden)dgOpen(box);}
+const DGEV=[
+ {id:'altar',ic:'🩸',n:'Кровавый алтарь',d:'Отдай пятую часть максимума здоровья — получи легендарную реликвию.',go:'Отдать кровь',
+  run(){const cut=Math.max(10,Math.round(P.maxHp*.2));P.baseMaxBonus=(P.baseMaxBonus||0)-cut;P.maxHp=calcMaxHp();P.hp=Math.min(P.hp,P.maxHp);sfx('hurt');dgRelicOv('l','Кровавый алтарь',()=>dgFloorDone());return true;}},
+ {id:'coin',ic:'🪙',n:'Монетка судьбы',d:'Подбрось монетку: орёл — редкая реликвия, решка — случайное проклятие.',go:'Подбросить',
+  run(){if(rand()<.5){toastMsg('Орёл!');dgRelicOv('r','Монетка судьбы',()=>dgFloorDone());}else{let c=[];try{c=Object.keys(CDEF).filter(k=>!CDEF[k].once);}catch(e){}if(c.length){const id=pick(c);addCurse(id);try{renderInv();}catch(e){}banner('Решка…','Проклятие: '+CDEF[id].name,true);}else toastMsg('Решка…');sfx('hurt');dgFloorDone();}return true;}},
+ {id:'well',ic:'⛲',n:'Колодец желаний',d:'Брось монеты в колодец. Чаще всего желание сбывается.',go:'Бросить монеты',cost:()=>25+4*RUN.dg.n,
+  run(){const c=25+4*RUN.dg.n;if((prog.coins||0)<c)return false;prog.coins-=c;cxDirty=true;sfx('coin');if(rand()<.7)dgRelicOv('n','Колодец желаний',()=>dgFloorDone());else{toastMsg('Колодец промолчал…');dgFloorDone();}return true;}},
+ {id:'chest',ic:'🧰',n:'Подозрительный сундук',d:'Внутри добыча… или засада из элитных зомби.',go:'Открыть',
+  run(){if(rand()<.6){for(let k=0;k<2;k++){const s=dgSpot(P.floor,1,3);dropGem(s.f,s.x,s.y,0,'chest');}toastMsg('Добыча!');}else{for(let k=0;k<4+Math.floor(RUN.dg.n/4);k++){const s=dgSpot(P.floor,4,8);const z=spawnAt(pick(['student','runner','monitor','mutant']),s.f,{x:s.x,y:s.y,w:-1});try{eliteMake(z);}catch(e){}z.enter=.5;}banner('Засада!','Элитные зомби выскочили из сундука',true);sfx('boss');}dgFloorDone();return true;}},
+ {id:'teacher',ic:'🧑‍🏫',n:'Строгий учитель',d:'Пройди экзамен: потеряй уровень у случайного оружия — и получи редкую реликвию.',go:'Сдать экзамен',ok:()=>P.weapons.some(w=>w.lvl>1),
+  run(){const ws=P.weapons.filter(w=>w.lvl>1);if(!ws.length)return false;pick(ws).lvl--;try{renderInv();}catch(e){}dgRelicOv('r','Экзамен сдан',()=>dgFloorDone());return true;}}];
+function dgEvent(){const D=RUN.dg;const evs=DGEV.filter(e=>!e.ok||e.ok());const E=D.ev?DGEV.find(e=>e.id===D.ev)||pick(evs):pick(evs);D.ev=E.id;
+  dgPause();const {box,ft}=dgShow('Этаж '+D.n+' · ❓ Загадка',E.ic+' '+E.n,E.d);const c=E.cost?E.cost():0,can=!c||(prog.coins||0)>=c;
+  dgCard(box,E.ic,E.go,c?'🪙 '+c+' · у тебя '+(prog.coins||0):'Рискнуть','','',0,()=>{if(state!=='dgpick')return;dgClose();D.ev=null;if(!E.run()){dgEvent();return;}if(pendingLv>0&&state==='play'&&$('#dgOv').hidden)openLevelUp();},!can);
+  dgCard(box,'🚪','Пройти мимо','Ничего не случится','','',1,()=>{if(state!=='dgpick')return;dgClose();D.ev=null;dgFloorDone();});
+  dgOpen(box);}
+/* ---- descent ---- */
+function dgDescend(type){const D=RUN.dg;D.lastT=D.type;D.type=type;D.n++;
   try{if(phCur())phEnd();}catch(e){}
   const keep=RUN,sel=MAPSEL;let maps=MAPS.filter(M=>!M.soon&&mapOpen(M.id)&&M.id!==MAPCUR.id);const fresh=maps.filter(M=>!D.maps.includes(M.id));if(fresh.length)maps=fresh;
   if(maps.length)MAPSEL=pick(maps).id;
@@ -12367,35 +12439,46 @@ function dgNext(){const D=RUN.dg;D.n++;
   nwp=[];enemies=[];projs=[];zprojs=[];fxs=[];parts=[];gems=[];nums=[];decals=[];boxes=[];
   {const ST=MAPCUR.start||[22,12];P.x=(ST[0]+.5)*T;P.y=(ST[1]+.5)*T;P.floor=0;}
   SV=null;MIM=null;NPC=null;OCT=null;CRB=null;octoBlocks=[];flankF=[null,null,null,null];flankT=0;flankKey=-1;pendRise=[];pendAmb=[];RW=[];rwT=0;exitField=null;lastRoom='';pfKey=-1;flowVer++;fade=1;spawnAcc=0;RES=[];
-  if(QUAR)QUAR.forEach(q=>{const F=floors[q.f];for(let k=0,m=0;k<80&&m<7;k++){const x=q.r.x0+((rand()*(q.r.x1-q.r.x0+1))|0),y=q.r.y0+((rand()*(q.r.y1-q.r.y0+1))|0);if(SOLID[F.g[y*MW+x]])continue;enemies.push(makeZombie(rand()<.2?'sumo':'student',q.f,x*T+T/2,y*T+T/2));m++;}});
+  if(QUAR&&!['rest','shop','event'].includes(type))QUAR.forEach(q=>{const F=floors[q.f];for(let k=0,m=0;k<80&&m<7;k++){const x=q.r.x0+((rand()*(q.r.x1-q.r.x0+1))|0),y=q.r.y0+((rand()*(q.r.y1-q.r.y0+1))|0);if(SOLID[F.g[y*MW+x]])continue;enemies.push(makeZombie(rand()<.2?'sumo':'student',q.f,x*T+T/2,y*T+T/2));m++;}});
   for(const k in H)delete H[k];for(const k in HW)delete HW[k];
   cache=null;try{fcFree();}catch(e){}resize();ensureCache();
   try{petStart();slotPlace();}catch(e){console.error(e);}
   $('#floors').classList.toggle('one',floors.length<2);$('#floors').innerHTML=floors.map((_,f)=>'<div class="fl" id="fl'+f+'"><span class="dot"></span><span class="f">'+floorName(f)+'</span><span class="z">0</span></div>').reverse().join('');for(const k in H)if(k.startsWith('#fl'))delete H[k];
   {const tb=$('#todayBox');if(tb){tb.hidden=!RUN.names.length;tb.classList.remove('dim');tb.innerHTML='<div class="th">Этаж '+D.n+'</div>'+RUN.names.map(n=>'<div class="tc">'+n.split(' — ')[0].split(': ')[0]+'</div>').join('');const rid=runId;setTimeout(()=>{if(rid===runId)tb.classList.add('dim');},9000);}}
-  P.hp=Math.min(P.maxHp,P.hp+P.maxHp*.25);P.inv=Math.max(P.inv||0,2);
+  P.hp=Math.min(P.maxHp,P.hp+P.maxHp*.2);P.inv=Math.max(P.inv||0,2);
   if(D.n>(prog.bestDepth||0)){prog.bestDepth=D.n;cxDirty=true;}
   dgFloorStart();}
-/* hatch drawing + arrow */
+/* hatch drawing + arrows */
 {const _nf=nbFxTick;nbFxTick=function(f,dt){if(f.k==='dghatch')return;return _nf.apply(this,arguments);};}
-{const _nd=nbFxDraw;nbFxDraw=function(f,k){if(f.k!=='dghatch')return _nd.apply(this,arguments);if(f.f!==P.floor)return;const t=time,pu=.5+.5*Math.sin(t*4);
-  ctx.save();ctx.fillStyle=`rgba(184,138,255,${.12+.1*pu})`;ctx.beginPath();ctx.arc(f.x,f.y,46+6*pu,0,7);ctx.fill();
+{const _nd=nbFxDraw;nbFxDraw=function(f,k){if(f.k!=='dghatch')return _nd.apply(this,arguments);if(f.f!==P.floor)return;const t=time,pu=.5+.5*Math.sin(t*4),R=DGROOM[f.type]||DGROOM.fight;
+  const col=f.type==='boss'?'255,90,70':f.type==='elite'?'255,120,200':f.type==='rest'?'255,170,80':f.type==='shop'?'255,211,107':f.type==='event'?'150,200,255':f.type==='treasure'?'255,220,90':'184,138,255';
+  ctx.save();ctx.fillStyle=`rgba(${col},${.12+.1*pu})`;ctx.beginPath();ctx.arc(f.x,f.y,46+6*pu,0,7);ctx.fill();
   ctx.fillStyle='#120c1e';ctx.strokeStyle='#5a4a7a';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(f.x,f.y,26,20,0,0,7);ctx.fill();ctx.stroke();
   ctx.strokeStyle='#8a7aa8';ctx.lineWidth=3;for(let s=0;s<3;s++){const y=f.y-9+s*7,w=18-s*4;ctx.beginPath();ctx.moveTo(f.x-w,y);ctx.lineTo(f.x+w,y);ctx.stroke();}
-  ctx.strokeStyle=`rgba(255,211,107,${.5+.4*pu})`;ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.lineDashOffset=-t*30;ctx.beginPath();ctx.arc(f.x,f.y,34,0,7);ctx.stroke();ctx.setLineDash([]);
-  ctx.font='bold 13px "Inter",sans-serif';ctx.textAlign='center';ctx.fillStyle='#ffe9a8';ctx.fillText('⬇ '+(clubEn()?'Down':'Вниз'),f.x,f.y-40);
-  const dx=f.x-P.x,dy=f.y-P.y,d=Math.hypot(dx,dy);if(d>120){const a=Math.atan2(dy,dx),r=58;ctx.translate(P.x+Math.cos(a)*r,P.y+Math.sin(a)*r);ctx.rotate(a);ctx.fillStyle=`rgba(255,211,107,${.75+.25*pu})`;ctx.strokeStyle='#3a2a10';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(-8,-10);ctx.lineTo(-3,0);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke();}
+  ctx.strokeStyle=`rgba(${col},${.55+.4*pu})`;ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.lineDashOffset=-t*30;ctx.beginPath();ctx.arc(f.x,f.y,34,0,7);ctx.stroke();ctx.setLineDash([]);
+  ctx.textAlign='center';ctx.font='22px sans-serif';ctx.fillText(R.ic,f.x,f.y-44);ctx.font='bold 12px "Inter",sans-serif';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.75)';ctx.strokeText(R.n,f.x,f.y+44);ctx.fillStyle='#fff3d0';ctx.fillText(R.n,f.x,f.y+44);
+  const dx=f.x-P.x,dy=f.y-P.y,d=Math.hypot(dx,dy);if(d>120){const a=Math.atan2(dy,dx),r=62;ctx.save();ctx.translate(P.x+Math.cos(a)*r,P.y+Math.sin(a)*r);ctx.rotate(a);ctx.fillStyle=`rgba(${col},${.8+.2*pu})`;ctx.strokeStyle='#2a1a10';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(-8,-10);ctx.lineTo(-3,0);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+    ctx.font='14px sans-serif';ctx.fillText(R.ic,P.x+Math.cos(a)*(r+22),P.y+Math.sin(a)*(r+22)+5);}
   ctx.restore();};}
-/* difficulty and relic effects */
-{const _sa=spawnAt;spawnAt=function(){const z=_sa.apply(this,arguments);try{if(z&&dgOn()&&z.kind!=='boss'&&!z.dgS){z.dgS=1;const n=RUN.dg.n-1;if(n>0){const hm=1+.16*n;z.hp*=hm;z.maxHp*=hm;if(z.dmg)z.dmg*=1+.06*n;}}}catch(e){}return z;};}
-{const _pm=phSpawnMul;phSpawnMul=function(){const m=_pm.apply(this,arguments);return dgOn()?m*Math.min(2.2,1+.07*(RUN.dg.n-1)):m;};}
+/* difficulty, floor affixes, relic effects */
+{const _sa=spawnAt;spawnAt=function(){const z=_sa.apply(this,arguments);try{if(z&&dgOn()&&!z.dgS){z.dgS=1;const D=RUN.dg;
+  if(dgNoSpawn()){z.alive=false;z.dead=true;return z;}
+  if(z.kind!=='boss'){const n=D.n-1,a=D.aff;let hm=1+.16*n;if(a==='tank')hm*=1.35;if(a==='horde')hm*=.8;z.hp*=hm;z.maxHp*=hm;if(z.dmg)z.dmg*=1+.06*n;if(a==='fast')z.spd*=1.2;
+    if(!z.elite&&(D.type==='elite'&&rand()<.3||a==='elite'&&rand()<.125)){try{eliteMake(z);}catch(e){}}}}}catch(e){}return z;};}
+{const _pm=phSpawnMul;phSpawnMul=function(){const m=_pm.apply(this,arguments);if(!dgOn())return m;const D=RUN.dg;if(dgNoSpawn())return 0;
+  return m*1.8*Math.min(2.2,1+.07*(D.n-1))*(D.aff==='horde'?1.5:1)*(D.type==='treasure'?.5:1)*(D.type==='boss'?.6:1);};}
+{const _cm=calcMaxHp;calcMaxHp=function(){const v=_cm.apply(this,arguments);return dgOn()&&RUN.dg.rel.glass?Math.max(20,Math.round(v*.6)):v;};}
 {const _sr=statsRaw;statsRaw=function(){const S=_sr.apply(this,arguments);try{if(dgOn()){const r=RUN.dg.rel,v=k=>r[k]||0;
   if(v('dm'))S.dm*=Math.pow(1.15,v('dm'));if(v('cd'))S.cdm*=Math.pow(.92,v('cd'));if(v('spd'))S.spd*=Math.pow(1.08,v('spd'));if(v('arm'))S.arm*=Math.pow(.9,v('arm'));
   if(v('area'))S.area=Math.min(3.5,S.area*Math.pow(1.12,v('area')));if(v('mag'))S.mag*=Math.pow(1.4,v('mag'));if(v('xp'))S.xpm*=Math.pow(1.15,v('xp'));
-  if(v('crit'))S.crit=Math.min(.8,S.crit+.06*v('crit'));if(v('regen')&&!noHeal())S.regen+=.6*v('regen');if(v('boss'))S.boss+=.25*v('boss');}}catch(e){}return S;};}
+  if(v('crit'))S.crit=Math.min(.8,S.crit+.06*v('crit'));if(v('regen')&&!noHeal())S.regen+=.6*v('regen');if(v('boss'))S.boss+=.25*v('boss');
+  if(v('vamp'))S.life+=v('vamp');if(v('thorn'))S.thorns+=30*v('thorn');if(v('critd')){S.critd+=.5*v('critd');S.crit=Math.min(.8,S.crit+.04*v('critd'));}
+  if(v('amount'))S.amount=Math.min(6,S.amount+v('amount'));if(v('dur'))S.dur*=1+.25*v('dur');if(v('low'))S.low+=.5*v('low');
+  if(v('glass'))S.dm*=1.6;if(v('berserk')){S.dm*=1.4;S.spd*=1.15;S.arm*=1.2;}if(v('clock'))S.cdm*=.8;}}catch(e){}return S;};}
 {const _us=updateSpawns;updateSpawns=function(dt){try{dgTick(dt);}catch(e){console.error(e);}return _us.apply(this,arguments);};}
 {const _sg=startGame0;startGame0=function(){_sg.apply(this,arguments);try{if(state==='play'&&RUN&&RUN.mode==='dungeon'&&!RUN.dg)dgInit();}catch(e){console.error(e);}};}
-addEventListener('keydown',e=>{if(state!=='dgpick')return;const n={Digit1:0,Digit2:1,Digit3:2,Numpad1:0,Numpad2:1,Numpad3:2}[e.code];if(n===undefined)return;e.preventDefault();e.stopPropagation();const b=document.querySelectorAll('#dgOv .dgCards button')[n];if(b)b.click();},true);
+addEventListener('keydown',e=>{if(state!=='dgpick')return;const n={Digit1:0,Digit2:1,Digit3:2,Digit4:3,Digit5:4,Numpad1:0,Numpad2:1,Numpad3:2,Numpad4:3,Numpad5:4}[e.code];if(n===undefined)return;e.preventDefault();e.stopPropagation();const b=document.querySelectorAll('#dgOv .dgCards button')[n];if(b&&!b.disabled)b.click();},true);
+function dgRelicList(){const D=RUN.dg;if(!D)return '';const m={};D.picks.forEach(id=>{m[id]=(m[id]||0)+1;});return Object.keys(m).map(id=>{const r=DGREL.find(q=>q.id===id);return r?r.ic+' '+r.n+(m[id]>1?' ×'+m[id]:''):'';}).filter(Boolean).join(', ');}
 
 function deathCause(){if(lastHit)return lastHit;let b=null,bd=1e9;try{for(const e of enemies){if(!e.alive||e.floor!==P.floor)continue;const d=Math.hypot(e.x-P.x,e.y-P.y);if(d<bd){bd=d;b=e;}}}catch(e){}
   if(b&&bd<180)return 'укусы: '+zName(b);return 'раны от зомби';}
@@ -12511,7 +12594,7 @@ function endGame0(win){
   $('#endText').textContent=win?''+'Солнце встало, и зомби ушли'+(left?' ('+left+')':'')+'. Ты продержался до рассвета.'+'':(nb?'Новый рекорд! ':'')+'Зомби до тебя добрались. Попробуй другой набор оружия или другого персонажа.';
   if(isEnd())$('#endText').textContent='Бесконечная ночь: ты продержался '+fmt(time)+'.'+((prog.bestEndless||0)<=Math.floor(time)?' Это рекорд!':' Рекорд: '+fmt(prog.bestEndless||0)+'.');
   if(RUN.mode==='clear'){$('#endKick').textContent=win?'Зачистка':'Время вышло';$('#endTitle').textContent=win?'Локация зачищена!':'Поражение';$('#endText').textContent=win?'Все '+(RUN.clearN||'')+' зомби уничтожены за '+fmt(time)+'.':'Не все зомби уничтожены за 5 минут.';}
-  if(RUN.mode==='dungeon'&&RUN.dg){const n=RUN.dg.n,rec=n>=(prog.bestDepth||0);if(n>(prog.bestDepth||0))prog.bestDepth=n;$('#endKick').textContent='Подземелье';$('#endTitle').textContent='Глубина: этаж '+n;$('#endText').textContent='Ты спустился до '+n+'-го этажа за '+fmt(time)+' и собрал реликвий: '+RUN.dg.picks.length+'.'+(rec?' Это рекорд!':' Рекорд: этаж '+prog.bestDepth+'.');}
+  if(RUN.mode==='dungeon'&&RUN.dg){const n=RUN.dg.n,rec=n>=(prog.bestDepth||0);if(n>(prog.bestDepth||0))prog.bestDepth=n;$('#endKick').textContent='Подземелье';$('#endTitle').textContent='Глубина: этаж '+n;$('#endText').textContent='Ты спустился до '+n+'-го этажа за '+fmt(time)+'.'+(rec?' Это рекорд!':' Рекорд: этаж '+prog.bestDepth+'.')+(RUN.dg.picks.length?' Реликвии: '+dgRelicList()+'.':'');}
   if(RUN.mode==='tutorial'&&win){$('#endKick').textContent='Обучение';$('#endTitle').textContent='Обучение пройдено!';$('#endText').textContent='Ты знаешь всё, чтобы выстоять ночь. Выбери карту и режим в меню — и вперёд!';}
   if(rmod('bosshunt')){$('#endKick').textContent='Охота на боссов';$('#endTitle').textContent=win?'Все боссы повержены!':'Поражение';if(win)$('#endText').textContent='Ты победил всех '+(RUN.hN||8)+' боссов за '+fmt(time)+'!';}
   if(rmod('keys')){$('#endKick').textContent='Спасательная операция';$('#endTitle').textContent=win?'Выжившие спасены!':'Поражение';if(win)$('#endText').textContent='Ты вывел '+(RUN.resN||0)+' из '+(RUN.resTot||6)+' выживших за '+fmt(time)+'!';else $('#endText').textContent='Спасено '+(RUN.resN||0)+' из '+(RUN.resNeed||4)+' нужных.';}
@@ -13716,7 +13799,7 @@ MODES.keys={name:'Rescue Operation',d:'7 minutes. Six survivors hide on the top 
 MODES.masq={name:'Masquerade',d:'6 minutes. Every 45 seconds you turn into a random hero. Your upgrades stay.'};
 MODES.notime={name:'No Time',d:'10 minutes until dawn. You get 1:30 to pick an upgrade — too slow and the level burns.'};
 MODES.clear={name:'Clear-Out',d:'All the zombies are already on the map and no new ones will come. Find and kill them all in 5 minutes.'};
-MODES.dungeon={name:'Dungeon',d:'An endless descent: every floor is a new map with new conditions. Kill enough zombies and a hatch down opens. Between floors pick 1 of 3 relics. Every 5th floor has a boss. Zombies get tougher with every floor. Your record is the deepest floor.'};
+MODES.dungeon={name:'Dungeon',d:'An endless roguelike descent. Every floor is a new map with its own conditions. Clear a floor, then pick a hatch down: fight, elite lair, treasury, campfire, shop or mystery. Relics are common, rare or legendary and last until the end of the run. Every 5th floor has a boss. The deeper you go, the meaner the zombies. Your record is the deepest floor.'};
 let MODE='normal';let prevMode=null,prevMap=null;try{const v=localStorage.getItem('szz-mode');if(v&&MODES[v])MODE=v;}catch(e){}
 const BASEMODES=['normal','quick','endless'],COMBOMODS=['hard','crabs','shuffle','zone','guard','keys','masq','notime','bosshunt'];let COMBO=null,COMBO2=null,COMBOBASE=null,MODE2=null;
 try{const v=localStorage.getItem('szz-combo');if(v&&COMBOMODS.includes(v))COMBO=v;const w=localStorage.getItem('szz-combo2');if(COMBO&&w&&COMBOMODS.includes(w)&&w!==COMBO)COMBO2=w;}catch(e){}
@@ -23138,79 +23221,150 @@ function pkSearchEl(box,sel){const i=document.createElement('input');i.type='sea
   i.addEventListener('input',()=>pkFilter(box,sel,i.value));return i;}
 function pkFilter(box,sel,q){q=pkNorm(q);let n=0;box.querySelectorAll(sel).forEach(b=>{const ok=!q||(b.dataset.q||pkNorm(b.textContent)).includes(q);b.hidden=!ok;b.style.display=ok?'':'none';if(ok)n++;});
   let no=box.querySelector('.pkNone');if(!n&&q){if(!no){no=document.createElement('div');no.className='pkNone';no.textContent='Nothing found';box.appendChild(no);}no.hidden=false;}else if(no)no.hidden=true;}
-/* ---------- 2.0: dungeon mode — roguelike descent: floor after floor, relics between floors ---------- */
+/* ---------- 2.0: dungeon mode — roguelike descent: room choice, relic rarities, floor affixes, shop and events ---------- */
 MODEIC.dungeon='<svg viewBox="0 0 40 40" width="40" height="40"><rect x="4" y="6" width="32" height="28" rx="4" fill="#2a2140" stroke="#b88aff" stroke-width="2"/><path d="M9 12h8v5h6v5h6v6" fill="none" stroke="#f4f1e8" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><path d="M26 25l3 3 3-3" fill="none" stroke="#ffd36b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="27" r="3" fill="#b88aff"/></svg>';
 try{MODECOL.dungeon=['#4a3a72','#271e42'];}catch(e){}
+const DGRAR={c:{n:'Common',col:'#9fe0b4'},r:{n:'Rare',col:'#7cc0ff'},l:{n:'Legendary',col:'#ffbf5a'}};
 const DGREL=[
- {id:'dm',ic:'⚔️',n:'Fighting spirit',d:'+15% weapon damage',max:4},
- {id:'cd',ic:'⏰',n:'Alarm clock',d:'Weapons recharge 8% faster',max:4},
- {id:'spd',ic:'👟',n:'Light sneakers',d:'+8% running speed',max:3},
- {id:'arm',ic:'🛡️',n:'Shoulder pads',d:'You take 10% less damage',max:4},
- {id:'area',ic:'📣',n:'Megaphone',d:'+12% attack radius',max:3},
- {id:'mag',ic:'🧲',n:'Horseshoe magnet',d:'+40% gem pickup radius',max:3},
- {id:'xp',ic:'📜',n:'Cheat sheet',d:'+15% experience',max:3},
- {id:'crit',ic:'🍀',n:'Four-leaf clover',d:'+6% crit chance',max:3},
- {id:'regen',ic:'🍵',n:'Thermos',d:'+0.6 health per second',max:3},
- {id:'boss',ic:'🗡️',n:'Hunting knife',d:'+25% damage to bosses',max:3},
- {id:'hp',ic:'🍱',n:'Bento with seconds',d:'+25 max health',max:4},
- {id:'heal',ic:'🍙',n:'Snack',d:'Fully heals you',max:99,ok:()=>P.hp<P.maxHp*.8},
- {id:'lv',ic:'📚',n:'Stack of textbooks',d:'+2 levels right away',max:99},
- {id:'any',ic:'🔮',n:'Quantum physics textbook',d:'Pick any weapon or item',max:99},
- {id:'rr',ic:'🎟️',n:'Lucky Ticket',d:'+3 upgrade rerolls',max:99},
- {id:'coin',ic:'🐷',n:'Piggy Bank',d:'Coins: 40 per floor cleared',max:99},
- {id:'life',ic:'🪽',n:'Charm',d:'One more life this run',max:1}];
+ {id:'dm',r:'c',ic:'⚔️',n:'Fighting spirit',d:'+15% weapon damage',max:4},
+ {id:'cd',r:'c',ic:'⏰',n:'Alarm clock',d:'Weapons recharge 8% faster',max:4},
+ {id:'spd',r:'c',ic:'👟',n:'Light sneakers',d:'+8% running speed',max:3},
+ {id:'arm',r:'c',ic:'🛡️',n:'Shoulder pads',d:'You take 10% less damage',max:4},
+ {id:'area',r:'c',ic:'📣',n:'Megaphone',d:'+12% attack radius',max:3},
+ {id:'mag',r:'c',ic:'🧲',n:'Horseshoe magnet',d:'+40% gem pickup radius',max:3},
+ {id:'xp',r:'c',ic:'📜',n:'Cheat sheet',d:'+15% experience',max:3},
+ {id:'crit',r:'c',ic:'🍀',n:'Four-leaf clover',d:'+6% crit chance',max:3},
+ {id:'regen',r:'c',ic:'🍵',n:'Thermos',d:'+0.6 health per second',max:3},
+ {id:'boss',r:'c',ic:'🗡️',n:'Hunting knife',d:'+25% damage to bosses',max:3},
+ {id:'hp',r:'c',ic:'🍱',n:'Bento with seconds',d:'+25 max health',max:4},
+ {id:'heal',r:'c',ic:'🍙',n:'Snack',d:'Fully heals you',max:99,ok:()=>P.hp<P.maxHp*.8},
+ {id:'lv',r:'c',ic:'📚',n:'Stack of textbooks',d:'+2 levels right away',max:99},
+ {id:'rr',r:'c',ic:'🎟️',n:'Lucky Ticket',d:'+3 upgrade rerolls',max:99},
+ {id:'any',r:'r',ic:'🔮',n:'Quantum physics textbook',d:'Pick any weapon or item',max:99},
+ {id:'vamp',r:'r',ic:'🩸',n:'Vampire fangs',d:'+1 health for every zombie killed',max:3},
+ {id:'thorn',r:'r',ic:'🌵',n:'Spiky vest',d:'Zombies touching you take 30 damage per second',max:3},
+ {id:'critd',r:'r',ic:'💥',n:'Precise strike',d:'+4% crit chance and +50% crit damage',max:3},
+ {id:'amount',r:'r',ic:'➕',n:'Spare pencil case',d:'+1 weapon projectile',max:2},
+ {id:'dur',r:'r',ic:'⌛',n:'Long play',d:'Turrets, puddles and traps last 25% longer',max:3},
+ {id:'low',r:'r',ic:'😤',n:'Second wind',d:'+50% damage while below half health',max:2},
+ {id:'life',r:'r',ic:'🪽',n:'Charm',d:'One more life this run',max:1},
+ {id:'glass',r:'l',ic:'🔮',n:'Glass Cannon',d:'Damage ×1.6, but max health ×0.6',max:1},
+ {id:'berserk',r:'l',ic:'🪓',n:'Berserker',d:'+40% damage and +15% speed, but you take 20% more damage',max:1},
+ {id:'clock',r:'l',ic:'🕰️',n:'Pocket watch',d:'Weapons recharge 20% faster',max:1},
+ {id:'phoenix',r:'l',ic:'🐦‍🔥',n:'Phoenix feather',d:'Two extra lives',max:1},
+ {id:'hoard',r:'l',ic:'🎒',n:'Top student\'s backpack',d:'+5 levels right away',max:1}];
+const DGROOM={
+ fight:{ic:'⚔️',n:'Fight',d:'A regular floor. Reward: a relic'},
+ elite:{ic:'💀',n:'Elite lair',d:'Lots of elite zombies. Reward: a rare relic'},
+ treasure:{ic:'💰',n:'Treasury',d:'Few zombies, chests and gold'},
+ rest:{ic:'🔥',n:'Campfire',d:'No zombies: full heal and +2 levels'},
+ shop:{ic:'🛒',n:'Shop',d:'Relics for coins'},
+ event:{ic:'❓',n:'Mystery',d:'A strange deal — lucky or not'},
+ boss:{ic:'👑',n:'Boss lair',d:'Defeat the boss. Reward: a legendary relic'}};
+const DGAFF={fast:{n:'⚡ Fast zombies',d:'zombies are 20% faster'},tank:{n:'🪨 Thick-skinned',d:'zombies have 35% more health'},horde:{n:'🧟 Horde',d:'50% more zombies, but weaker'},elite:{n:'👑 Elite patrol',d:'every eighth zombie is elite'}};
 function dgOn(){return !!(RUN&&RUN.mode==='dungeon'&&RUN.dg);}
-function dgRel(id){return dgOn()?(RUN.dg.rel[id]||0):0;}
-function dgQuota(n){return Math.round(28+12*n+Math.max(0,n-10)*8);}
-function dgBossFl(n){return n%5===0;}
-function dgHud(){const D=RUN.dg;if(!D)return 'dungeon';const q=dgQuota(D.n);
-  if(D.hatch)return 'floor '+D.n+' · find the hatch down ⬇';if(D.boss)return 'floor '+D.n+' · defeat the boss';return 'floor '+D.n+' · killed '+Math.min(q,kills-D.k0)+'/'+q;}
+function dgQuota(n,t){const q=Math.round(24+9*n+Math.max(0,n-10)*6);return t==='elite'?Math.round(q*.7):t==='treasure'?Math.round(q*.35):q;}
+function dgR(){return RUN.dg.room;}
+function dgHud(){const D=RUN.dg;if(!D)return 'dungeon';const R=DGROOM[D.type]||DGROOM.fight,h='floor '+D.n+' · '+R.ic+' ';
+  if(D.hatches&&D.hatches.length)return h+'pick a hatch down ⬇';if(D.type==='boss')return h+'defeat the boss';if(['rest','shop','event'].includes(D.type))return h+R.n;
+  const q=dgQuota(D.n,D.type);return h+Math.min(q,kills-D.k0)+'/'+q;}
 function dgClearTimers(){if(!RUN)return;RUN.events=[];RUN.mimT=undefined;RUN.crabT=undefined;RUN.octoT=undefined;RUN.npcT=undefined;RUN.altB=undefined;bossIdx=1e9;}
-function dgInit(){RUN.dg={n:1,k0:kills,rel:{},hatch:null,boss:false,bz:[],bT:0,map0:MAPSEL,maps:[MAPCUR.id],picks:[]};dgClearTimers();dgFloorStart();}
-function dgFloorStart(){const D=RUN.dg;D.k0=kills;D.hatch=null;D.hfx=null;D.bz=[];D.boss=dgBossFl(D.n);D.bT=D.boss?3:0;D.bTry=0;
-  const rid=runId;setTimeout(()=>{if(rid!==runId||!dgOn())return;banner('Floor '+D.n+' · '+MAPCUR.name,D.boss?'Boss floor: defeat it to open the hatch':'Kill '+dgQuota(D.n)+' zombies and the hatch down opens',D.boss);},D.n>1?600:2200);}
+function dgInit(){RUN.dg={n:1,type:'fight',aff:null,k0:kills,rel:{},hatches:null,bz:[],bT:0,map0:MAPSEL,maps:[MAPCUR.id],picks:[],done:false,lastT:''};dgClearTimers();dgFloorStart();}
+function dgNoSpawn(){const D=RUN.dg;return !!D&&!D.done&&['rest','shop','event'].includes(D.type);}
+function dgFloorStart(){const D=RUN.dg;D.k0=kills;D.hatches=null;D.hfx=[];D.bz=[];D.done=false;D.bT=D.type==='boss'?3:0;D.wait=0;
+  D.aff=null;if(D.n>1&&['fight','elite','treasure','boss'].includes(D.type)&&rand()<.75)D.aff=pick(Object.keys(DGAFF));
+  const R=DGROOM[D.type]||DGROOM.fight,rid=runId;
+  if(D.type==='rest'){D.wait=5;P.hp=P.maxHp;pendingLv+=2;bonusLv+=2;bonusSrc='Campfire';}
+  if(D.type==='shop'||D.type==='event')D.wait=1.2;
+  if(D.type==='treasure')setTimeout(()=>{if(rid!==runId||!dgOn())return;for(let k=0;k<3;k++){const s=dgSpot(P.floor,3,9);dropGem(s.f,s.x,s.y,0,k<2?'chest':'gold');}},900);
+  setTimeout(()=>{if(rid!==runId||!dgOn())return;const sub=D.type==='boss'?'Defeat the boss to open the hatch':['rest','shop','event'].includes(D.type)?R.d:'Kill '+dgQuota(D.n,D.type)+' zombies and the hatches down open';
+    banner('Floor '+D.n+' · '+R.ic+' '+R.n,sub+(D.aff?' · '+DGAFF[D.aff].n:'')+' · '+MAPCUR.name,D.type==='boss'||D.type==='elite');},D.n>1?500:2200);
+  if(D.type==='rest'&&pendingLv>0)setTimeout(()=>{if(rid===runId&&state==='play'&&pendingLv>0)openLevelUp();},900);}
 function dgSpawnBoss(){const D=RUN.dg;let pool=[];try{pool=endBossPool().filter(B=>B&&B.name&&!B.trio);}catch(e){}
   const cnt=1+Math.floor(D.n/15),mul=.45+.11*D.n;
   for(let k=0;k<cnt&&pool.length;k++){const B=pick(pool);let zs=[];try{zs=bossSpawnNow(Object.assign({},B,{again:0}),mul,true)||[];}catch(e){console.error(e);}
     zs.forEach(z=>{if(z.dmg)z.dmg*=1+.05*D.n;z.dgB=1;});D.bz=D.bz.concat(zs);}
-  if(!D.bz.length){D.boss=false;toastMsg('No boss came — keep killing zombies');}}
-function dgSpot(f){const si=Math.floor(P.y/T)*MW+Math.floor(P.x/T),F=floors[f];let d=null;try{d=buildField(f,[si]);}catch(e){}
-  const c=[];if(d){for(let i=0;i<MW*MH;i++){const v=d[i];if(v>=1e8||v<7||v>16)continue;const x=i%MW,y=(i/MW)|0,g=F.g[i];if(g===STAIR||g===ENTR)continue;
-      if(solidT(f,x-1,y)||solidT(f,x+1,y)||solidT(f,x,y-1)||solidT(f,x,y+1))continue;c.push(i);}
-    if(!c.length)for(let i=0;i<MW*MH;i++){const v=d[i];if(v<1e8&&v>=3)c.push(i);}}
+  if(!D.bz.length){D.type='fight';toastMsg('No boss came — keep killing zombies');}}
+function dgSpot(f,dmin,dmax,avoid){const si=Math.floor(P.y/T)*MW+Math.floor(P.x/T),F=floors[f];let d=null;try{d=buildField(f,[si]);}catch(e){}
+  dmin=dmin||7;dmax=dmax||16;const far=i=>!avoid||avoid.every(a=>Math.hypot((i%MW+.5)*T-a.x,(((i/MW)|0)+.5)*T-a.y)>150);const c=[];
+  if(d){for(let i=0;i<MW*MH;i++){const v=d[i];if(v>=1e8||v<dmin||v>dmax)continue;const x=i%MW,y=(i/MW)|0,g=F.g[i];if(g===STAIR||g===ENTR)continue;
+      if(solidT(f,x-1,y)||solidT(f,x+1,y)||solidT(f,x,y-1)||solidT(f,x,y+1))continue;if(far(i))c.push(i);}
+    if(!c.length)for(let i=0;i<MW*MH;i++){const v=d[i];if(v<1e8&&v>=3&&!SOLID[F.g[i]]&&far(i))c.push(i);}
+    if(!c.length)for(let i=0;i<MW*MH;i++){const v=d[i];if(v<1e8&&v>=2&&!SOLID[F.g[i]])c.push(i);}}
   if(!c.length)return {x:P.x,y:P.y,f};const i=pick(c);return {x:(i%MW+.5)*T,y:(((i/MW)|0)+.5)*T,f};}
-function dgOpenHatch(){const D=RUN.dg;D.hatch=dgSpot(P.floor);D.hfx={k:'dghatch',nb:1,x:D.hatch.x,y:D.hatch.y,f:D.hatch.f,t:0,dur:1e9};fxs.push(D.hfx);
-  banner('The hatch is open!','Follow the arrow down to floor '+(D.n+1),false);sfx('level');haptic('success');}
+function dgNextTypes(){const D=RUN.dg,nx=D.n+1;if(nx%5===0)return ['boss'];
+  const W={fight:4,elite:2.2,treasure:1.1,rest:D.type==='rest'?0:1,shop:D.type==='shop'?0:1.2,event:D.type==='event'?0:1.2};const n=D.n>=3?3:2,out=[];
+  while(out.length<n){let s=0;for(const k in W)if(!out.includes(k))s+=W[k];let r=rand()*s,ch='fight';for(const k in W){if(out.includes(k))continue;r-=W[k];if(r<=0){ch=k;break;}}out.push(ch);}
+  if(!out.includes('fight')&&!out.includes('elite'))out[0]='fight';return out;}
+function dgOpenHatches(){const D=RUN.dg,types=dgNextTypes(),used=[];D.hatches=types.map(t=>{const s=dgSpot(P.floor,5,14,used);used.push(s);return Object.assign(s,{type:t});});
+  D.hfx=D.hatches.map(h=>{const f={k:'dghatch',nb:1,x:h.x,y:h.y,f:h.f,t:0,dur:1e9,type:h.type};fxs.push(f);return f;});
+  banner(types.length>1?'Hatches are open!':'The hatch is open!',types.length>1?'Choose where to go down: '+types.map(t=>DGROOM[t].ic+' '+DGROOM[t].n).join(' · '):'Below: '+DGROOM[types[0]].n.toLowerCase(),false);sfx('level');haptic('success');}
+function dgFloorDone(){const D=RUN.dg;if(D.done)return;D.done=true;coinGain(4+2*D.n);
+  const rw=D.type==='boss'?'l':D.type==='elite'?'r':D.type==='fight'?'n':null;
+  if(rw)dgRelicOv(rw,'Floor '+D.n+' cleared',()=>dgOpenHatches());else dgOpenHatches();}
 function dgTick(dt){if(!dgOn()||state!=='play')return;const D=RUN.dg;
-  if(D.boss&&D.bT>0){D.bT-=dt;if(D.bT<=0)dgSpawnBoss();return;}
-  if(!D.hatch){const done=D.boss?(D.bz.length>0&&D.bz.every(z=>!z.alive)):(kills-D.k0>=dgQuota(D.n));if(done)dgOpenHatch();return;}
-  const h=D.hatch;if(h.f!==P.floor){const s=dgSpot(P.floor);Object.assign(h,s);}
-  if(!D.hfx||!fxs.includes(D.hfx)){D.hfx={k:'dghatch',nb:1,x:h.x,y:h.y,f:h.f,t:0,dur:1e9};fxs.push(D.hfx);}
-  Object.assign(D.hfx,{x:h.x,y:h.y,f:h.f});
-  if(Math.hypot(P.x-h.x,P.y-h.y)<34)dgEnter();}
+  if(D.type==='boss'&&D.bT>0){D.bT-=dt;if(D.bT<=0)dgSpawnBoss();return;}
+  if(!D.done){if(D.wait>0){D.wait-=dt;if(D.wait<=0){if(D.type==='shop')dgShop();else if(D.type==='event')dgEvent();else dgFloorDone();}return;}
+    if(D.type==='boss'?(D.bz.length>0&&D.bz.every(z=>!z.alive)):(!['rest','shop','event'].includes(D.type)&&kills-D.k0>=dgQuota(D.n,D.type)))dgFloorDone();return;}
+  if(!D.hatches)return;
+  if(D.hatches.some(h=>h.f!==P.floor)){const used=[];D.hatches.forEach(h=>{const s=dgSpot(P.floor,5,14,used);used.push(s);Object.assign(h,s);});}
+  D.hatches.forEach((h,i)=>{let f=D.hfx[i];if(!f||!fxs.includes(f)){f={k:'dghatch',nb:1,t:0,dur:1e9};fxs.push(f);D.hfx[i]=f;}Object.assign(f,{x:h.x,y:h.y,f:h.f,type:h.type});});
+  for(const h of D.hatches)if(Math.hypot(P.x-h.x,P.y-h.y)<34){dgDescend(h.type);break;}}
+/* ---- overlays ---- */
 function dgOv(){let ov=$('#dgOv');if(ov)return ov;ov=document.createElement('div');ov.className='ov';ov.id='dgOv';ov.hidden=true;
-  ov.innerHTML='<div class="boardbox dgBox"><div class="kicker"></div><h2>Pick a relic</h2><p class="lead">A relic stays until the end of the run. Zombies are tougher further down.</p><div class="cards dgCards"></div></div>';document.body.appendChild(ov);return ov;}
-function dgRoll(){const D=RUN.dg,ok=DGREL.filter(r=>(D.rel[r.id]||0)<r.max&&(!r.ok||r.ok())&&!(r.id==='life'&&rmod('hard')));const out=[];
-  while(out.length<3&&ok.length){const i=(rand()*ok.length)|0;out.push(ok.splice(i,1)[0]);}return out;}
-function dgEnter(){const D=RUN.dg;state='dgpick';for(const k in keys)keys[k]=false;try{joy.id=null;$('#joy').hidden=true;}catch(e){}
-  const ov=dgOv(),opts=dgRoll();ov.querySelector('.kicker').textContent='Descent · floor '+D.n+' → '+(D.n+1);const box=ov.querySelector('.dgCards');box.innerHTML='';
-  opts.forEach((r,i)=>{const b=document.createElement('button');b.type='button';b.className='card';const lv=D.rel[r.id]?'<span class="lv">×'+(D.rel[r.id]+1)+'</span>':'';
-    b.innerHTML='<span class="ic dgIc">'+r.ic+'</span><span class="tx"><span class="nm">'+r.n+lv+'</span><span class="ds" style="display:block">'+(r.id==='coin'?'+'+(40*D.n)+' coins':r.d)+'</span></span><span class="key">'+(i+1)+'</span>';
-    b.addEventListener('click',()=>dgPick(r));box.appendChild(b);});
-  if(!opts.length){dgPick(null);return;}
-  sfx('level');showOv('dgOv');setTimeout(()=>{const c=box.querySelector('button');if(c)c.focus({preventScroll:true});},60);}
-function dgPick(r){if(state!=='dgpick')return;const D=RUN.dg;hideOv('dgOv');sfx('pick');
-  if(r){D.rel[r.id]=(D.rel[r.id]||0)+1;D.picks.push(r.id);
-    if(r.id==='hp'){P.baseMaxBonus=(P.baseMaxBonus||0)+25;P.maxHp=calcMaxHp();P.hp=Math.min(P.maxHp,P.hp+25);}
-    if(r.id==='heal')P.hp=P.maxHp;
-    if(r.id==='lv'){pendingLv+=2;bonusLv+=2;bonusSrc='Stack of textbooks';}
-    if(r.id==='any'){pendingLv++;bonusLv++;bonusSrc='Quantum physics textbook';anyPick=true;}
-    if(r.id==='rr')P.rerolls=(P.rerolls||0)+3;
-    if(r.id==='coin')coinGain(40*D.n);
-    if(r.id==='life')P.revive=(P.revive||0)+1;}
-  state='play';try{dgNext();}catch(e){console.error(e);}
-  try{renderInv();}catch(e){}if(pendingLv>0&&state==='play')openLevelUp();}
-function dgNext(){const D=RUN.dg;D.n++;
+  ov.innerHTML='<div class="boardbox dgBox"><div class="kicker"></div><h2></h2><p class="lead"></p><div class="cards dgCards"></div><div class="dgFoot"></div></div>';document.body.appendChild(ov);return ov;}
+function dgPause(){state='dgpick';for(const k in keys)keys[k]=false;try{joy.id=null;$('#joy').hidden=true;}catch(e){}}
+function dgShow(kick,title,lead){const ov=dgOv();ov.querySelector('.kicker').textContent=kick;ov.querySelector('h2').textContent=title;ov.querySelector('.lead').textContent=lead||'';ov.querySelector('.lead').hidden=!lead;
+  const box=ov.querySelector('.dgCards'),ft=ov.querySelector('.dgFoot');box.innerHTML='';ft.innerHTML='';return {ov,box,ft};}
+function dgCard(box,ic,nm,ds,tag,tcol,i,fn,dis){const b=document.createElement('button');b.type='button';b.className='card';if(dis)b.disabled=true;
+  b.innerHTML='<span class="ic dgIc">'+ic+'</span><span class="tx"><span class="nm">'+nm+'</span><span class="ds" style="display:block">'+ds+'</span></span>'+(i>=0?'<span class="key">'+(i+1)+'</span>':'')+(tag?'<span class="tag" style="background:'+tcol+';color:#0c1022">'+tag+'</span>':'');
+  b.addEventListener('click',fn);box.appendChild(b);return b;}
+function dgOpen(box){sfx('level');showOv('dgOv');setTimeout(()=>{const c=box.querySelector('button:not([disabled])');if(c)c.focus({preventScroll:true});},60);}
+function dgClose(){hideOv('dgOv');sfx('pick');state='play';}
+function dgPool(mode){const D=RUN.dg;const ok=DGREL.filter(r=>(D.rel[r.id]||0)<r.max&&(!r.ok||r.ok())&&!((r.id==='life'||r.id==='phoenix')&&rmod('hard')));
+  const by=k=>ok.filter(r=>r.r===k),roll=()=>{const x=rand();const k=mode==='l'?'l':mode==='r'?(x<.25?'l':'r'):(x<.05?'l':x<.3?'r':'c');let a=by(k);if(!a.length)a=by('r');if(!a.length)a=by('c');return a;};
+  const out=[];for(let t=0;t<30&&out.length<3;t++){const a=roll().filter(r=>!out.includes(r));if(a.length)out.push(pick(a));}return out;}
+function dgRelicOv(mode,kick,after){const D=RUN.dg,opts=dgPool(mode);if(!opts.length){after&&after();return;}dgPause();
+  const {box}=dgShow(kick,mode==='l'?'Legendary reward':mode==='r'?'Rare reward':'Pick a relic','A relic stays until the end of the run.');
+  opts.forEach((r,i)=>{const R=DGRAR[r.r],lv=D.rel[r.id]?' ×'+(D.rel[r.id]+1):'';dgCard(box,r.ic,r.n+lv,r.d,R.n.toUpperCase(),R.col,i,()=>{if(state!=='dgpick')return;dgClose();dgApply(r);after&&after();if(pendingLv>0&&state==='play')openLevelUp();});});
+  dgOpen(box);}
+function dgApply(r){const D=RUN.dg;D.rel[r.id]=(D.rel[r.id]||0)+1;D.picks.push(r.id);
+  if(r.id==='hp'){P.baseMaxBonus=(P.baseMaxBonus||0)+25;P.maxHp=calcMaxHp();P.hp=Math.min(P.maxHp,P.hp+25);}
+  if(r.id==='glass'){P.maxHp=calcMaxHp();P.hp=Math.min(P.hp,P.maxHp);}
+  if(r.id==='heal')P.hp=P.maxHp;
+  if(r.id==='lv'){pendingLv+=2;bonusLv+=2;bonusSrc=r.n;}
+  if(r.id==='hoard'){pendingLv+=5;bonusLv+=5;bonusSrc=r.n;}
+  if(r.id==='any'){pendingLv++;bonusLv++;bonusSrc=r.n;anyPick=true;}
+  if(r.id==='rr')P.rerolls=(P.rerolls||0)+3;
+  if(r.id==='life')P.revive=(P.revive||0)+1;
+  if(r.id==='phoenix')P.revive=(P.revive||0)+2;
+  try{renderInv();}catch(e){}}
+function dgPrice(r){const n=RUN.dg.n;return r.r==='l'?70+8*n:r.r==='r'?35+5*n:18+3*n;}
+function dgShop(){const D=RUN.dg;if(!D.stock){D.stock=dgPool('n').concat(dgPool('r').slice(0,1));D.stock=D.stock.filter((r,i)=>D.stock.indexOf(r)===i).slice(0,4);D.sold=[];D.healB=0;}
+  dgPause();const {box,ft}=dgShow('Floor '+D.n+' · 🛒 Shop','Shop','Your coins: '+(prog.coins||0));
+  D.stock.forEach((r,i)=>{const pr=dgPrice(r),sold=D.sold.includes(r.id),R=DGRAR[r.r];
+    dgCard(box,r.ic,r.n,r.d+' · <b>'+(sold?'sold':'🪙 '+pr)+'</b>',R.n.toUpperCase(),R.col,i,()=>{if(sold||(prog.coins||0)<pr)return;prog.coins-=pr;cxDirty=true;D.sold.push(r.id);sfx('buy');coinUI&&coinUI();dgApply(r);dgShop();},sold||(prog.coins||0)<pr);});
+  {const pr=10+2*D.n;dgCard(box,'🍙','Onigiri from the stall','Fully heals you · <b>'+(D.healB?'sold':'🪙 '+pr)+'</b>','','',-1,()=>{if(D.healB||(prog.coins||0)<pr)return;prog.coins-=pr;cxDirty=true;D.healB=1;P.hp=P.maxHp;sfx('heal');dgShop();},D.healB||(prog.coins||0)<pr);}
+  const b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Leave the shop';b.addEventListener('click',()=>{dgClose();D.stock=null;dgFloorDone();if(pendingLv>0&&state==='play')openLevelUp();});ft.appendChild(b);
+  if($('#dgOv').hidden)dgOpen(box);}
+const DGEV=[
+ {id:'altar',ic:'🩸',n:'Blood altar',d:'Give up a fifth of your max health and get a legendary relic.',go:'Give blood',
+  run(){const cut=Math.max(10,Math.round(P.maxHp*.2));P.baseMaxBonus=(P.baseMaxBonus||0)-cut;P.maxHp=calcMaxHp();P.hp=Math.min(P.hp,P.maxHp);sfx('hurt');dgRelicOv('l','Blood altar',()=>dgFloorDone());return true;}},
+ {id:'coin',ic:'🪙',n:'Coin of fate',d:'Flip the coin: heads, a rare relic; tails, a random curse.',go:'Flip',
+  run(){if(rand()<.5){toastMsg('Heads!');dgRelicOv('r','Coin of fate',()=>dgFloorDone());}else{let c=[];try{c=Object.keys(CDEF).filter(k=>!CDEF[k].once);}catch(e){}if(c.length){const id=pick(c);addCurse(id);try{renderInv();}catch(e){}banner('Tails…','Curse: '+CDEF[id].name,true);}else toastMsg('Tails…');sfx('hurt');dgFloorDone();}return true;}},
+ {id:'well',ic:'⛲',n:'Wishing well',d:'Throw coins into the well. Most of the time your wish comes true.',go:'Throw coins',cost:()=>25+4*RUN.dg.n,
+  run(){const c=25+4*RUN.dg.n;if((prog.coins||0)<c)return false;prog.coins-=c;cxDirty=true;sfx('coin');if(rand()<.7)dgRelicOv('n','Wishing well',()=>dgFloorDone());else{toastMsg('The well stayed silent…');dgFloorDone();}return true;}},
+ {id:'chest',ic:'🧰',n:'Suspicious chest',d:'Loot inside… or an ambush of elite zombies.',go:'Open',
+  run(){if(rand()<.6){for(let k=0;k<2;k++){const s=dgSpot(P.floor,1,3);dropGem(s.f,s.x,s.y,0,'chest');}toastMsg('Loot!');}else{for(let k=0;k<4+Math.floor(RUN.dg.n/4);k++){const s=dgSpot(P.floor,4,8);const z=spawnAt(pick(['student','runner','monitor','mutant']),s.f,{x:s.x,y:s.y,w:-1});try{eliteMake(z);}catch(e){}z.enter=.5;}banner('Ambush!','Elite zombies jumped out of the chest',true);sfx('boss');}dgFloorDone();return true;}},
+ {id:'teacher',ic:'🧑‍🏫',n:'Strict teacher',d:'Take the exam: a random weapon loses a level and you get a rare relic.',go:'Take the exam',ok:()=>P.weapons.some(w=>w.lvl>1),
+  run(){const ws=P.weapons.filter(w=>w.lvl>1);if(!ws.length)return false;pick(ws).lvl--;try{renderInv();}catch(e){}dgRelicOv('r','Exam passed',()=>dgFloorDone());return true;}}];
+function dgEvent(){const D=RUN.dg;const evs=DGEV.filter(e=>!e.ok||e.ok());const E=D.ev?DGEV.find(e=>e.id===D.ev)||pick(evs):pick(evs);D.ev=E.id;
+  dgPause();const {box,ft}=dgShow('Floor '+D.n+' · ❓ Mystery',E.ic+' '+E.n,E.d);const c=E.cost?E.cost():0,can=!c||(prog.coins||0)>=c;
+  dgCard(box,E.ic,E.go,c?'🪙 '+c+' · you have '+(prog.coins||0):'Take the risk','','',0,()=>{if(state!=='dgpick')return;dgClose();D.ev=null;if(!E.run()){dgEvent();return;}if(pendingLv>0&&state==='play'&&$('#dgOv').hidden)openLevelUp();},!can);
+  dgCard(box,'🚪','Walk past','Nothing happens','','',1,()=>{if(state!=='dgpick')return;dgClose();D.ev=null;dgFloorDone();});
+  dgOpen(box);}
+/* ---- descent ---- */
+function dgDescend(type){const D=RUN.dg;D.lastT=D.type;D.type=type;D.n++;
   try{if(phCur())phEnd();}catch(e){}
   const keep=RUN,sel=MAPSEL;let maps=MAPS.filter(M=>!M.soon&&mapOpen(M.id)&&M.id!==MAPCUR.id);const fresh=maps.filter(M=>!D.maps.includes(M.id));if(fresh.length)maps=fresh;
   if(maps.length)MAPSEL=pick(maps).id;
@@ -23221,35 +23375,46 @@ function dgNext(){const D=RUN.dg;D.n++;
   nwp=[];enemies=[];projs=[];zprojs=[];fxs=[];parts=[];gems=[];nums=[];decals=[];boxes=[];
   {const ST=MAPCUR.start||[22,12];P.x=(ST[0]+.5)*T;P.y=(ST[1]+.5)*T;P.floor=0;}
   SV=null;MIM=null;NPC=null;OCT=null;CRB=null;octoBlocks=[];flankF=[null,null,null,null];flankT=0;flankKey=-1;pendRise=[];pendAmb=[];RW=[];rwT=0;exitField=null;lastRoom='';pfKey=-1;flowVer++;fade=1;spawnAcc=0;RES=[];
-  if(QUAR)QUAR.forEach(q=>{const F=floors[q.f];for(let k=0,m=0;k<80&&m<7;k++){const x=q.r.x0+((rand()*(q.r.x1-q.r.x0+1))|0),y=q.r.y0+((rand()*(q.r.y1-q.r.y0+1))|0);if(SOLID[F.g[y*MW+x]])continue;enemies.push(makeZombie(rand()<.2?'sumo':'student',q.f,x*T+T/2,y*T+T/2));m++;}});
+  if(QUAR&&!['rest','shop','event'].includes(type))QUAR.forEach(q=>{const F=floors[q.f];for(let k=0,m=0;k<80&&m<7;k++){const x=q.r.x0+((rand()*(q.r.x1-q.r.x0+1))|0),y=q.r.y0+((rand()*(q.r.y1-q.r.y0+1))|0);if(SOLID[F.g[y*MW+x]])continue;enemies.push(makeZombie(rand()<.2?'sumo':'student',q.f,x*T+T/2,y*T+T/2));m++;}});
   for(const k in H)delete H[k];for(const k in HW)delete HW[k];
   cache=null;try{fcFree();}catch(e){}resize();ensureCache();
   try{petStart();slotPlace();}catch(e){console.error(e);}
   $('#floors').classList.toggle('one',floors.length<2);$('#floors').innerHTML=floors.map((_,f)=>'<div class="fl" id="fl'+f+'"><span class="dot"></span><span class="f">'+floorName(f)+'</span><span class="z">0</span></div>').reverse().join('');for(const k in H)if(k.startsWith('#fl'))delete H[k];
   {const tb=$('#todayBox');if(tb){tb.hidden=!RUN.names.length;tb.classList.remove('dim');tb.innerHTML='<div class="th">Floor '+D.n+'</div>'+RUN.names.map(n=>'<div class="tc">'+n.split(' — ')[0].split(': ')[0]+'</div>').join('');const rid=runId;setTimeout(()=>{if(rid===runId)tb.classList.add('dim');},9000);}}
-  P.hp=Math.min(P.maxHp,P.hp+P.maxHp*.25);P.inv=Math.max(P.inv||0,2);
+  P.hp=Math.min(P.maxHp,P.hp+P.maxHp*.2);P.inv=Math.max(P.inv||0,2);
   if(D.n>(prog.bestDepth||0)){prog.bestDepth=D.n;cxDirty=true;}
   dgFloorStart();}
-/* hatch drawing + arrow */
+/* hatch drawing + arrows */
 {const _nf=nbFxTick;nbFxTick=function(f,dt){if(f.k==='dghatch')return;return _nf.apply(this,arguments);};}
-{const _nd=nbFxDraw;nbFxDraw=function(f,k){if(f.k!=='dghatch')return _nd.apply(this,arguments);if(f.f!==P.floor)return;const t=time,pu=.5+.5*Math.sin(t*4);
-  ctx.save();ctx.fillStyle=`rgba(184,138,255,${.12+.1*pu})`;ctx.beginPath();ctx.arc(f.x,f.y,46+6*pu,0,7);ctx.fill();
+{const _nd=nbFxDraw;nbFxDraw=function(f,k){if(f.k!=='dghatch')return _nd.apply(this,arguments);if(f.f!==P.floor)return;const t=time,pu=.5+.5*Math.sin(t*4),R=DGROOM[f.type]||DGROOM.fight;
+  const col=f.type==='boss'?'255,90,70':f.type==='elite'?'255,120,200':f.type==='rest'?'255,170,80':f.type==='shop'?'255,211,107':f.type==='event'?'150,200,255':f.type==='treasure'?'255,220,90':'184,138,255';
+  ctx.save();ctx.fillStyle=`rgba(${col},${.12+.1*pu})`;ctx.beginPath();ctx.arc(f.x,f.y,46+6*pu,0,7);ctx.fill();
   ctx.fillStyle='#120c1e';ctx.strokeStyle='#5a4a7a';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(f.x,f.y,26,20,0,0,7);ctx.fill();ctx.stroke();
   ctx.strokeStyle='#8a7aa8';ctx.lineWidth=3;for(let s=0;s<3;s++){const y=f.y-9+s*7,w=18-s*4;ctx.beginPath();ctx.moveTo(f.x-w,y);ctx.lineTo(f.x+w,y);ctx.stroke();}
-  ctx.strokeStyle=`rgba(255,211,107,${.5+.4*pu})`;ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.lineDashOffset=-t*30;ctx.beginPath();ctx.arc(f.x,f.y,34,0,7);ctx.stroke();ctx.setLineDash([]);
-  ctx.font='bold 13px "Inter",sans-serif';ctx.textAlign='center';ctx.fillStyle='#ffe9a8';ctx.fillText('⬇ '+(clubEn()?'Down':'Down'),f.x,f.y-40);
-  const dx=f.x-P.x,dy=f.y-P.y,d=Math.hypot(dx,dy);if(d>120){const a=Math.atan2(dy,dx),r=58;ctx.translate(P.x+Math.cos(a)*r,P.y+Math.sin(a)*r);ctx.rotate(a);ctx.fillStyle=`rgba(255,211,107,${.75+.25*pu})`;ctx.strokeStyle='#3a2a10';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(-8,-10);ctx.lineTo(-3,0);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke();}
+  ctx.strokeStyle=`rgba(${col},${.55+.4*pu})`;ctx.lineWidth=3;ctx.setLineDash([8,6]);ctx.lineDashOffset=-t*30;ctx.beginPath();ctx.arc(f.x,f.y,34,0,7);ctx.stroke();ctx.setLineDash([]);
+  ctx.textAlign='center';ctx.font='22px sans-serif';ctx.fillText(R.ic,f.x,f.y-44);ctx.font='bold 12px "Inter",sans-serif';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.75)';ctx.strokeText(R.n,f.x,f.y+44);ctx.fillStyle='#fff3d0';ctx.fillText(R.n,f.x,f.y+44);
+  const dx=f.x-P.x,dy=f.y-P.y,d=Math.hypot(dx,dy);if(d>120){const a=Math.atan2(dy,dx),r=62;ctx.save();ctx.translate(P.x+Math.cos(a)*r,P.y+Math.sin(a)*r);ctx.rotate(a);ctx.fillStyle=`rgba(${col},${.8+.2*pu})`;ctx.strokeStyle='#2a1a10';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(-8,-10);ctx.lineTo(-3,0);ctx.lineTo(-8,10);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+    ctx.font='14px sans-serif';ctx.fillText(R.ic,P.x+Math.cos(a)*(r+22),P.y+Math.sin(a)*(r+22)+5);}
   ctx.restore();};}
-/* difficulty and relic effects */
-{const _sa=spawnAt;spawnAt=function(){const z=_sa.apply(this,arguments);try{if(z&&dgOn()&&z.kind!=='boss'&&!z.dgS){z.dgS=1;const n=RUN.dg.n-1;if(n>0){const hm=1+.16*n;z.hp*=hm;z.maxHp*=hm;if(z.dmg)z.dmg*=1+.06*n;}}}catch(e){}return z;};}
-{const _pm=phSpawnMul;phSpawnMul=function(){const m=_pm.apply(this,arguments);return dgOn()?m*Math.min(2.2,1+.07*(RUN.dg.n-1)):m;};}
+/* difficulty, floor affixes, relic effects */
+{const _sa=spawnAt;spawnAt=function(){const z=_sa.apply(this,arguments);try{if(z&&dgOn()&&!z.dgS){z.dgS=1;const D=RUN.dg;
+  if(dgNoSpawn()){z.alive=false;z.dead=true;return z;}
+  if(z.kind!=='boss'){const n=D.n-1,a=D.aff;let hm=1+.16*n;if(a==='tank')hm*=1.35;if(a==='horde')hm*=.8;z.hp*=hm;z.maxHp*=hm;if(z.dmg)z.dmg*=1+.06*n;if(a==='fast')z.spd*=1.2;
+    if(!z.elite&&(D.type==='elite'&&rand()<.3||a==='elite'&&rand()<.125)){try{eliteMake(z);}catch(e){}}}}}catch(e){}return z;};}
+{const _pm=phSpawnMul;phSpawnMul=function(){const m=_pm.apply(this,arguments);if(!dgOn())return m;const D=RUN.dg;if(dgNoSpawn())return 0;
+  return m*1.8*Math.min(2.2,1+.07*(D.n-1))*(D.aff==='horde'?1.5:1)*(D.type==='treasure'?.5:1)*(D.type==='boss'?.6:1);};}
+{const _cm=calcMaxHp;calcMaxHp=function(){const v=_cm.apply(this,arguments);return dgOn()&&RUN.dg.rel.glass?Math.max(20,Math.round(v*.6)):v;};}
 {const _sr=statsRaw;statsRaw=function(){const S=_sr.apply(this,arguments);try{if(dgOn()){const r=RUN.dg.rel,v=k=>r[k]||0;
   if(v('dm'))S.dm*=Math.pow(1.15,v('dm'));if(v('cd'))S.cdm*=Math.pow(.92,v('cd'));if(v('spd'))S.spd*=Math.pow(1.08,v('spd'));if(v('arm'))S.arm*=Math.pow(.9,v('arm'));
   if(v('area'))S.area=Math.min(3.5,S.area*Math.pow(1.12,v('area')));if(v('mag'))S.mag*=Math.pow(1.4,v('mag'));if(v('xp'))S.xpm*=Math.pow(1.15,v('xp'));
-  if(v('crit'))S.crit=Math.min(.8,S.crit+.06*v('crit'));if(v('regen')&&!noHeal())S.regen+=.6*v('regen');if(v('boss'))S.boss+=.25*v('boss');}}catch(e){}return S;};}
+  if(v('crit'))S.crit=Math.min(.8,S.crit+.06*v('crit'));if(v('regen')&&!noHeal())S.regen+=.6*v('regen');if(v('boss'))S.boss+=.25*v('boss');
+  if(v('vamp'))S.life+=v('vamp');if(v('thorn'))S.thorns+=30*v('thorn');if(v('critd')){S.critd+=.5*v('critd');S.crit=Math.min(.8,S.crit+.04*v('critd'));}
+  if(v('amount'))S.amount=Math.min(6,S.amount+v('amount'));if(v('dur'))S.dur*=1+.25*v('dur');if(v('low'))S.low+=.5*v('low');
+  if(v('glass'))S.dm*=1.6;if(v('berserk')){S.dm*=1.4;S.spd*=1.15;S.arm*=1.2;}if(v('clock'))S.cdm*=.8;}}catch(e){}return S;};}
 {const _us=updateSpawns;updateSpawns=function(dt){try{dgTick(dt);}catch(e){console.error(e);}return _us.apply(this,arguments);};}
 {const _sg=startGame0;startGame0=function(){_sg.apply(this,arguments);try{if(state==='play'&&RUN&&RUN.mode==='dungeon'&&!RUN.dg)dgInit();}catch(e){console.error(e);}};}
-addEventListener('keydown',e=>{if(state!=='dgpick')return;const n={Digit1:0,Digit2:1,Digit3:2,Numpad1:0,Numpad2:1,Numpad3:2}[e.code];if(n===undefined)return;e.preventDefault();e.stopPropagation();const b=document.querySelectorAll('#dgOv .dgCards button')[n];if(b)b.click();},true);
+addEventListener('keydown',e=>{if(state!=='dgpick')return;const n={Digit1:0,Digit2:1,Digit3:2,Digit4:3,Digit5:4,Numpad1:0,Numpad2:1,Numpad3:2,Numpad4:3,Numpad5:4}[e.code];if(n===undefined)return;e.preventDefault();e.stopPropagation();const b=document.querySelectorAll('#dgOv .dgCards button')[n];if(b&&!b.disabled)b.click();},true);
+function dgRelicList(){const D=RUN.dg;if(!D)return '';const m={};D.picks.forEach(id=>{m[id]=(m[id]||0)+1;});return Object.keys(m).map(id=>{const r=DGREL.find(q=>q.id===id);return r?r.ic+' '+r.n+(m[id]>1?' ×'+m[id]:''):'';}).filter(Boolean).join(', ');}
 
 function deathCause(){if(lastHit)return lastHit;let b=null,bd=1e9;try{for(const e of enemies){if(!e.alive||e.floor!==P.floor)continue;const d=Math.hypot(e.x-P.x,e.y-P.y);if(d<bd){bd=d;b=e;}}}catch(e){}
   if(b&&bd<180)return 'bites: '+zName(b);return 'zombie wounds';}
@@ -23365,7 +23530,7 @@ function endGame0(win){
   $('#endText').textContent=win?''+'The sun is up and the zombies left'+(left?' ('+left+')':'')+'. You made it to dawn.'+'':(nb?'New record! ':'')+'The zombies got you. Try a different weapon set or another character.';
   if(isEnd())$('#endText').textContent='Endless Night: you survived '+fmt(time)+'.'+((prog.bestEndless||0)<=Math.floor(time)?' New record!':' Best: '+fmt(prog.bestEndless||0)+'.');
   if(RUN.mode==='clear'){$('#endKick').textContent=win?'Clear-Out':'Time\'s up';$('#endTitle').textContent=win?'Area cleared!':'Defeat';$('#endText').textContent=win?'All '+(RUN.clearN||'')+' zombies destroyed in '+fmt(time)+'.':'Not all zombies were destroyed in 5 minutes.';}
-  if(RUN.mode==='dungeon'&&RUN.dg){const n=RUN.dg.n,rec=n>=(prog.bestDepth||0);if(n>(prog.bestDepth||0))prog.bestDepth=n;$('#endKick').textContent='Dungeon';$('#endTitle').textContent='Depth: floor '+n;$('#endText').textContent='You made it down to floor '+n+' in '+fmt(time)+' and collected relics: '+RUN.dg.picks.length+'.'+(rec?' New record!':' Record: floor '+prog.bestDepth+'.');}
+  if(RUN.mode==='dungeon'&&RUN.dg){const n=RUN.dg.n,rec=n>=(prog.bestDepth||0);if(n>(prog.bestDepth||0))prog.bestDepth=n;$('#endKick').textContent='Dungeon';$('#endTitle').textContent='Depth: floor '+n;$('#endText').textContent='You made it down to floor '+n+' in '+fmt(time)+'.'+(rec?' New record!':' Record: floor '+prog.bestDepth+'.')+(RUN.dg.picks.length?' Relics: '+dgRelicList()+'.':'');}
   if(RUN.mode==='tutorial'&&win){$('#endKick').textContent='Tutorial';$('#endTitle').textContent='Tutorial complete!';$('#endText').textContent='You know everything you need to survive the night. Pick a map and mode in the menu — and go!';}
   if(rmod('bosshunt')){$('#endKick').textContent='Boss Hunt';$('#endTitle').textContent=win?'All bosses defeated!':'Defeat';if(win)$('#endText').textContent='You defeated all '+(RUN.hN||8)+' bosses in '+fmt(time)+'!';}
   if(rmod('keys')){$('#endKick').textContent='Rescue Operation';$('#endTitle').textContent=win?'Survivors rescued!':'Defeat';if(win)$('#endText').textContent='You led '+(RUN.resN||0)+' of '+(RUN.resTot||6)+' survivors in '+fmt(time)+'!';else $('#endText').textContent='Saved '+(RUN.resN||0)+' of '+(RUN.resNeed||4)+' needed.';}
