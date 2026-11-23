@@ -1381,6 +1381,7 @@ body.calm #menu *,body.calm #menu *::before,body.calm #menu *::after{animation-p
 .lbTabs button{min-width:0!important;white-space:normal!important;line-height:1.15!important;font-size:13px!important;text-align:center!important;overflow-wrap:anywhere}
 .pkSearch{display:block;width:100%;flex:0 0 auto;margin:0 0 8px;padding:10px 12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.18);background:rgba(0,0,0,.28);color:var(--chalk,#fff);font:600 16px/1.2 var(--body);outline:none;-webkit-appearance:none;appearance:none}.pkSearch:focus{border-color:var(--gold,#ffd36b)}.pkSearch::placeholder{color:rgba(238,242,230,.5)}.pkNone{text-align:center;color:rgba(238,242,230,.6);font:600 13px/1.3 var(--body);padding:14px 4px;grid-column:1/-1}.prPickBox .pkSearch{margin:0}
 .dgCards .dgIc{font-size:30px;line-height:1;display:flex;align-items:center;justify-content:center;min-width:44px}
+.dCause{margin:0 0 8px;padding:8px 10px;border-radius:10px;background:rgba(255,70,70,.14);border:1px solid rgba(255,110,110,.35);color:#ffc9c9;font:700 13px/1.35 var(--body)}
 </style>
 </head>
 <body>
@@ -1614,7 +1615,7 @@ body.calm #menu *,body.calm #menu *::before,body.calm #menu *::after{animation-p
 </div>
 
 <!-- REVIVE -->
-<div class="ov" id="revOv" hidden><div class="boardbox"><div class="kicker">Ты упал</div><h2>Воскреснуть?</h2>
+<div class="ov" id="revOv" hidden><div class="boardbox"><p class="dCause" id="revCause"></p><h2>Воскреснуть?</h2>
   <p style="margin:6px 0 6px;color:#cfe0d6">Встань с половиной здоровья и взрывом отбрось зомби. За забег можно воскреснуть только 3 раза: за 5, 20 и 50 монет.</p><p class="best" id="revLeft" style="margin:0 0 12px"></p>
   <div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap"><button class="btn adbtn" id="revAd" type="button" hidden>📺 Воскреснуть бесплатно (реклама)</button><button class="btn" id="revBuy" type="button">Воскреснуть · <i class="cn"></i> <span id="revPrice">5</span></button><button class="btn ghost" id="revQuit" type="button">Сдаться</button></div>
   <p class="best" style="margin-top:10px">У тебя: <i class="cn"></i> <span id="revHave">0</span></p></div></div>
@@ -1940,7 +1941,7 @@ body.calm #menu *,body.calm #menu *::before,body.calm #menu *::after{animation-p
 </div>
 
 <!-- REVIVE -->
-<div class="ov" id="revOv" hidden><div class="boardbox"><div class="kicker">You fell</div><h2>Revive?</h2>
+<div class="ov" id="revOv" hidden><div class="boardbox"><p class="dCause" id="revCause"></p><h2>Revive?</h2>
   <p style="margin:6px 0 6px;color:#cfe0d6">Get back up with half your health and blast the zombies away. You can revive only 3 times per run: for 5, 20 and 50 coins.</p><p class="best" id="revLeft" style="margin:0 0 12px"></p>
   <div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap"><button class="btn adbtn" id="revAd" type="button" hidden>📺 Revive for free (ad)</button><button class="btn" id="revBuy" type="button">Revive · <i class="cn"></i> <span id="revPrice">5</span></button><button class="btn ghost" id="revQuit" type="button">Give up</button></div>
   <p class="best" style="margin-top:10px">You have: <i class="cn"></i> <span id="revHave">0</span></p></div></div>
@@ -11508,8 +11509,8 @@ function coopHud(){let h=document.getElementById('coopHud');if(!CR){if(h)h.hidde
   h.classList.toggle('dn',!!(p&&p.dn&&!p.fin));h.classList.toggle('off',!!(CR.gone||(p&&p.fin)));
   h.querySelector('#coopHudS').textContent=!p?'подключается…':CR.gone?'нет связи':p.fin?'закончил · '+p.k+' ☠':p.dn?'упал — помоги!':(P&&p.f!==P.floor?floorName(p.f)+' · ':'')+'☠ '+p.k+' · вместе '+((kills|0)+p.k);}
 function coopDown(){if(!CR||CR.fin||CR.downs>=2||!coopPartnerUp())return false;CR.dn=1;CR.dnT=30;CR.downs++;state='revive';for(const k in keys)keys[k]=false;joy.id=null;$('#joy').hidden=true;
-  let ov=document.getElementById('coopDn');if(!ov){ov=document.createElement('div');ov.className='ov';ov.id='coopDn';ov.hidden=true;ov.innerHTML='<div class="boardbox coopDnBox"><div class="kicker">Ты упал</div><h2>Напарник спешит на помощь</h2><p class="lead" id="coopDnL"></p><b class="coopDnT" id="coopDnT">30</b><div class="row"><button class="btn ghost small" id="coopDnQ" type="button">Сдаться</button></div></div>';document.body.appendChild(ov);ov.querySelector('#coopDnQ').addEventListener('click',()=>{sfx('pick');coopGiveUp();});}
-  ov.querySelector('#coopDnL').textContent=CR.pn+' поднимет тебя, если подбежит к тебе или убьёт 15 зомби. '+(CR.downs>=2?'Это последний раз за забег.':'За забег так можно подняться два раза.');ov.querySelector('#coopDnT').textContent='30';ov.hidden=false;sfx('hurt');coopBeat();return true;}
+  let ov=document.getElementById('coopDn');if(!ov){ov=document.createElement('div');ov.className='ov';ov.id='coopDn';ov.hidden=true;ov.innerHTML='<div class="boardbox coopDnBox"><p class="dCause" id="coopDnC"></p><h2>Напарник спешит на помощь</h2><p class="lead" id="coopDnL"></p><b class="coopDnT" id="coopDnT">30</b><div class="row"><button class="btn ghost small" id="coopDnQ" type="button">Сдаться</button></div></div>';document.body.appendChild(ov);ov.querySelector('#coopDnQ').addEventListener('click',()=>{sfx('pick');coopGiveUp();});}
+  ov.querySelector('#coopDnL').textContent=CR.pn+' поднимет тебя, если подбежит к тебе или убьёт 15 зомби. '+(CR.downs>=2?'Это последний раз за забег.':'За забег так можно подняться два раза.');ov.querySelector('#coopDnT').textContent='30';{const c=ov.querySelector('#coopDnC');if(c)c.textContent='☠ Причина смерти — '+deathCause();}ov.hidden=false;sfx('hurt');coopBeat();return true;}
 function coopDnHide(){const ov=document.getElementById('coopDn');if(ov)ov.hidden=true;}
 function coopRevived(){if(!CR||!CR.dn)return;CR.dn=0;coopDnHide();P.hp=P.maxHp*.5;P.inv=3;try{fxs.push({k:'ring',x:P.x,y:P.y,f:P.floor,R:220,dmg:120,t:0,dur:.6,hit:new Set()});fxs.push({k:'revive',x:P.x,y:P.y,f:P.floor,t:0,dur:1.4});reviveFx=1.2;}catch(e){}
   banner(CR.pn+' поднял тебя!','Половина здоровья и 3 секунды неуязвимости',false);sfx('level');haptic('heavy');state='play';CR.busy=0;coopBeat();}
@@ -12396,6 +12397,34 @@ function dgNext(){const D=RUN.dg;D.n++;
 {const _sg=startGame0;startGame0=function(){_sg.apply(this,arguments);try{if(state==='play'&&RUN&&RUN.mode==='dungeon'&&!RUN.dg)dgInit();}catch(e){console.error(e);}};}
 addEventListener('keydown',e=>{if(state!=='dgpick')return;const n={Digit1:0,Digit2:1,Digit3:2,Numpad1:0,Numpad2:1,Numpad3:2}[e.code];if(n===undefined)return;e.preventDefault();e.stopPropagation();const b=document.querySelectorAll('#dgOv .dgCards button')[n];if(b)b.click();},true);
 
+function deathCause(){if(lastHit)return lastHit;let b=null,bd=1e9;try{for(const e of enemies){if(!e.alive||e.floor!==P.floor)continue;const d=Math.hypot(e.x-P.x,e.y-P.y);if(d<bd){bd=d;b=e;}}}catch(e){}
+  if(b&&bd<180)return 'укусы: '+zName(b);return 'раны от зомби';}
+{const _ro=revOpen;revOpen=function(){_ro.apply(this,arguments);try{const c=$('#revCause');if(c)c.textContent='☠ Причина смерти — '+deathCause();}catch(e){}};}
+/* ---- 2.0: training update ---- */
+TTABS.splice(1,0,['e','Элита']);TTABS.splice(TTABS.findIndex(t=>t[0]==='s'),0,['f','Фазы'],['a','Способности']);
+{const _ca=curAbil;curAbil=function(){if(RUN&&RUN.mode==='train'&&TRN.abil){const A=ABIL.find(a=>a.id===TRN.abil);if(A)return A;}return _ca.apply(this,arguments);};}
+function trainElite(k,kind){const p=trainSpot(140,300);const z=makeZombie(kind,P.floor,p.x,p.y);z.elite=k;RUN.eliteN=(RUN.eliteN||0)+1;z.hp*=4;z.maxHp*=4;z.r*=1.22;z.cr*=1.22;z.xp=(z.xp||1)*5;z.dmg*=1.3;
+  if(k==='fast')z.spd*=1.55;if(k==='brute'){z.hp*=1.8;z.maxHp*=1.8;z.r*=1.3;z.cr*=1.3;z.spd*=.72;z.dmg*=1.5;}z.elT=rr(2,4);z.enter=.4;enemies.push(z);return z;}
+{const _ti=trainItems;trainItems=function(tab){const it=[];const A=(ic,nm,tag,fn,on)=>it.push({ic,nm,tag,fn,on});
+  if(tab==='e'){const kinds=INFO_Z.filter(z=>ZT[z.kind]).map(z=>z.kind).filter(k=>k!=='bomber'&&k!=='blob');
+    Object.keys(ELITE).forEach(k=>A('',ELITE[k].n,'',()=>{for(let i=0;i<TRN.n;i++)trainElite(k,pick(kinds.length?kinds:['student']));sfx('glass');}));return it;}
+  if(tab==='b'){const seen=new Set(),add=(B,fn)=>{if(!B||!B.name||seen.has(B.name))return;seen.add(B.name);A('',B.name,B.nb&&['octorex','snakecrab','minoking'].includes(B.nb)?'2.0':'',()=>{trainClose();fn();});};
+    let pool=[];try{pool=endBossPool();}catch(e){}
+    pool.forEach(B=>add(B,()=>{if(B.octo||B.crab){trainBoss(B);return;}let zs=[];try{zs=bossSpawnNow(Object.assign({},B,{again:0}),1,true)||[];}catch(e){console.error(e);}
+      zs.forEach((z,i)=>{if(z.floor!==P.floor||Math.hypot(z.x-P.x,z.y-P.y)>420){const q=trainSpot(170,260);z.floor=P.floor;z.x=q.x+i*26;z.y=q.y;}});if(!zs.length)trainBoss(B);}));
+    [OCTO].concat(Object.values(CRABV)).forEach(B=>add(B,()=>trainBoss(B)));
+    return it;}
+  if(tab==='f'){NPH.forEach(D=>A('',D.n,RUN.ph&&RUN.ph.id===D.id?'идёт':'',()=>{trainClose();try{if(RUN.ph)phEnd();}catch(e){}phStart(D.id);},!!(RUN.ph&&RUN.ph.id===D.id)));
+    A('','Закончить фазу','',()=>{try{if(RUN.ph)phEnd();}catch(e){}renderTrain();});return it;}
+  if(tab==='a'){const cur=curAbil();ABIL.forEach(B=>A('',B.ic+' '+B.n,cur.id===B.id?'сейчас':'',()=>{TRN.abil=B.id;slowCd=0;abilUI();sfx('pick');renderTrain();},cur.id===B.id));
+    A('','Сбросить перезарядку способности','',()=>{slowCd=0;sfx('pick');});return it;}
+  const r=_ti.apply(this,arguments);
+  if(tab==='o'){
+    r.push({ic:'',nm:'Неуязвимость на 10 секунд',tag:'',fn:()=>{P.inv=10;sfx('heal');}});
+    r.push({ic:'',nm:'+10 уровней',tag:'',fn:()=>{trainClose();for(let i=0;i<10;i++)addXP(Math.max(.01,P.next-P.xp+.01));}});
+    r.push({ic:'',nm:'Собрать все кристаллы',tag:'',fn:()=>{for(const g of gems)if(g.type==='xp'){g.f=P.floor;g.x=P.x+rr(-8,8);g.y=P.y+rr(-8,8);g.pull=true;}sfx('coin');}});}
+  return r;};}
+
 function startGame(){for(let a=0;a<3;a++){try{startGame0();return;}catch(e){try{console.error(e);localStorage.setItem('szz-lasterr','startGame '+MAPSEL+': '+String(e&&e.stack||e).slice(0,500));}catch(_){}if(a===1)MAPSEL='school';}}try{state='menu';showOv('menu');}catch(e){}}
 function startGame0(){
   if(!RESUME&&comboOn()){COMBOBASE=MODE;MODE=COMBO;MODE2=combo2Ok()?COMBO2:null;}else if(!(COMBOBASE&&COMBOMODS.includes(MODE))){COMBOBASE=null;MODE2=null;}
@@ -12491,7 +12520,7 @@ function endGame0(win){
     const td=trProg().d;$('#endText').textContent=D.daily?'Убито зомби: '+kills+'. Лучший результат сегодня: '+(td&&td.day===D.day?td.best:kills)+'.'+(win?'':' Счёт всё равно попал в таблицу дня.'):win?'Звёзды: '+'★'.repeat(R.st)+'☆'.repeat(3-R.st)+' — '+trStarText(D).slice(0,R.st).pop()+'. Время: '+fmt(time)+'.':'Не сдавайся — попробуй другой маршрут или тактику.';}
   if(rmod('guard')){if(win)$('#endText').textContent='Выживший дожил до рассвета и сбежал — ты его отстоял!'+(left?' Зомби ушли ('+left+').':'');else if(SV&&SV.dead)$('#endText').textContent='Выжившего не уберегли. Он продержался до '+fmt(time)+'.';}
   {const ee=$('#endEnd');const et=win&&!['tutorial','train','trial'].includes(RUN.mode)?(ENDINGS[skinId]||''):'';ee.hidden=!et;if(et){ee.textContent='';const b=document.createElement('b');b.textContent='Концовка · '+((skinOf(skinId)||{}).name||'')+'. ';ee.appendChild(b);ee.appendChild(document.createTextNode(et));try{prog.endSeen=prog.endSeen||{};if(!prog.endSeen[skinId]){prog.endSeen[skinId]=1;cxDirty=true;}}catch(_){}}}
-  {const ec=$('#endCause');if(!win&&lastHit){ec.textContent='Причина смерти — '+lastHit+'.';ec.hidden=false;}else ec.hidden=true;}
+  {const ec=$('#endCause');if(!win&&!['tutorial','train'].includes(RUN.mode)){ec.textContent='Причина смерти — '+deathCause()+'.';ec.hidden=false;}else ec.hidden=true;}
   if(runMapUnlocks.length)$('#endText').textContent+=' Открыта новая карта: '+runMapUnlocks.join(', ')+'!';
   if(runUnlocks.length)$('#endText').textContent+=' Открыт'+(runUnlocks.length>1?'ы персонажи: ':' персонаж: ')+runUnlocks.join(', ')+'!';
   $('#sTime').textContent=fmt(time);$('#sLvl').textContent=P.level;$('#sKills').textContent=kills;
@@ -22334,8 +22363,8 @@ function coopHud(){let h=document.getElementById('coopHud');if(!CR){if(h)h.hidde
   h.classList.toggle('dn',!!(p&&p.dn&&!p.fin));h.classList.toggle('off',!!(CR.gone||(p&&p.fin)));
   h.querySelector('#coopHudS').textContent=!p?'connecting…':CR.gone?'no connection':p.fin?'finished · '+p.k+' ☠':p.dn?'down — help!':(P&&p.f!==P.floor?floorName(p.f)+' · ':'')+'☠ '+p.k+' · together '+((kills|0)+p.k);}
 function coopDown(){if(!CR||CR.fin||CR.downs>=2||!coopPartnerUp())return false;CR.dn=1;CR.dnT=30;CR.downs++;state='revive';for(const k in keys)keys[k]=false;joy.id=null;$('#joy').hidden=true;
-  let ov=document.getElementById('coopDn');if(!ov){ov=document.createElement('div');ov.className='ov';ov.id='coopDn';ov.hidden=true;ov.innerHTML='<div class="boardbox coopDnBox"><div class="kicker">You are down</div><h2>Your partner is on the way</h2><p class="lead" id="coopDnL"></p><b class="coopDnT" id="coopDnT">30</b><div class="row"><button class="btn ghost small" id="coopDnQ" type="button">Give up</button></div></div>';document.body.appendChild(ov);ov.querySelector('#coopDnQ').addEventListener('click',()=>{sfx('pick');coopGiveUp();});}
-  ov.querySelector('#coopDnL').textContent=CR.pn+' will get you up by running to you or killing 15 zombies. '+(CR.downs>=2?'This is the last time in this run.':'You can get up this way twice per run.');ov.querySelector('#coopDnT').textContent='30';ov.hidden=false;sfx('hurt');coopBeat();return true;}
+  let ov=document.getElementById('coopDn');if(!ov){ov=document.createElement('div');ov.className='ov';ov.id='coopDn';ov.hidden=true;ov.innerHTML='<div class="boardbox coopDnBox"><p class="dCause" id="coopDnC"></p><h2>Your partner is on the way</h2><p class="lead" id="coopDnL"></p><b class="coopDnT" id="coopDnT">30</b><div class="row"><button class="btn ghost small" id="coopDnQ" type="button">Give up</button></div></div>';document.body.appendChild(ov);ov.querySelector('#coopDnQ').addEventListener('click',()=>{sfx('pick');coopGiveUp();});}
+  ov.querySelector('#coopDnL').textContent=CR.pn+' will get you up by running to you or killing 15 zombies. '+(CR.downs>=2?'This is the last time in this run.':'You can get up this way twice per run.');ov.querySelector('#coopDnT').textContent='30';{const c=ov.querySelector('#coopDnC');if(c)c.textContent='☠ Cause of death — '+deathCause();}ov.hidden=false;sfx('hurt');coopBeat();return true;}
 function coopDnHide(){const ov=document.getElementById('coopDn');if(ov)ov.hidden=true;}
 function coopRevived(){if(!CR||!CR.dn)return;CR.dn=0;coopDnHide();P.hp=P.maxHp*.5;P.inv=3;try{fxs.push({k:'ring',x:P.x,y:P.y,f:P.floor,R:220,dmg:120,t:0,dur:.6,hit:new Set()});fxs.push({k:'revive',x:P.x,y:P.y,f:P.floor,t:0,dur:1.4});reviveFx=1.2;}catch(e){}
   banner(CR.pn+' got you up!','Half health and 3 seconds of invulnerability',false);sfx('level');haptic('heavy');state='play';CR.busy=0;coopBeat();}
@@ -23222,6 +23251,34 @@ function dgNext(){const D=RUN.dg;D.n++;
 {const _sg=startGame0;startGame0=function(){_sg.apply(this,arguments);try{if(state==='play'&&RUN&&RUN.mode==='dungeon'&&!RUN.dg)dgInit();}catch(e){console.error(e);}};}
 addEventListener('keydown',e=>{if(state!=='dgpick')return;const n={Digit1:0,Digit2:1,Digit3:2,Numpad1:0,Numpad2:1,Numpad3:2}[e.code];if(n===undefined)return;e.preventDefault();e.stopPropagation();const b=document.querySelectorAll('#dgOv .dgCards button')[n];if(b)b.click();},true);
 
+function deathCause(){if(lastHit)return lastHit;let b=null,bd=1e9;try{for(const e of enemies){if(!e.alive||e.floor!==P.floor)continue;const d=Math.hypot(e.x-P.x,e.y-P.y);if(d<bd){bd=d;b=e;}}}catch(e){}
+  if(b&&bd<180)return 'bites: '+zName(b);return 'zombie wounds';}
+{const _ro=revOpen;revOpen=function(){_ro.apply(this,arguments);try{const c=$('#revCause');if(c)c.textContent='☠ Cause of death — '+deathCause();}catch(e){}};}
+/* ---- 2.0: training update ---- */
+TTABS.splice(1,0,['e','Elites']);TTABS.splice(TTABS.findIndex(t=>t[0]==='s'),0,['f','Phases'],['a','Abilities']);
+{const _ca=curAbil;curAbil=function(){if(RUN&&RUN.mode==='train'&&TRN.abil){const A=ABIL.find(a=>a.id===TRN.abil);if(A)return A;}return _ca.apply(this,arguments);};}
+function trainElite(k,kind){const p=trainSpot(140,300);const z=makeZombie(kind,P.floor,p.x,p.y);z.elite=k;RUN.eliteN=(RUN.eliteN||0)+1;z.hp*=4;z.maxHp*=4;z.r*=1.22;z.cr*=1.22;z.xp=(z.xp||1)*5;z.dmg*=1.3;
+  if(k==='fast')z.spd*=1.55;if(k==='brute'){z.hp*=1.8;z.maxHp*=1.8;z.r*=1.3;z.cr*=1.3;z.spd*=.72;z.dmg*=1.5;}z.elT=rr(2,4);z.enter=.4;enemies.push(z);return z;}
+{const _ti=trainItems;trainItems=function(tab){const it=[];const A=(ic,nm,tag,fn,on)=>it.push({ic,nm,tag,fn,on});
+  if(tab==='e'){const kinds=INFO_Z.filter(z=>ZT[z.kind]).map(z=>z.kind).filter(k=>k!=='bomber'&&k!=='blob');
+    Object.keys(ELITE).forEach(k=>A('',ELITE[k].n,'',()=>{for(let i=0;i<TRN.n;i++)trainElite(k,pick(kinds.length?kinds:['student']));sfx('glass');}));return it;}
+  if(tab==='b'){const seen=new Set(),add=(B,fn)=>{if(!B||!B.name||seen.has(B.name))return;seen.add(B.name);A('',B.name,B.nb&&['octorex','snakecrab','minoking'].includes(B.nb)?'2.0':'',()=>{trainClose();fn();});};
+    let pool=[];try{pool=endBossPool();}catch(e){}
+    pool.forEach(B=>add(B,()=>{if(B.octo||B.crab){trainBoss(B);return;}let zs=[];try{zs=bossSpawnNow(Object.assign({},B,{again:0}),1,true)||[];}catch(e){console.error(e);}
+      zs.forEach((z,i)=>{if(z.floor!==P.floor||Math.hypot(z.x-P.x,z.y-P.y)>420){const q=trainSpot(170,260);z.floor=P.floor;z.x=q.x+i*26;z.y=q.y;}});if(!zs.length)trainBoss(B);}));
+    [OCTO].concat(Object.values(CRABV)).forEach(B=>add(B,()=>trainBoss(B)));
+    return it;}
+  if(tab==='f'){NPH.forEach(D=>A('',D.n,RUN.ph&&RUN.ph.id===D.id?'is coming':'',()=>{trainClose();try{if(RUN.ph)phEnd();}catch(e){}phStart(D.id);},!!(RUN.ph&&RUN.ph.id===D.id)));
+    A('','End the phase','',()=>{try{if(RUN.ph)phEnd();}catch(e){}renderTrain();});return it;}
+  if(tab==='a'){const cur=curAbil();ABIL.forEach(B=>A('',B.ic+' '+B.n,cur.id===B.id?'now':'',()=>{TRN.abil=B.id;slowCd=0;abilUI();sfx('pick');renderTrain();},cur.id===B.id));
+    A('','Reset ability cooldown','',()=>{slowCd=0;sfx('pick');});return it;}
+  const r=_ti.apply(this,arguments);
+  if(tab==='o'){
+    r.push({ic:'',nm:'Invulnerable for 10 seconds',tag:'',fn:()=>{P.inv=10;sfx('heal');}});
+    r.push({ic:'',nm:'+10 levels',tag:'',fn:()=>{trainClose();for(let i=0;i<10;i++)addXP(Math.max(.01,P.next-P.xp+.01));}});
+    r.push({ic:'',nm:'Collect all gems',tag:'',fn:()=>{for(const g of gems)if(g.type==='xp'){g.f=P.floor;g.x=P.x+rr(-8,8);g.y=P.y+rr(-8,8);g.pull=true;}sfx('coin');}});}
+  return r;};}
+
 function startGame(){for(let a=0;a<3;a++){try{startGame0();return;}catch(e){try{console.error(e);localStorage.setItem('szz-lasterr','startGame '+MAPSEL+': '+String(e&&e.stack||e).slice(0,500));}catch(_){}if(a===1)MAPSEL='school';}}try{state='menu';showOv('menu');}catch(e){}}
 function startGame0(){
   if(!RESUME&&comboOn()){COMBOBASE=MODE;MODE=COMBO;MODE2=combo2Ok()?COMBO2:null;}else if(!(COMBOBASE&&COMBOMODS.includes(MODE))){COMBOBASE=null;MODE2=null;}
@@ -23317,7 +23374,7 @@ function endGame0(win){
     const td=trProg().d;$('#endText').textContent=D.daily?'Zombies killed: '+kills+'. Best result today: '+(td&&td.day===D.day?td.best:kills)+'.'+(win?'':' Your score still went to the daily leaderboard.'):win?'Stars: '+'★'.repeat(R.st)+'☆'.repeat(3-R.st)+' — '+trStarText(D).slice(0,R.st).pop()+'. Time: '+fmt(time)+'.':'Don\'t give up — try a different route or tactic.';}
   if(rmod('guard')){if(win)$('#endText').textContent='The survivor made it to dawn and escaped — you saved them!'+(left?' The zombies left ('+left+').':'');else if(SV&&SV.dead)$('#endText').textContent='The survivor didn\'t make it. They held out until '+fmt(time)+'.';}
   {const ee=$('#endEnd');const et=win&&!['tutorial','train','trial'].includes(RUN.mode)?(ENDINGS[skinId]||''):'';ee.hidden=!et;if(et){ee.textContent='';const b=document.createElement('b');b.textContent='Ending · '+((skinOf(skinId)||{}).name||'')+'. ';ee.appendChild(b);ee.appendChild(document.createTextNode(et));try{prog.endSeen=prog.endSeen||{};if(!prog.endSeen[skinId]){prog.endSeen[skinId]=1;cxDirty=true;}}catch(_){}}}
-  {const ec=$('#endCause');if(!win&&lastHit){ec.textContent='Cause of death — '+lastHit+'.';ec.hidden=false;}else ec.hidden=true;}
+  {const ec=$('#endCause');if(!win&&!['tutorial','train'].includes(RUN.mode)){ec.textContent='Cause of death — '+deathCause()+'.';ec.hidden=false;}else ec.hidden=true;}
   if(runMapUnlocks.length)$('#endText').textContent+=' New map unlocked: '+runMapUnlocks.join(', ')+'!';
   if(runUnlocks.length)$('#endText').textContent+=' Unlocked'+(runUnlocks.length>1?' characters: ':' character: ')+runUnlocks.join(', ')+'!';
   $('#sTime').textContent=fmt(time);$('#sLvl').textContent=P.level;$('#sKills').textContent=kills;
