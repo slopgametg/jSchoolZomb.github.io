@@ -1602,6 +1602,17 @@ body.inMenu:has(#achToast.live) .hWho{visibility:hidden}
 #rgChip.ok{background:#2f8f55}
 .pzBtns{display:flex!important;gap:8px}
 .pzBtns>button{flex:1 1 0;min-width:0}
+#storyBtn{display:none!important}
+.hpwrap{position:relative}
+.hpline{display:flex;align-items:center;gap:5px}
+#noHealIc{flex:0 0 auto;width:22px;height:22px;padding:0;border:0;background:none;cursor:pointer;pointer-events:auto;z-index:2;animation:nhIn .35s cubic-bezier(.2,1.6,.4,1)}
+#noHealIc[hidden]{display:none}
+#noHealIc svg{width:100%;height:100%;display:block;filter:drop-shadow(0 1.5px 0 rgba(18,22,48,.9))}
+#noHealIc.tmp{animation:nhIn .35s cubic-bezier(.2,1.6,.4,1),nhBlink 1s ease-in-out infinite alternate}
+@media (pointer:coarse){#noHealIc{width:18px;height:18px}.hpline{gap:3px}}
+@keyframes nhIn{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes nhBlink{from{opacity:1}to{opacity:.45}}
+@media (prefers-reduced-motion:reduce){#noHealIc,#noHealIc.tmp{animation:none}}
 </style>
 </head>
 <body>
@@ -1631,7 +1642,7 @@ body.inMenu:has(#achToast.live) .hWho{visibility:hidden}
   <div class="verTag hudVer"></div>
   <div class="hud-left">
     <div class="hprow"><div class="lvl" id="lvl">УР. 1</div>
-    <div class="hpwrap"><div id="hpfill"></div><div id="hptext">100 / 100</div></div></div>
+    <div class="hpline"><div class="hpwrap"><div id="hpfill"></div><div id="hptext">100 / 100</div></div><button type="button" id="noHealIc" hidden aria-label="Лечение не работает" title="Лечение не работает"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.8S2.8 15.2 2.8 9a4.6 4.6 0 0 1 9.2-1.5A4.6 4.6 0 0 1 21.2 9c0 6.2-9.2 11.8-9.2 11.8z" fill="#ff6b6b" stroke="#121630" stroke-width="1.8" stroke-linejoin="round"/><path d="M4.5 19.5L19.5 4.5" stroke="#121630" stroke-width="4.6" stroke-linecap="round"/><path d="M4.5 19.5L19.5 4.5" stroke="#f4efe4" stroke-width="2" stroke-linecap="round"/></svg></button></div></div>
     <div id="svBox" hidden><div class="hpwrap svw"><div id="svfill"></div><div id="svtext">Выживший</div></div><span id="svArr" aria-hidden="true">➤</span></div>
     <div id="inv"></div>
     <div id="phHud" hidden></div>
@@ -1960,7 +1971,7 @@ body.inMenu:has(#achToast.live) .hWho{visibility:hidden}
   <div class="verTag hudVer"></div>
   <div class="hud-left">
     <div class="hprow"><div class="lvl" id="lvl">LV. 1</div>
-    <div class="hpwrap"><div id="hpfill"></div><div id="hptext">100 / 100</div></div></div>
+    <div class="hpline"><div class="hpwrap"><div id="hpfill"></div><div id="hptext">100 / 100</div></div><button type="button" id="noHealIc" hidden aria-label="Healing does not work" title="Healing does not work"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.8S2.8 15.2 2.8 9a4.6 4.6 0 0 1 9.2-1.5A4.6 4.6 0 0 1 21.2 9c0 6.2-9.2 11.8-9.2 11.8z" fill="#ff6b6b" stroke="#121630" stroke-width="1.8" stroke-linejoin="round"/><path d="M4.5 19.5L19.5 4.5" stroke="#121630" stroke-width="4.6" stroke-linecap="round"/><path d="M4.5 19.5L19.5 4.5" stroke="#f4efe4" stroke-width="2" stroke-linecap="round"/></svg></button></div></div>
     <div id="svBox" hidden><div class="hpwrap svw"><div id="svfill"></div><div id="svtext">Survivor</div></div><span id="svArr" aria-hidden="true">➤</span></div>
     <div id="inv"></div>
     <div id="phHud" hidden></div>
@@ -13194,6 +13205,14 @@ function rgUI(){let el=$('#rgChip');if(!el){const g=$('#goal');if(!g)return;el=d
 {const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);try{RG=rgPick();if(RG){const g=RG;setTimeout(()=>{if(RG===g&&state==='play'&&!g.done)toastMsg('🎯 Цель забега: '+rgText(g)+' · +'+g.rw+' монет');},3500);}}catch(e){RG=null;}return r;};}
 {const _eg2=endGame;endGame=function(win){const g=RG;const r=_eg2.apply(this,arguments);try{if(g){const et=$('#endText');if(et){const v=rgVal();
   et.textContent+=g.done?' 🎯 Цель забега выполнена: +'+g.rw+' монет.':' 🎯 Цель забега: '+rgText(g)+' — '+(g.k==='surv'?fmt(Math.min(v,g.n)):Math.min(v,g.n)+' из '+g.n)+'.';}}}catch(e){}RG=null;return r;};}
+
+/* 2.1: hide story sharing; badge when healing does not work */
+let nhOn=null,nhT=0;
+function noHealWhy(){if(!P)return '';if(P.nekoBan)return 'Лечение не работает весь забег: так задано правилами этого забега. Еда, регенерация и лечащие предметы не восстанавливают здоровье.';
+  const l=(P.auraNoHeal||0)-time;return l>0?'Лечение сейчас не работает: рядом аура, которая его блокирует. Отойди от неё.':'';}
+{const _uh3=updateHUD;updateHUD=function(dt){const r=_uh3.apply(this,arguments);try{nhT-=dt||0;if(nhT<=0){nhT=.2;const on=state==='play'&&!!P&&noHeal();
+  if(on!==nhOn){nhOn=on;const b=$('#noHealIc');if(b){b.hidden=!on;b.classList.toggle('tmp',on&&!P.nekoBan);}}}}catch(e){}return r;};}
+try{$('#noHealIc').addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();const t=noHealWhy();if(t)toastMsg('🚫 '+t);});}catch(e){}
 
 function startGame(){for(let a=0;a<3;a++){try{startGame0();return;}catch(e){try{console.error(e);localStorage.setItem('szz-lasterr','startGame '+MAPSEL+': '+String(e&&e.stack||e).slice(0,500));}catch(_){}if(a===1)MAPSEL='school';}}try{state='menu';showOv('menu');}catch(e){}}
 function startGame0(){
@@ -24592,6 +24611,14 @@ function rgUI(){let el=$('#rgChip');if(!el){const g=$('#goal');if(!g)return;el=d
 {const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);try{RG=rgPick();if(RG){const g=RG;setTimeout(()=>{if(RG===g&&state==='play'&&!g.done)toastMsg('🎯 Run goal: '+rgText(g)+' · +'+g.rw+' coins');},3500);}}catch(e){RG=null;}return r;};}
 {const _eg2=endGame;endGame=function(win){const g=RG;const r=_eg2.apply(this,arguments);try{if(g){const et=$('#endText');if(et){const v=rgVal();
   et.textContent+=g.done?' 🎯 Run goal complete: +'+g.rw+' coins.':' 🎯 Run goal: '+rgText(g)+' — '+(g.k==='surv'?fmt(Math.min(v,g.n)):Math.min(v,g.n)+' of '+g.n)+'.';}}}catch(e){}RG=null;return r;};}
+
+/* 2.1: hide story sharing; badge when healing does not work */
+let nhOn=null,nhT=0;
+function noHealWhy(){if(!P)return '';if(P.nekoBan)return 'Healing does not work for the whole run: that is a rule of this run. Food, regeneration and healing items do not restore health.';
+  const l=(P.auraNoHeal||0)-time;return l>0?'Healing does not work right now: an aura nearby blocks it. Move away from it.':'';}
+{const _uh3=updateHUD;updateHUD=function(dt){const r=_uh3.apply(this,arguments);try{nhT-=dt||0;if(nhT<=0){nhT=.2;const on=state==='play'&&!!P&&noHeal();
+  if(on!==nhOn){nhOn=on;const b=$('#noHealIc');if(b){b.hidden=!on;b.classList.toggle('tmp',on&&!P.nekoBan);}}}}catch(e){}return r;};}
+try{$('#noHealIc').addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();const t=noHealWhy();if(t)toastMsg('🚫 '+t);});}catch(e){}
 
 function startGame(){for(let a=0;a<3;a++){try{startGame0();return;}catch(e){try{console.error(e);localStorage.setItem('szz-lasterr','startGame '+MAPSEL+': '+String(e&&e.stack||e).slice(0,500));}catch(_){}if(a===1)MAPSEL='school';}}try{state='menu';showOv('menu');}catch(e){}}
 function startGame0(){
